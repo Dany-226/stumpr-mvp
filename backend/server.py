@@ -242,8 +242,9 @@ async def search_lppr(q: str = Query(..., min_length=2)):
         url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE}"
         headers = {"Authorization": f"Bearer {AIRTABLE_TOKEN}"}
         
-        # Build filter formula
-        filter_formula = f'OR(SEARCH(LOWER("{q}"),LOWER({{Nomenclature}})),SEARCH("{q}",{{Code}}))'
+        # Build filter formula - search in Nomenclature (text) and Code (converted to string)
+        q_lower = q.lower()
+        filter_formula = f'OR(SEARCH("{q_lower}",LOWER({{Nomenclature}})),SEARCH("{q}",CONCATENATE({{Code}},"")))'
         
         params = {
             "filterByFormula": filter_formula,
@@ -261,7 +262,7 @@ async def search_lppr(q: str = Query(..., min_length=2)):
             fields = record.get("fields", {})
             results.append(LPPRSearchResult(
                 code=str(fields.get("Code", "")),
-                nomenclature=fields.get("Nomenclature", ""),
+                nomenclature=fields.get("Nomenclature", "").strip(),
                 tarif=fields.get("Tarif TTC"),
                 duree_ans=fields.get("Durée de prise en charge"),
                 categorie=fields.get("Catégorie"),
