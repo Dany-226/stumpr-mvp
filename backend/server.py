@@ -34,10 +34,10 @@ SECRET_KEY = os.environ.get('JWT_SECRET', 'stumpr-secret-key-change-in-productio
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
-# Airtable Configuration
-AIRTABLE_BASE_ID = "appf0OPmCirvux6GG"
-AIRTABLE_TABLE = "Produits"
-AIRTABLE_TOKEN = "patKXdedwuD653ttv.c786a3360fe46438c033835fcf0d6eee08c01375bb53afb9ea1412137500078f"
+# Airtable Configuration (from environment variables)
+AIRTABLE_BASE_ID = os.environ.get('AIRTABLE_BASE_ID')
+AIRTABLE_TABLE = os.environ.get('AIRTABLE_TABLE', 'Produits')
+AIRTABLE_TOKEN = os.environ.get('AIRTABLE_TOKEN')
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
