@@ -4,6 +4,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import FichePatientPage from "./pages/FichePatientPage";
 import SharedViewPage from "./pages/SharedViewPage";
+import JournalPage from "./pages/JournalPage";
+import DashboardPage from "./pages/DashboardPage";
 import "./App.css";
 
 // Auth helper
