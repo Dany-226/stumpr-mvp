@@ -459,16 +459,38 @@ export default function FichePatientPage() {
     }
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     if (!id) {
       toast.error("Enregistrez d'abord la fiche pour pouvoir l'exporter");
       return;
     }
     
-    // Ouvrir le PDF dans un nouvel onglet avec le token pour téléchargement
-    const pdfUrl = `${API}/patients/${id}/pdf?token=${token}`;
-    window.open(pdfUrl, '_blank');
-    toast.success("PDF en cours de téléchargement...");
+    try {
+      // Téléchargement via fetch + blob
+      const pdfUrl = `${API}/patients/${id}/pdf?token=${token}`;
+      const response = await fetch(pdfUrl);
+      
+      if (!response.ok) {
+        throw new Error("Erreur lors de la génération du PDF");
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      // Créer lien de téléchargement programmatique
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `stumpr-fiche-${(formData.nom || 'patient').toLowerCase().replace(/\s+/g, '-')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("PDF téléchargé !");
+    } catch (error) {
+      console.error("PDF export error:", error);
+      toast.error("Erreur lors de l'export PDF");
+    }
   };
 
   const handleShare = async () => {
