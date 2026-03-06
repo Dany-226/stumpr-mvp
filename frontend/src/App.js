@@ -53,6 +53,22 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/journal"
+            element={
+              <ProtectedRoute>
+                <JournalPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tableau-de-bord"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/partage/:shareId" element={<SharedViewPage />} />
         </Routes>
       </BrowserRouter>
