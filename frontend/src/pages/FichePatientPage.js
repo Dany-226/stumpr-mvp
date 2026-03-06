@@ -541,6 +541,22 @@ export default function FichePatientPage() {
       <header className="app-header sticky top-0 z-50">
         <h1 className="app-logo">Stumpr</h1>
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate("/journal")}
+            className="text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2"
+            style={{ backgroundColor: '#e8f5f4', color: '#1d7a72' }}
+            data-testid="nav-journal"
+          >
+            📝 Journal
+          </button>
+          <button
+            onClick={() => navigate("/tableau-de-bord")}
+            className="text-sm font-medium px-4 py-2 rounded-lg"
+            style={{ backgroundColor: '#f8f9fc', color: '#3d4a5c', border: '1px solid #e2e6ed' }}
+            data-testid="nav-dashboard"
+          >
+            📊 Tableau de bord
+          </button>
           <span style={{ color: '#3d4a5c' }}>
             {user.prenom} {user.nom}
           </span>
