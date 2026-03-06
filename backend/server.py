@@ -375,7 +375,24 @@ async def get_shared_patient(share_id: str):
 # ======================== PDF EXPORT ========================
 
 @api_router.get("/patients/{patient_id}/pdf")
-async def export_patient_pdf(patient_id: str, current_user: dict = Depends(get_current_user)):
+async def export_patient_pdf(patient_id: str, token: str = Query(None), current_user: dict = None):
+    # Allow token via query param for direct browser download
+    if token:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            user_id = payload.get("sub")
+            if not user_id:
+                raise HTTPException(status_code=401, detail="Token invalide")
+            user = await db.users.find_one({"id": user_id}, {"_id": 0})
+            if not user:
+                raise HTTPException(status_code=401, detail="Utilisateur non trouvé")
+            current_user = user
+        except JWTError:
+            raise HTTPException(status_code=401, detail="Token invalide")
+    
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentification requise")
+    
     patient = await db.patients.find_one({"id": patient_id, "user_id": current_user["id"]}, {"_id": 0})
     if not patient:
         raise HTTPException(status_code=404, detail="Fiche patient non trouvée")
@@ -388,8 +405,39 @@ async def export_patient_pdf(patient_id: str, current_user: dict = Depends(get_c
     styles.add(ParagraphStyle(name='SectionTitle', fontName='Helvetica-Bold', fontSize=14, textColor=colors.HexColor('#1a1f2e'), spaceBefore=15, spaceAfter=10))
     styles.add(ParagraphStyle(name='StumprBody', fontName='Helvetica', fontSize=10, textColor=colors.HexColor('#3d4a5c'), spaceAfter=5))
     styles.add(ParagraphStyle(name='FieldLabel', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#8892a4')))
+    styles.add(ParagraphStyle(name='CompTitle', fontName='Helvetica-Bold', fontSize=11, textColor=colors.HexColor('#1d7a72'), spaceBefore=8, spaceAfter=4))
+    styles.add(ParagraphStyle(name='RenewalOK', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#2d9e6b')))
+    styles.add(ParagraphStyle(name='RenewalWarn', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#e08c2a')))
+    styles.add(ParagraphStyle(name='RenewalDanger', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#d64545')))
     
     elements = []
+    
+    # Helper to format dates
+    def format_date(date_str):
+        if not date_str:
+            return "Non renseignée"
+        try:
+            d = datetime.fromisoformat(date_str.replace('Z', '+00:00')) if 'T' in date_str else datetime.strptime(date_str, '%Y-%m-%d')
+            return d.strftime("%d/%m/%Y")
+        except:
+            return date_str
+    
+    # Helper to calculate renewal date
+    def get_renewal_info(prescription_date, duration_years):
+        if not prescription_date or not duration_years:
+            return None, None
+        try:
+            if 'T' in prescription_date:
+                prescription = datetime.fromisoformat(prescription_date.replace('Z', '+00:00'))
+            else:
+                prescription = datetime.strptime(prescription_date, '%Y-%m-%d')
+            renewal = prescription.replace(year=prescription.year + duration_years)
+            now = datetime.now(timezone.utc) if prescription.tzinfo else datetime.now()
+            diff_days = (renewal - now).days
+            renewal_str = renewal.strftime("%d/%m/%Y")
+            return renewal_str, diff_days
+        except:
+            return None, None
     
     # Title
     elements.append(Paragraph("Stumpr — Fiche Patient", styles['StumprTitle']))
@@ -400,7 +448,7 @@ async def export_patient_pdf(patient_id: str, current_user: dict = Depends(get_c
     identity_data = [
         ["Prénom:", patient.get("prenom", ""), "Nom:", patient.get("nom", "")],
         ["Email:", patient.get("email", ""), "Téléphone:", patient.get("telephone", "") or "Non renseigné"],
-        ["Date de naissance:", patient.get("date_naissance", "") or "Non renseignée", "Niveau d'activité:", patient.get("niveau_activite", "") or "Non renseigné"]
+        ["Date de naissance:", format_date(patient.get("date_naissance")), "Niveau d'activité:", patient.get("niveau_activite", "") or "Non renseigné"]
     ]
     t = Table(identity_data, colWidths=[3*cm, 5*cm, 3*cm, 5*cm])
     t.setStyle(TableStyle([
@@ -420,7 +468,7 @@ async def export_patient_pdf(patient_id: str, current_user: dict = Depends(get_c
     elements.append(Paragraph("AMPUTATION", styles['SectionTitle']))
     amp_data = [
         ["Niveau:", patient.get("niveau_amputation", ""), "Côté:", patient.get("cote", "") or "Non renseigné"],
-        ["Date:", patient.get("date_amputation", "") or "Non renseignée", "Cause:", patient.get("cause", "") or "Non renseignée"]
+        ["Date:", format_date(patient.get("date_amputation")), "Cause:", patient.get("cause", "") or "Non renseignée"]
     ]
     t2 = Table(amp_data, colWidths=[3*cm, 5*cm, 3*cm, 5*cm])
     t2.setStyle(TableStyle([
@@ -440,24 +488,73 @@ async def export_patient_pdf(patient_id: str, current_user: dict = Depends(get_c
         elements.append(Paragraph(f"Notes sur le moignon: {patient['notes_moignon']}", styles['StumprBody']))
     elements.append(Spacer(1, 10))
     
-    # Section 3 - Composants
+    # Section 3 - Composants with full details
     composants = patient.get("composants", [])
     if composants:
-        elements.append(Paragraph("COMPOSANTS PROTHÉTIQUES", styles['SectionTitle']))
+        elements.append(Paragraph("COMPOSANTS PROTHÉTIQUES (LPPR)", styles['SectionTitle']))
         for i, comp in enumerate(composants, 1):
-            elements.append(Paragraph(f"Composant {i}: {comp.get('nomenclature', 'N/A')}", styles['StumprBody']))
-            elements.append(Paragraph(f"   Code LPPR: {comp.get('code', 'N/A')} | Tarif: {comp.get('tarif', 'N/A')}€ | Durée: {comp.get('duree_ans', 'N/A')} ans", styles['StumprBody']))
-            if comp.get('date_prescription'):
-                elements.append(Paragraph(f"   Prescrit le: {comp['date_prescription']}", styles['StumprBody']))
-        elements.append(Spacer(1, 10))
+            elements.append(Paragraph(f"Composant {i}", styles['CompTitle']))
+            
+            # Code and nomenclature
+            elements.append(Paragraph(f"<b>Code LPPR:</b> {comp.get('code', 'N/A')}", styles['StumprBody']))
+            nomenclature = comp.get('nomenclature', 'N/A').replace('\n', ' ')
+            elements.append(Paragraph(f"<b>Nomenclature:</b> {nomenclature}", styles['StumprBody']))
+            
+            # Tarif and duration
+            tarif = comp.get('tarif')
+            tarif_str = f"{tarif}€" if tarif else "N/A"
+            duree = comp.get('duree_ans')
+            duree_str = f"{duree} ans" if duree else "N/A"
+            elements.append(Paragraph(f"<b>Tarif TTC:</b> {tarif_str} | <b>Durée prise en charge:</b> {duree_str}", styles['StumprBody']))
+            
+            # Category and application
+            categorie = comp.get('categorie', 'N/A')
+            application = comp.get('application', 'N/A')
+            elements.append(Paragraph(f"<b>Catégorie:</b> {categorie} | <b>Application:</b> {application}", styles['StumprBody']))
+            
+            # Prescription date
+            prescription_date = comp.get('date_prescription')
+            elements.append(Paragraph(f"<b>Date de prescription:</b> {format_date(prescription_date)}", styles['StumprBody']))
+            
+            # Renewal date with color coding
+            renewal_str, diff_days = get_renewal_info(prescription_date, duree)
+            if renewal_str:
+                if diff_days is not None:
+                    if diff_days < 0:
+                        elements.append(Paragraph(f"Date de renouvellement: {renewal_str} (DÉPASSÉE)", styles['RenewalDanger']))
+                    elif diff_days < 30:
+                        elements.append(Paragraph(f"Date de renouvellement: {renewal_str} (URGENT)", styles['RenewalDanger']))
+                    elif diff_days < 180:
+                        elements.append(Paragraph(f"Date de renouvellement: {renewal_str} (dans {diff_days // 30} mois)", styles['RenewalWarn']))
+                    else:
+                        elements.append(Paragraph(f"Date de renouvellement: {renewal_str}", styles['RenewalOK']))
+            
+            # Additional info
+            prise_charge = comp.get('prise_en_charge_complementaire')
+            if prise_charge:
+                montant = comp.get('montant_rembourse')
+                montant_str = f" ({montant}€)" if montant else ""
+                elements.append(Paragraph(f"<b>Prise en charge:</b> {prise_charge}{montant_str}", styles['StumprBody']))
+            
+            etat = comp.get('etat_composant')
+            if etat:
+                elements.append(Paragraph(f"<b>État:</b> {etat}", styles['StumprBody']))
+            
+            notes = comp.get('notes')
+            if notes:
+                elements.append(Paragraph(f"<b>Notes:</b> {notes}", styles['StumprBody']))
+            
+            elements.append(Spacer(1, 8))
     
     # Section 4 - Suivi médical
     elements.append(Paragraph("SUIVI MÉDICAL", styles['SectionTitle']))
     med_data = [
         ["Orthoprothésiste:", patient.get("ortho_referent", "") or "Non renseigné"],
         ["Cabinet/Centre:", patient.get("cabinet_centre", "") or "Non renseigné"],
+        ["Tél. ortho:", patient.get("telephone_ortho", "") or "Non renseigné"],
         ["Médecin prescripteur:", patient.get("medecin_prescripteur", "") or "Non renseigné"],
-        ["Prochain RDV:", patient.get("prochain_rdv", "") or "Non programmé"]
+        ["Spécialité:", patient.get("specialite_prescripteur", "") or "Non renseignée"],
+        ["Prochain RDV:", format_date(patient.get("prochain_rdv"))]
     ]
     t3 = Table(med_data, colWidths=[4*cm, 12*cm])
     t3.setStyle(TableStyle([
@@ -468,13 +565,31 @@ async def export_patient_pdf(patient_id: str, current_user: dict = Depends(get_c
         ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
     ]))
     elements.append(t3)
+    
+    if patient.get("notes_medicales"):
+        elements.append(Spacer(1, 5))
+        elements.append(Paragraph(f"Notes médicales: {patient['notes_medicales']}", styles['StumprBody']))
     elements.append(Spacer(1, 10))
     
-    # Section 5 - Activités
+    # Section 5 - Activités with labels
     activites = patient.get("activites", [])
     if activites:
         elements.append(Paragraph("ACTIVITÉS QUOTIDIENNES", styles['SectionTitle']))
-        elements.append(Paragraph(", ".join(activites), styles['StumprBody']))
+        activity_labels = {
+            "marche_courte": "Marche courte (< 1km)",
+            "marche_longue": "Marche longue (> 1km)",
+            "courses": "Courses / Supermarché",
+            "conduite": "Conduite automobile",
+            "velo": "Vélo",
+            "natation": "Natation",
+            "sport_collectif": "Sport collectif",
+            "randonnee": "Randonnée",
+            "travail_debout": "Travail debout",
+            "travail_assis": "Travail assis",
+            "competition": "Activité intense / compétition"
+        }
+        labels = [activity_labels.get(a, a) for a in activites]
+        elements.append(Paragraph(" • ".join(labels), styles['StumprBody']))
     
     # Footer
     elements.append(Spacer(1, 30))
@@ -484,11 +599,17 @@ async def export_patient_pdf(patient_id: str, current_user: dict = Depends(get_c
     doc.build(elements)
     buffer.seek(0)
     
-    filename = f"fiche_patient_{patient['prenom']}_{patient['nom']}.pdf"
+    # Sanitize filename
+    nom = (patient.get('nom') or 'patient').lower().replace(' ', '-')
+    filename = f"stumpr-fiche-{nom}.pdf"
+    
     return StreamingResponse(
         buffer,
         media_type="application/pdf",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Access-Control-Expose-Headers": "Content-Disposition"
+        }
     )
 
 # ======================== HEALTH CHECK ========================
