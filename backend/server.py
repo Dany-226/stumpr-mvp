@@ -158,6 +158,50 @@ class LPPRSearchResult(BaseModel):
     categorie: Optional[str] = None
     application: Optional[str] = None
 
+# ======================== JOURNAL MODELS ========================
+
+class ComponentPain(BaseModel):
+    nom: str
+    score: int = Field(ge=0, le=10)
+
+class JournalDouleurs(BaseModel):
+    composants: List[ComponentPain] = []
+    fantome: int = Field(ge=0, le=10, default=0)
+
+class JournalBienEtre(BaseModel):
+    fatigue: int = Field(ge=0, le=4, default=2)
+    sommeil: int = Field(ge=0, le=4, default=2)
+    humeur: int = Field(ge=0, le=4, default=2)
+
+class JournalEntryCreate(BaseModel):
+    patient_id: str
+    douleurs: JournalDouleurs
+    bien_etre: JournalBienEtre
+    activites: List[str] = []
+    notes: Optional[str] = None
+
+class JournalEntryResponse(BaseModel):
+    id: str
+    patient_id: str
+    user_id: str
+    created_at: str
+    douleurs: JournalDouleurs
+    bien_etre: JournalBienEtre
+    activites: List[str] = []
+    notes: Optional[str] = None
+    has_alert: bool = False
+
+class JournalStatsResponse(BaseModel):
+    avg_pain_composants: float
+    avg_fantome: float
+    avg_fatigue: float
+    avg_sommeil: float
+    avg_humeur: float
+    active_days: int
+    total_days: int
+    alerts_count: int
+    entries_by_day: List[dict]
+
 # ======================== HELPERS ========================
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
