@@ -656,6 +656,160 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
         }
     )
 
+# ======================== JOURNAL ROUTES ========================
+
+@api_router.post("/journal", response_model=JournalEntryResponse)
+async def create_journal_entry(entry: JournalEntryCreate, current_user: dict = Depends(get_current_user)):
+    # Verify patient belongs to user
+    patient = await db.patients.find_one({"id": entry.patient_id, "user_id": current_user["id"]})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient non trouvé")
+    
+    entry_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Check if any pain score >= 7 for alert
+    has_alert = False
+    for comp_pain in entry.douleurs.composants:
+        if comp_pain.score >= 7:
+            has_alert = True
+            break
+    if entry.douleurs.fantome >= 7:
+        has_alert = True
+    
+    entry_doc = {
+        "id": entry_id,
+        "patient_id": entry.patient_id,
+        "user_id": current_user["id"],
+        "created_at": now,
+        "douleurs": entry.douleurs.model_dump(),
+        "bien_etre": entry.bien_etre.model_dump(),
+        "activites": entry.activites,
+        "notes": entry.notes,
+        "has_alert": has_alert
+    }
+    
+    await db.journal_entries.insert_one(entry_doc)
+    del entry_doc["_id"]
+    
+    return JournalEntryResponse(**entry_doc)
+
+@api_router.get("/journal", response_model=List[JournalEntryResponse])
+async def get_journal_entries(
+    days: int = Query(default=7, ge=1, le=90),
+    current_user: dict = Depends(get_current_user)
+):
+    # Calculate date range
+    end_date = datetime.now(timezone.utc)
+    start_date = end_date - timedelta(days=days)
+    
+    entries = await db.journal_entries.find({
+        "user_id": current_user["id"],
+        "created_at": {"$gte": start_date.isoformat()}
+    }, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    return [JournalEntryResponse(**e) for e in entries]
+
+@api_router.get("/journal/stats", response_model=JournalStatsResponse)
+async def get_journal_stats(
+    days: int = Query(default=7, ge=1, le=90),
+    current_user: dict = Depends(get_current_user)
+):
+    end_date = datetime.now(timezone.utc)
+    start_date = end_date - timedelta(days=days)
+    
+    entries = await db.journal_entries.find({
+        "user_id": current_user["id"],
+        "created_at": {"$gte": start_date.isoformat()}
+    }, {"_id": 0}).sort("created_at", 1).to_list(500)
+    
+    if not entries:
+        return JournalStatsResponse(
+            avg_pain_composants=0,
+            avg_fantome=0,
+            avg_fatigue=2,
+            avg_sommeil=2,
+            avg_humeur=2,
+            active_days=0,
+            total_days=days,
+            alerts_count=0,
+            entries_by_day=[]
+        )
+    
+    # Calculate averages
+    total_pain_composants = []
+    total_fantome = []
+    total_fatigue = []
+    total_sommeil = []
+    total_humeur = []
+    alerts_count = 0
+    active_days_set = set()
+    entries_by_day = []
+    
+    for entry in entries:
+        # Pain from components
+        douleurs = entry.get("douleurs", {})
+        for comp in douleurs.get("composants", []):
+            total_pain_composants.append(comp.get("score", 0))
+        total_fantome.append(douleurs.get("fantome", 0))
+        
+        # Well-being
+        bien_etre = entry.get("bien_etre", {})
+        total_fatigue.append(bien_etre.get("fatigue", 2))
+        total_sommeil.append(bien_etre.get("sommeil", 2))
+        total_humeur.append(bien_etre.get("humeur", 2))
+        
+        # Alerts
+        if entry.get("has_alert", False):
+            alerts_count += 1
+        
+        # Active days (days with activities)
+        if entry.get("activites", []):
+            created = entry.get("created_at", "")[:10]
+            active_days_set.add(created)
+        
+        # Format for chart
+        created_dt = datetime.fromisoformat(entry["created_at"].replace('Z', '+00:00'))
+        date_str = created_dt.strftime("%d/%m")
+        
+        avg_comp_pain = sum([c.get("score", 0) for c in douleurs.get("composants", [])]) / max(len(douleurs.get("composants", [])), 1)
+        
+        entries_by_day.append({
+            "date": date_str,
+            "pain_composants": round(avg_comp_pain, 1),
+            "fantome": douleurs.get("fantome", 0),
+            "fatigue": bien_etre.get("fatigue", 2),
+            "sommeil": bien_etre.get("sommeil", 2),
+            "humeur": bien_etre.get("humeur", 2),
+            "activites_count": len(entry.get("activites", []))
+        })
+    
+    return JournalStatsResponse(
+        avg_pain_composants=round(sum(total_pain_composants) / max(len(total_pain_composants), 1), 1),
+        avg_fantome=round(sum(total_fantome) / max(len(total_fantome), 1), 1),
+        avg_fatigue=round(sum(total_fatigue) / max(len(total_fatigue), 1), 1),
+        avg_sommeil=round(sum(total_sommeil) / max(len(total_sommeil), 1), 1),
+        avg_humeur=round(sum(total_humeur) / max(len(total_humeur), 1), 1),
+        active_days=len(active_days_set),
+        total_days=days,
+        alerts_count=alerts_count,
+        entries_by_day=entries_by_day
+    )
+
+@api_router.get("/journal/today")
+async def get_today_entry(current_user: dict = Depends(get_current_user)):
+    """Check if user has already made an entry today"""
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    entry = await db.journal_entries.find_one({
+        "user_id": current_user["id"],
+        "created_at": {"$gte": today_start.isoformat()}
+    }, {"_id": 0})
+    
+    if entry:
+        return {"has_entry_today": True, "entry": JournalEntryResponse(**entry)}
+    return {"has_entry_today": False, "entry": None}
+
 # ======================== HEALTH CHECK ========================
 
 @api_router.get("/")
