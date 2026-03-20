@@ -6,6 +6,7 @@ import FichePatientPage from "./pages/FichePatientPage";
 import SharedViewPage from "./pages/SharedViewPage";
 import JournalPage from "./pages/JournalPage";
 import DashboardPage from "./pages/DashboardPage";
+import AnnuairePage from "./pages/AnnuairePage";
 import "./App.css";
 
 // Auth helper
@@ -66,6 +67,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/annuaire"
+            element={
+              <ProtectedRoute>
+                <AnnuairePage />
               </ProtectedRoute>
             }
           />

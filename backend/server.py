@@ -810,6 +810,110 @@ async def get_today_entry(current_user: dict = Depends(get_current_user)):
         return {"has_entry_today": True, "entry": JournalEntryResponse(**entry)}
     return {"has_entry_today": False, "entry": None}
 
+# ======================== ANNUAIRE MODELS ========================
+
+class Avis(BaseModel):
+    auteur: str
+    note: int = Field(ge=1, le=5)
+    commentaire: Optional[str] = None
+
+class EtablissementCreate(BaseModel):
+    nom: str
+    type: str  # "CRF" ou "Prothesiste"
+    ville: str
+    departement: str
+    telephone: Optional[str] = None
+    site_web: Optional[str] = None
+    adresse: Optional[str] = None
+    notes_communautaires: Optional[str] = None
+
+class EtablissementResponse(BaseModel):
+    id: str
+    nom: str
+    type: str
+    ville: str
+    departement: str
+    telephone: Optional[str] = None
+    site_web: Optional[str] = None
+    adresse: Optional[str] = None
+    notes_communautaires: Optional[str] = None
+    note_moyenne: float
+    nombre_avis: int
+    avis: List[dict] = []
+    created_at: str
+
+# ======================== ANNUAIRE ROUTES ========================
+
+@api_router.get("/annuaire", response_model=List[EtablissementResponse])
+async def list_annuaire(
+    ville: Optional[str] = Query(None),
+    type: Optional[str] = Query(None),
+    current_user: dict = Depends(get_current_user)
+):
+    query = {}
+    if ville:
+        query["ville"] = {"$regex": ville, "$options": "i"}
+    if type:
+        query["type"] = type
+
+    cursor = db.annuaire.find(query, {"_id": 0}).sort("note_moyenne", -1)
+    etablissements = await cursor.to_list(100)
+    return [EtablissementResponse(**e) for e in etablissements]
+
+@api_router.post("/annuaire", response_model=EtablissementResponse)
+async def create_etablissement(
+    data: EtablissementCreate,
+    current_user: dict = Depends(get_current_user)
+):
+    if data.type not in ["CRF", "Prothesiste"]:
+        raise HTTPException(status_code=400, detail="Type doit être 'CRF' ou 'Prothesiste'")
+
+    etablissement_id = str(uuid.uuid4())
+    doc = {
+        "id": etablissement_id,
+        **data.dict(),
+        "note_moyenne": 0.0,
+        "nombre_avis": 0,
+        "avis": [],
+        "created_by": current_user["id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.annuaire.insert_one(doc)
+    doc.pop("_id", None)
+    return EtablissementResponse(**doc)
+
+@api_router.post("/annuaire/{etablissement_id}/avis")
+async def add_avis(
+    etablissement_id: str,
+    avis: Avis,
+    current_user: dict = Depends(get_current_user)
+):
+    etablissement = await db.annuaire.find_one({"id": etablissement_id})
+    if not etablissement:
+        raise HTTPException(status_code=404, detail="Établissement non trouvé")
+
+    avis_doc = {
+        "auteur": avis.auteur,
+        "note": avis.note,
+        "commentaire": avis.commentaire,
+        "user_id": current_user["id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+
+    existing_avis = etablissement.get("avis", [])
+    existing_avis.append(avis_doc)
+    note_moyenne = sum(a["note"] for a in existing_avis) / len(existing_avis)
+
+    await db.annuaire.update_one(
+        {"id": etablissement_id},
+        {"$set": {
+            "avis": existing_avis,
+            "nombre_avis": len(existing_avis),
+            "note_moyenne": round(note_moyenne, 1)
+        }}
+    )
+    return {"message": "Avis ajouté", "note_moyenne": round(note_moyenne, 1)}
+
 # ======================== HEALTH CHECK ========================
 
 @api_router.get("/")
