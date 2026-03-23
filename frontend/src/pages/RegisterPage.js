@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import axios from "axios";
+import StumprLogo from "../components/StumprLogo";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -46,17 +47,17 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#f8f9fc' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f5f0e8' }}>
+      {/* White header with logo */}
+      <header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e0d9cf', padding: '16px 24px' }}>
+        <StumprLogo size={22} />
+      </header>
+
+      <div className="flex-1 flex items-center justify-center p-6">
       <div className="w-full max-w-md animate-fade-in">
-        {/* Logo */}
+        {/* Subtitle */}
         <div className="text-center mb-8">
-          <h1 
-            className="text-4xl font-bold mb-2" 
-            style={{ fontFamily: 'Georgia, serif', color: '#1d7a72' }}
-          >
-            Stumpr
-          </h1>
-          <p style={{ color: '#3d4a5c' }}>
+          <p className="text-lg font-medium" style={{ color: '#3d4a5c' }}>
             Créez votre espace patient
           </p>
         </div>
@@ -186,6 +187,7 @@ export default function RegisterPage() {
             </Link>
           </p>
         </div>
+      </div>
       </div>
     </div>
   );

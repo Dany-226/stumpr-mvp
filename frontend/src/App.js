@@ -24,7 +24,7 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f8f9fc' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#f5f0e8' }}>
       <Toaster 
         position="top-center" 
         richColors 

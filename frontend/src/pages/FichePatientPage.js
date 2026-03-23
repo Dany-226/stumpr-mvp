@@ -7,6 +7,7 @@ import {
   Waves, CircleDot, Mountain, Briefcase, Armchair, Trophy
 } from "lucide-react";
 import axios from "axios";
+import StumprLogo from "../components/StumprLogo";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -536,15 +537,15 @@ export default function FichePatientPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f8f9fc' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#f5f0e8' }}>
       {/* Header */}
       <header className="app-header sticky top-0 z-50">
-        <h1 className="app-logo">Stumpr</h1>
-        <div className="flex items-center gap-4">
+        <StumprLogo size={22} />
+        <div className="flex items-center gap-2">
           <button
             onClick={() => navigate("/journal")}
             className="text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2"
-            style={{ backgroundColor: '#e8f5f4', color: '#1d7a72' }}
+            style={{ backgroundColor: '#e6f3f2', color: '#0e6b63' }}
             data-testid="nav-journal"
           >
             📝 Journal
@@ -552,10 +553,26 @@ export default function FichePatientPage() {
           <button
             onClick={() => navigate("/tableau-de-bord")}
             className="text-sm font-medium px-4 py-2 rounded-lg"
-            style={{ backgroundColor: '#f8f9fc', color: '#3d4a5c', border: '1px solid #e2e6ed' }}
+            style={{ backgroundColor: '#f5f0e8', color: '#3d4a5c', border: '1px solid #e0d9cf' }}
             data-testid="nav-dashboard"
           >
             📊 Tableau de bord
+          </button>
+          <button
+            onClick={() => navigate("/annuaire")}
+            className="text-sm font-medium px-4 py-2 rounded-lg"
+            style={{ backgroundColor: '#f5f0e8', color: '#3d4a5c', border: '1px solid #e0d9cf' }}
+            data-testid="nav-annuaire"
+          >
+            🏥 Annuaire
+          </button>
+          <button
+            onClick={() => navigate("/fiches-droits")}
+            className="text-sm font-medium px-4 py-2 rounded-lg"
+            style={{ backgroundColor: '#f5f0e8', color: '#3d4a5c', border: '1px solid #e0d9cf' }}
+            data-testid="nav-fiches-droits"
+          >
+            📋 Fiches droits
           </button>
           <span style={{ color: '#3d4a5c' }}>
             {user.prenom} {user.nom}

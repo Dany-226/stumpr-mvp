@@ -145,10 +145,11 @@ textarea.stumpr-input {
 }
 
 .app-logo {
-  font-family: Georgia, serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 24px;
-  font-weight: 700;
-  color: #1d7a72;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #1a1a1a;
 }
 
 /* Responsive container */

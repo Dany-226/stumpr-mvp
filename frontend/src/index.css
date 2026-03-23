@@ -2,18 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Georgia&display=swap');
-
 body {
     margin: 0;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "DM Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #f8f9fc;
+    background-color: #f5f0e8;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: Georgia, serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.025em;
 }
 
 code {
@@ -22,43 +22,44 @@ code {
 
 @layer base {
     :root {
-        --background: 220 20% 98%;
+        --background: 36 33% 92%;
         --foreground: 222 33% 14%;
         --card: 0 0% 100%;
         --card-foreground: 222 33% 14%;
         --popover: 0 0% 100%;
         --popover-foreground: 222 33% 14%;
-        --primary: 172 60% 29%;
+        --primary: 175 77% 24%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 172 40% 94%;
-        --secondary-foreground: 172 60% 29%;
-        --muted: 220 14% 96%;
+        --secondary: 175 40% 92%;
+        --secondary-foreground: 175 77% 24%;
+        --muted: 36 20% 94%;
         --muted-foreground: 217 15% 58%;
-        --accent: 172 40% 94%;
-        --accent-foreground: 172 60% 29%;
+        --accent: 175 40% 92%;
+        --accent-foreground: 175 77% 24%;
         --destructive: 0 65% 55%;
         --destructive-foreground: 0 0% 100%;
-        --border: 220 13% 91%;
-        --input: 220 13% 91%;
-        --ring: 172 60% 29%;
-        --chart-1: 172 60% 29%;
+        --border: 36 15% 86%;
+        --input: 36 15% 86%;
+        --ring: 175 77% 24%;
+        --chart-1: 175 77% 24%;
         --chart-2: 145 55% 40%;
-        --chart-3: 36 75% 52%;
+        --chart-3: 31 65% 48%;
         --chart-4: 0 65% 55%;
         --chart-5: 217 15% 58%;
-        --radius: 0.625rem;
-        
-        --stumpr-bg: #f8f9fc;
+        --radius: 0.75rem;
+
+        --stumpr-bg: #f5f0e8;
         --stumpr-surface: #ffffff;
-        --stumpr-primary: #1d7a72;
-        --stumpr-primary-hover: #2a9d92;
-        --stumpr-primary-light: #e8f5f4;
+        --stumpr-primary: #0e6b63;
+        --stumpr-primary-hover: #0d5a54;
+        --stumpr-primary-light: #e6f3f2;
+        --stumpr-amber: #c97c2a;
         --stumpr-text-primary: #1a1f2e;
         --stumpr-text-secondary: #3d4a5c;
         --stumpr-text-muted: #8892a4;
-        --stumpr-border: #e2e6ed;
+        --stumpr-border: #e0d9cf;
         --stumpr-success: #2d9e6b;
-        --stumpr-warning: #e08c2a;
+        --stumpr-warning: #c97c2a;
         --stumpr-danger: #d64545;
     }
 }
@@ -78,7 +79,7 @@ code {
     border: 1px solid var(--stumpr-border);
     border-radius: 20px;
     padding: 28px;
-    box-shadow: 0 4px 16px rgba(26, 31, 46, 0.08);
+    box-shadow: 0 4px 16px rgba(14, 107, 99, 0.07);
 }
 
 .stumpr-label {
@@ -89,6 +90,7 @@ code {
     color: var(--stumpr-text-muted);
     margin-bottom: 6px;
     display: block;
+    font-family: "DM Sans", sans-serif;
 }
 
 .stumpr-input {
@@ -99,13 +101,14 @@ code {
     width: 100%;
     background: white;
     color: var(--stumpr-text-primary);
+    font-family: "DM Sans", sans-serif;
     transition: all 0.2s ease;
 }
 
 .stumpr-input:focus {
     outline: none;
     border-color: var(--stumpr-primary);
-    box-shadow: 0 0 0 3px rgba(29, 122, 114, 0.12);
+    box-shadow: 0 0 0 3px rgba(14, 107, 99, 0.12);
 }
 
 .stumpr-input::placeholder {
@@ -120,6 +123,7 @@ code {
     width: 100%;
     background: white;
     color: var(--stumpr-text-primary);
+    font-family: "DM Sans", sans-serif;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -127,17 +131,18 @@ code {
 .stumpr-select:focus {
     outline: none;
     border-color: var(--stumpr-primary);
-    box-shadow: 0 0 0 3px rgba(29, 122, 114, 0.12);
+    box-shadow: 0 0 0 3px rgba(14, 107, 99, 0.12);
 }
 
 .stumpr-btn-primary {
     background: var(--stumpr-primary);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 12px 24px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
+    font-family: "DM Sans", sans-serif;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -154,26 +159,28 @@ code {
     background: var(--stumpr-primary-light);
     color: var(--stumpr-primary);
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 12px 24px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
+    font-family: "DM Sans", sans-serif;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .stumpr-btn-secondary:hover {
-    background: #d0e8e6;
+    background: #cde5e3;
 }
 
 .stumpr-btn-outline {
     background: transparent;
     color: var(--stumpr-text-secondary);
     border: 1.5px solid var(--stumpr-border);
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 12px 24px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
+    font-family: "DM Sans", sans-serif;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -188,7 +195,7 @@ code {
     background: white;
     border: 1px solid var(--stumpr-border);
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(26, 31, 46, 0.12);
+    box-shadow: 0 8px 24px rgba(14, 107, 99, 0.10);
     overflow: hidden;
 }
 
@@ -196,6 +203,7 @@ code {
     padding: 12px 16px;
     cursor: pointer;
     transition: background 0.15s ease;
+    font-family: "DM Sans", sans-serif;
 }
 
 .stumpr-dropdown-item:hover {
@@ -205,7 +213,7 @@ code {
 /* Selected component card */
 .stumpr-component-selected {
     background: var(--stumpr-primary-light);
-    border: 1px solid rgba(29, 122, 114, 0.2);
+    border: 1px solid rgba(14, 107, 99, 0.2);
     border-radius: 10px;
     padding: 14px;
 }
@@ -226,12 +234,12 @@ code {
 }
 
 .stumpr-activity-toggle:hover {
-    border-color: rgba(29, 122, 114, 0.5);
+    border-color: rgba(14, 107, 99, 0.5);
 }
 
 .stumpr-activity-toggle.active {
     background: var(--stumpr-primary-light);
-    border-color: rgba(29, 122, 114, 0.3);
+    border-color: rgba(14, 107, 99, 0.3);
     color: var(--stumpr-primary);
 }
 
@@ -261,6 +269,11 @@ code {
     border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
+}
+
+/* Gradient hero (amber → teal) */
+.stumpr-gradient {
+    background: linear-gradient(135deg, #c97c2a 0%, #0e6b63 100%);
 }
 
 /* Animations */

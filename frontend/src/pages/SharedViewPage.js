@@ -6,6 +6,7 @@ import {
   AlertTriangle, CheckCircle, Clock
 } from "lucide-react";
 import axios from "axios";
+import StumprLogo from "../components/StumprLogo";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -148,7 +149,7 @@ export default function SharedViewPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#f8f9fc' }}>
       {/* Header */}
       <header className="app-header">
-        <h1 className="app-logo">Stumpr</h1>
+        <StumprLogo size={22} />
         <span 
           className="text-sm px-3 py-1 rounded-full"
           style={{ backgroundColor: '#e8f5f4', color: '#1d7a72' }}
@@ -338,7 +339,7 @@ export default function SharedViewPage() {
         {/* Footer */}
         <div className="text-center py-8" style={{ color: '#8892a4' }}>
           <p className="text-sm">
-            Cette fiche est partagée en lecture seule via Stumpr
+            Cette fiche est partagée en lecture seule via Stumpr.
           </p>
         </div>
       </main>

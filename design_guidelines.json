@@ -7,38 +7,41 @@
   },
   "typography": {
     "font_family": {
-      "heading": "Georgia, serif",
-      "body": "Helvetica Neue, Helvetica, Arial, sans-serif"
+      "heading": "Plus Jakarta Sans, sans-serif",
+      "body": "DM Sans, Helvetica Neue, Arial, sans-serif"
     },
+    "heading_style": "font-weight: 800, letter-spacing: -0.025em",
     "scale": {
-      "h1": "text-4xl md:text-5xl font-bold tracking-tight",
-      "h2": "text-3xl font-semibold tracking-tight",
-      "h3": "text-2xl font-medium",
+      "h1": "text-4xl md:text-5xl font-extrabold tracking-tight",
+      "h2": "text-3xl font-extrabold tracking-tight",
+      "h3": "text-2xl font-bold",
       "body": "text-base leading-relaxed",
       "small": "text-sm text-muted-foreground"
     }
   },
   "colors": {
     "palette": {
-      "background": "#f8f9fc",
+      "background": "#f5f0e8",
       "surface": "#ffffff",
-      "primary": "#1d7a72",
-      "primary_hover": "#2a9d92",
-      "primary_light": "#e8f5f4",
+      "primary": "#0e6b63",
+      "primary_hover": "#0d5a54",
+      "primary_light": "#e6f3f2",
+      "amber": "#c97c2a",
       "text_primary": "#1a1f2e",
       "text_secondary": "#3d4a5c",
       "text_muted": "#8892a4",
-      "border": "#e2e6ed",
+      "border": "#e0d9cf",
       "success": "#2d9e6b",
-      "warning": "#e08c2a",
+      "warning": "#c97c2a",
       "danger": "#d64545"
     },
+    "gradient_hero": "linear-gradient(135deg, #c97c2a 0%, #0e6b63 100%)",
     "usage": {
-      "body_bg": "bg-[#f8f9fc]",
+      "body_bg": "bg-[#f5f0e8]",
       "card_bg": "bg-[#ffffff]",
       "text_main": "text-[#1a1f2e]",
       "text_sub": "text-[#3d4a5c]",
-      "border_color": "border-[#e2e6ed]"
+      "border_color": "border-[#e0d9cf]"
     }
   },
   "spacing": {
@@ -47,7 +50,7 @@
     "element_gap": "gap-4",
     "radius": {
       "card": "rounded-[20px]",
-      "button": "rounded-[10px]",
+      "button": "rounded-[12px]",
       "input": "rounded-[10px]"
     }
   },
@@ -63,21 +66,21 @@
   },
   "components": {
     "buttons": {
-      "base": "h-12 px-6 font-medium transition-all duration-200 active:scale-95",
-      "primary": "bg-[#1d7a72] text-white hover:bg-[#2a9d92] shadow-sm hover:shadow-md",
-      "secondary": "bg-[#e8f5f4] text-[#1d7a72] hover:bg-[#d0e8e6]",
-      "outline": "border-2 border-[#e2e6ed] text-[#3d4a5c] hover:border-[#1d7a72] hover:text-[#1d7a72]"
+      "base": "h-12 px-6 font-bold transition-all duration-200 active:scale-95",
+      "primary": "bg-[#0e6b63] text-white hover:bg-[#0d5a54] shadow-sm hover:shadow-md rounded-[12px] font-bold",
+      "secondary": "bg-[#e6f3f2] text-[#0e6b63] hover:bg-[#cde5e3] rounded-[12px] font-bold",
+      "outline": "border-2 border-[#e0d9cf] text-[#3d4a5c] hover:border-[#0e6b63] hover:text-[#0e6b63] rounded-[12px] font-bold"
     },
     "inputs": {
-      "base": "h-12 px-4 bg-white border border-[#e2e6ed] focus:border-[#1d7a72] focus:ring-2 focus:ring-[#1d7a72]/20 transition-all outline-none placeholder:text-[#8892a4]"
+      "base": "h-12 px-4 bg-white border border-[#e0d9cf] focus:border-[#0e6b63] focus:ring-2 focus:ring-[#0e6b63]/20 transition-all outline-none placeholder:text-[#8892a4] font-body"
     },
     "cards": {
-      "base": "bg-white border border-[#e2e6ed] shadow-sm hover:shadow-md transition-shadow duration-300"
+      "base": "bg-white border border-[#e0d9cf] rounded-[20px] shadow-sm hover:shadow-md transition-shadow duration-300"
     },
     "activity_toggles": {
       "wrapper": "grid grid-cols-2 md:grid-cols-3 gap-4",
-      "item": "flex flex-col items-center justify-center p-6 border-2 border-[#e2e6ed] rounded-[20px] cursor-pointer transition-all hover:border-[#1d7a72]/50",
-      "item_active": "border-[#1d7a72] bg-[#e8f5f4] text-[#1d7a72]"
+      "item": "flex flex-col items-center justify-center p-6 border-2 border-[#e0d9cf] rounded-[20px] cursor-pointer transition-all hover:border-[#0e6b63]/50",
+      "item_active": "border-[#0e6b63] bg-[#e6f3f2] text-[#0e6b63]"
     }
   },
   "visual_enhancers": {
@@ -86,29 +89,16 @@
     "motion": "Use 'framer-motion' for smooth section entry (opacity: 0 -> 1, y: 20 -> 0).",
     "illustrations": "Use clean, minimalist SVG icons or Lucide icons for activities. Avoid cluttered stock photos."
   },
-  "image_urls": {
-    "logo": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWVkaWNhbCUyMGxvZ298ZW58MHx8MHx8fDA%3D",
-    "hero_bg": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWVkaWNhbCUyMGNsZWFufGVufDB8fDB8fHww",
-    "activity_cycling": "https://images.unsplash.com/flagged/photo-1552640684-af49ab059afe?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwxfHxtaW5pbWFsaXN0JTIwaWxsdXN0cmF0aW9uJTIwcGVyc29uJTIwd2Fsa2luZyUyMGN5Y2xpbmclMjBzd2ltbWluZyUyMHJ1bm5pbmclMjBkcml2aW5nJTIwZ2FyZGVuaW5nfGVufDB8fHx8MTc3MjYzNjQ3OXww&ixlib=rb-4.1.0&q=85"
-  },
-  "instructions_to_main_agent": [
-    "1. SETUP: Update 'tailwind.config.js' with the custom colors and border radius variables immediately.",
-    "2. FONTS: Import 'Georgia' (system font usually available) and 'Helvetica Neue' (fallback to Arial/Sans). Ensure headings use Georgia.",
-    "3. COMPONENTS: Create a reusable 'SectionCard' component that encapsulates the white background, 20px radius, and padding.",
-    "4. FORMS: Use 'react-hook-form' + 'zod' for validation. This is critical for medical forms.",
-    "5. AIRTABLE: Mock the Airtable search for now with a static list of prosthetic components (e.g., 'Foot - Sach', 'Knee - Polycentric', 'Hand - Myoelectric'). Create a 'Combobox' component for this.",
-    "6. ACTIVITIES: Create a 'ToggleCard' component for the daily activities. It should visually change state (border color + bg color) when selected.",
-    "7. PDF: Use 'react-to-print' or 'jspdf' to generate a summary of the patient form.",
-    "8. ROUTING: Use 'react-router-dom'. Routes: '/' (Login), '/register', '/fiche-patient', '/shared/:id'.",
-    "9. LANGUAGE: All text MUST be in French.",
-    "10. DATA-TESTID: Add 'data-testid' to all inputs (e.g., 'input-name', 'input-amputation-date') and buttons."
-  ],
   "universal_guidelines": [
-    "Do not use gradients for backgrounds; stick to the solid #f8f9fc.",
+    "Background: cream warm #f5f0e8 — never cold grays.",
+    "Primary color: #0e6b63 (teal foncé de la landing page).",
+    "Headings: Plus Jakarta Sans, font-weight 800, letter-spacing -0.025em.",
+    "Body: DM Sans, font-weight 400-500.",
+    "Button border-radius: 12px, font-weight 700.",
+    "Card border-radius: 20px, box-shadow légère.",
     "Ensure high contrast for text (use the provided #1a1f2e for primary text).",
     "Use generous padding inside cards (p-6 or p-8) to avoid a cramped look.",
     "Input fields should have a height of 48px (h-12) for better touch targets.",
-    "Feedback is key: Show success toast after saving.",
-    "Do not use 'Inter' font; strictly follow the Georgia/Helvetica rule."
+    "Feedback is key: Show success toast after saving."
   ]
 }

@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import axios from "axios";
+import StumprLogo from "../components/StumprLogo";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -38,26 +39,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#f8f9fc' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f5f0e8' }}>
+      {/* White header with logo */}
+      <header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e0d9cf', padding: '16px 24px' }}>
+        <StumprLogo size={22} />
+      </header>
+
+      <div className="flex-1 flex items-center justify-center p-6">
       <div className="w-full max-w-md animate-fade-in">
-        {/* Logo */}
+        {/* Subtitle */}
         <div className="text-center mb-8">
-          <h1 
-            className="text-4xl font-bold mb-2" 
-            style={{ fontFamily: 'Georgia, serif', color: '#1d7a72' }}
-          >
-            Stumpr
-          </h1>
-          <p style={{ color: '#3d4a5c' }}>
-            Votre espace patient amputé
+          <p className="text-lg font-medium" style={{ color: '#3d4a5c' }}>
+            Vos droits, vos besoins, enfin clairs.
           </p>
         </div>
 
         {/* Login Card */}
         <div className="stumpr-card">
-          <h2 
-            className="text-2xl font-semibold mb-6 text-center"
-            style={{ fontFamily: 'Georgia, serif', color: '#1a1f2e' }}
+          <h2
+            className="text-2xl mb-6 text-center"
+            style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', fontWeight: 700, color: '#1a1f2e' }}
           >
             Connexion
           </h2>
@@ -141,6 +142,7 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
+      </div>
       </div>
     </div>
   );
