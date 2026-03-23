@@ -7,6 +7,7 @@ import SharedViewPage from "./pages/SharedViewPage";
 import JournalPage from "./pages/JournalPage";
 import DashboardPage from "./pages/DashboardPage";
 import AnnuairePage from "./pages/AnnuairePage";
+import FichesDroitsPage from "./pages/FichesDroitsPage";
 import "./App.css";
 
 // Auth helper
@@ -75,6 +76,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <AnnuairePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fiches-droits"
+            element={
+              <ProtectedRoute>
+                <FichesDroitsPage />
               </ProtectedRoute>
             }
           />
