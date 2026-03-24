@@ -162,6 +162,19 @@ const FicheModal = ({ fiche, onClose }) => {
 
         {/* Contenu scrollable */}
         <div className="overflow-y-auto flex-1 p-6 space-y-6">
+          {/* Disclaimer */}
+          <div
+            className="flex gap-3 rounded-xl p-4"
+            style={{ backgroundColor: "#fdf8e3", border: "1px solid #f0e0a0" }}
+          >
+            <span style={{ fontSize: 16, lineHeight: 1.5 }}>⚠️</span>
+            <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: 13, color: "#7a6020", lineHeight: 1.6 }}>
+              Ces informations sont données à titre indicatif et ne constituent pas un conseil juridique. Vérifiez les règles applicables à votre situation sur{" "}
+              <a href="https://www.ameli.fr" target="_blank" rel="noopener noreferrer" style={{ color: "#0e6b63", fontWeight: 600, textDecoration: "underline" }}>ameli.fr</a>
+              {" "}ou auprès de votre CPAM.
+            </p>
+          </div>
+
           {fiche.contenu.map((bloc, i) => (
             <div key={i}>
               <h3
