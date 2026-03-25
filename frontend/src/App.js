@@ -8,6 +8,7 @@ import JournalPage from "./pages/JournalPage";
 import DashboardPage from "./pages/DashboardPage";
 import AnnuairePage from "./pages/AnnuairePage";
 import FichesDroitsPage from "./pages/FichesDroitsPage";
+import RapportPage from "./pages/RapportPage";
 import "./App.css";
 
 // Auth helper
@@ -84,6 +85,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <FichesDroitsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rapport"
+            element={
+              <ProtectedRoute>
+                <RapportPage />
               </ProtectedRoute>
             }
           />

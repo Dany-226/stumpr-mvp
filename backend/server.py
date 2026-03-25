@@ -15,6 +15,8 @@ import httpx
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 import io
+import json
+import anthropic
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -38,6 +40,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 AIRTABLE_BASE_ID = os.environ.get('AIRTABLE_BASE_ID')
 AIRTABLE_TABLE = os.environ.get('AIRTABLE_TABLE', 'Produits')
 AIRTABLE_TOKEN = os.environ.get('AIRTABLE_TOKEN')
+
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY')
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -964,6 +968,373 @@ async def get_today_entry(current_user: dict = Depends(get_current_user)):
     if entry:
         return {"has_entry_today": True, "entry": JournalEntryResponse(**entry)}
     return {"has_entry_today": False, "entry": None}
+
+# ======================== RAPPORT MODELS ========================
+
+class RapportRequest(BaseModel):
+    periode: int = Field(default=30, description="30, 90 ou 180 jours")
+    prothese_id: Optional[str] = None
+
+class RapportResponse(BaseModel):
+    id: str
+    patient_id: str
+    periode: int
+    prothese_id: Optional[str] = None
+    generated_at: str
+    titre: str
+    resume_executif: str
+    evolution_douleur: str
+    evenements_notables: str
+    composants_proches_renouvellement: List[dict] = []
+    conclusion: str
+
+# ======================== RAPPORT ROUTES ========================
+
+RAPPORT_SYSTEM_PROMPT = """Tu es un assistant médical qui rédige des synthèses pour des médecins MPR français. Ton rôle est de résumer objectivement les données de suivi d'un patient amputé. Langage médical clair, jamais de diagnostic, jamais de recommandation thérapeutique. Tu constates, tu décris, tu quantifies.
+
+Réponds UNIQUEMENT avec un objet JSON valide (aucun texte avant ou après), respectant exactement ce format :
+{
+  "titre": "Rapport de suivi – [Période] – [Prénom Nom]",
+  "resume_executif": "Synthèse en 2-3 phrases des éléments cliniques marquants de la période.",
+  "evolution_douleur": "Description quantifiée de l'évolution des douleurs (globale et fantôme) avec moyennes, tendances et pics observés.",
+  "evenements_notables": "Description des événements notables : alertes douleur, variations importantes, activités inhabituelles, plaintes récurrentes.",
+  "conclusion": "Synthèse conclusive sobre en 2-3 phrases."
+}"""
+
+def _build_rapport_prompt(patient: dict, entries: list, protheses: list, periode: int, prothese_id: Optional[str]) -> str:
+    """Build the user prompt from patient data and journal entries."""
+    prenom = patient.get("prenom", "")
+    nom = patient.get("nom", "")
+    niveau_amp = patient.get("niveau_amputation", "Non renseigné")
+    cote = patient.get("cote", "")
+
+    # Filter protheses
+    if prothese_id:
+        active_protheses = [p for p in protheses if p.get("id") == prothese_id]
+    else:
+        active_protheses = [p for p in protheses if p.get("statut") == "active"]
+
+    # Protheses summary
+    protheses_lines = []
+    for p in active_protheses:
+        type_label = p.get("type", "inconnue").capitalize()
+        composants = p.get("composants", [])
+        comps_str = ", ".join([
+            f"{c.get('type','')} {c.get('marque','') or ''} [renouvellement: {c.get('date_renouvellement_eligible','N/A')}]"
+            for c in composants
+        ]) or "aucun composant renseigné"
+        protheses_lines.append(f"  - Prothèse {type_label}: {comps_str}")
+
+    # Composants approaching renewal (within 6 months)
+    now = datetime.now(timezone.utc)
+    approaching = []
+    for p in active_protheses:
+        for c in p.get("composants", []):
+            renewal = c.get("date_renouvellement_eligible")
+            if renewal:
+                try:
+                    rd = datetime.strptime(renewal, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                    diff_days = (rd - now).days
+                    if diff_days <= 180:
+                        approaching.append({
+                            "composant": c.get("type", ""),
+                            "marque": c.get("marque", ""),
+                            "date_renouvellement": renewal,
+                            "jours_restants": diff_days,
+                            "prothese_type": p.get("type", "")
+                        })
+                except Exception:
+                    pass
+
+    # Stats from entries
+    n = len(entries)
+    if n == 0:
+        stats_block = "Aucune entrée de journal sur la période."
+    else:
+        globale_scores = [e.get("douleurs", {}).get("globale", 0) for e in entries]
+        fantome_scores = [e.get("douleurs", {}).get("fantome", 0) for e in entries]
+        fatigue_scores = [e.get("bien_etre", {}).get("fatigue", 2) for e in entries]
+        sommeil_scores = [e.get("bien_etre", {}).get("sommeil", 2) for e in entries]
+        humeur_scores  = [e.get("bien_etre", {}).get("humeur", 2) for e in entries]
+        alerts = sum(1 for e in entries if e.get("has_alert", False))
+
+        activity_counts: dict = {}
+        for e in entries:
+            for a in e.get("activites", []):
+                activity_counts[a] = activity_counts.get(a, 0) + 1
+        top_activities = sorted(activity_counts.items(), key=lambda x: -x[1])[:5]
+        act_str = ", ".join(f"{k}({v}j)" for k, v in top_activities) or "aucune"
+
+        stats_block = f"""Statistiques sur {n} entrées ({periode} jours analysés) :
+- Douleur globale : moyenne {round(sum(globale_scores)/n, 1)}/10, min {min(globale_scores)}, max {max(globale_scores)}
+- Douleur fantôme : moyenne {round(sum(fantome_scores)/n, 1)}/10, min {min(fantome_scores)}, max {max(fantome_scores)}
+- Alertes douleur (≥7) : {alerts} sur {n} entrées
+- Fatigue moyenne : {round(sum(fatigue_scores)/n, 1)}/4
+- Sommeil moyen : {round(sum(sommeil_scores)/n, 1)}/4
+- Humeur moyenne : {round(sum(humeur_scores)/n, 1)}/4
+- Activités les plus pratiquées : {act_str}"""
+
+    # Chronological detail (last 10 entries max)
+    detail_lines = []
+    for e in sorted(entries, key=lambda x: x.get("created_at", ""))[-10:]:
+        date_str = e.get("created_at", "")[:10]
+        g = e.get("douleurs", {}).get("globale", 0)
+        f = e.get("douleurs", {}).get("fantome", 0)
+        acts = e.get("activites", [])
+        notes = e.get("notes") or ""
+        detail_lines.append(
+            f"  {date_str} : douleur {g}/10, fantôme {f}/10"
+            + (f", activités: {','.join(acts)}" if acts else "")
+            + (f", note: «{notes[:80]}»" if notes else "")
+        )
+
+    protheses_block = "\n".join(protheses_lines) if protheses_lines else "  Aucune prothèse active renseignée"
+
+    prompt = f"""Génère un rapport médical de suivi pour le patient suivant.
+
+PATIENT : {prenom} {nom}
+Niveau d'amputation : {niveau_amp} {cote}
+Période analysée : {periode} derniers jours
+
+PROTHÈSES ACTIVES :
+{protheses_block}
+
+{stats_block}
+
+DÉTAIL CHRONOLOGIQUE (10 dernières entrées) :
+{chr(10).join(detail_lines) if detail_lines else "  Aucune entrée"}
+
+COMPOSANTS DONT LE RENOUVELLEMENT APPROCHE (<6 mois) :
+{json.dumps(approaching, ensure_ascii=False, indent=2) if approaching else "  Aucun"}
+
+Rédige le rapport JSON demandé."""
+
+    return prompt, approaching
+
+
+@api_router.post("/patient/rapport", response_model=RapportResponse)
+async def generate_rapport(request: RapportRequest, current_user: dict = Depends(get_current_user)):
+    if not ANTHROPIC_API_KEY:
+        raise HTTPException(status_code=503, detail="Clé API Anthropic non configurée. Ajoutez ANTHROPIC_API_KEY dans les variables d'environnement.")
+
+    if request.periode not in [30, 90, 180]:
+        raise HTTPException(status_code=400, detail="Période doit être 30, 90 ou 180 jours")
+
+    # Load patient
+    patient = await db.patients.find_one({"user_id": current_user["id"]}, {"_id": 0})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Fiche patient non trouvée")
+
+    # Load protheses
+    protheses = patient.get("protheses", [])
+
+    # Load journal entries for the period
+    start_date = datetime.now(timezone.utc) - timedelta(days=request.periode)
+    entries = await db.journal_entries.find({
+        "user_id": current_user["id"],
+        "created_at": {"$gte": start_date.isoformat()}
+    }, {"_id": 0}).sort("created_at", 1).to_list(500)
+
+    # Build prompt
+    prompt_text, approaching = _build_rapport_prompt(patient, entries, protheses, request.periode, request.prothese_id)
+
+    # Call Anthropic
+    try:
+        anthropic_client = anthropic.AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+        message = await anthropic_client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=2048,
+            system=RAPPORT_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": prompt_text}]
+        )
+        raw = message.content[0].text.strip()
+        # Extract JSON if wrapped in code block
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        rapport_data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        logger.error(f"Claude JSON parse error: {e}\nRaw: {raw[:500]}")
+        raise HTTPException(status_code=502, detail="Erreur lors de l'analyse de la réponse IA")
+    except anthropic.APIError as e:
+        logger.error(f"Anthropic API error: {e}")
+        raise HTTPException(status_code=502, detail=f"Erreur API Anthropic : {str(e)}")
+
+    # Store rapport
+    rapport_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+    rapport_doc = {
+        "id": rapport_id,
+        "user_id": current_user["id"],
+        "patient_id": patient["id"],
+        "periode": request.periode,
+        "prothese_id": request.prothese_id,
+        "generated_at": now,
+        "titre": rapport_data.get("titre", f"Rapport {request.periode}j"),
+        "resume_executif": rapport_data.get("resume_executif", ""),
+        "evolution_douleur": rapport_data.get("evolution_douleur", ""),
+        "evenements_notables": rapport_data.get("evenements_notables", ""),
+        "composants_proches_renouvellement": approaching,
+        "conclusion": rapport_data.get("conclusion", ""),
+    }
+    await db.rapports.insert_one(rapport_doc)
+    del rapport_doc["_id"]
+    return RapportResponse(**rapport_doc)
+
+
+@api_router.get("/patient/rapport/{rapport_id}/pdf")
+async def export_rapport_pdf(rapport_id: str, token: str = Query(None), current_user: dict = None):
+    # Allow token via query param for direct browser download
+    if token:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            user_id = payload.get("sub")
+            if not user_id:
+                raise HTTPException(status_code=401, detail="Token invalide")
+            user = await db.users.find_one({"id": user_id}, {"_id": 0})
+            if not user:
+                raise HTTPException(status_code=401, detail="Utilisateur non trouvé")
+            current_user = user
+        except JWTError:
+            raise HTTPException(status_code=401, detail="Token invalide")
+
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentification requise")
+
+    rapport = await db.rapports.find_one({"id": rapport_id, "user_id": current_user["id"]}, {"_id": 0})
+    if not rapport:
+        raise HTTPException(status_code=404, detail="Rapport non trouvé")
+
+    # Get patient info for header
+    patient = await db.patients.find_one({"id": rapport["patient_id"]}, {"_id": 0})
+    patient_name = f"{patient.get('prenom','')} {patient.get('nom','')}".strip() if patient else "Patient"
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+                             rightMargin=2*cm, leftMargin=2*cm,
+                             topMargin=2*cm, bottomMargin=2.5*cm)
+
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='RapportTitle',  fontName='Helvetica-Bold', fontSize=22, textColor=colors.HexColor('#0e6b63'), spaceAfter=6))
+    styles.add(ParagraphStyle(name='RapportMeta',   fontName='Helvetica',      fontSize=10, textColor=colors.HexColor('#8892a4'), spaceAfter=20))
+    styles.add(ParagraphStyle(name='SectionHead',   fontName='Helvetica-Bold', fontSize=13, textColor=colors.HexColor('#1a1f2e'), spaceBefore=18, spaceAfter=6, borderPad=4))
+    styles.add(ParagraphStyle(name='BodyText',      fontName='Helvetica',      fontSize=10, textColor=colors.HexColor('#3d4a5c'), spaceAfter=8, leading=15))
+    styles.add(ParagraphStyle(name='RenewalItem',   fontName='Helvetica',      fontSize=9,  textColor=colors.HexColor('#e08c2a'), spaceAfter=4))
+    styles.add(ParagraphStyle(name='Disclaimer',    fontName='Helvetica-Oblique', fontSize=8, textColor=colors.HexColor('#8892a4'), spaceBefore=20))
+
+    elements = []
+
+    # ── Header ──────────────────────────────────────────────────────
+    elements.append(Paragraph("Stumpr.", styles['RapportTitle']))
+
+    gen_date = datetime.fromisoformat(rapport["generated_at"].replace('Z', '+00:00')).strftime("%d/%m/%Y à %H:%M")
+    periode = rapport.get("periode", 30)
+    start_date_str = (datetime.now(timezone.utc) - timedelta(days=periode)).strftime("%d/%m/%Y")
+    elements.append(Paragraph(
+        f"Patient : {patient_name}  ·  Période : {periode} jours ({start_date_str} – aujourd'hui)  ·  Généré le {gen_date}",
+        styles['RapportMeta']
+    ))
+
+    # Divider
+    elements.append(Table([['']], colWidths=[17*cm]))
+    elements[-1].setStyle(TableStyle([
+        ('LINEBELOW', (0,0), (-1,-1), 1.5, colors.HexColor('#0e6b63')),
+        ('TOPPADDING', (0,0), (-1,-1), 0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 12),
+    ]))
+
+    # ── Titre rapport ────────────────────────────────────────────────
+    elements.append(Paragraph(rapport.get("titre", "Rapport de suivi"), styles['SectionHead']))
+    elements.append(Spacer(1, 4))
+
+    # ── Sections ─────────────────────────────────────────────────────
+    sections = [
+        ("📋  Résumé exécutif",          rapport.get("resume_executif", "")),
+        ("📈  Évolution de la douleur",   rapport.get("evolution_douleur", "")),
+        ("⚠️   Événements notables",       rapport.get("evenements_notables", "")),
+        ("✅  Conclusion",                rapport.get("conclusion", "")),
+    ]
+    for heading, body in sections:
+        elements.append(Paragraph(heading, styles['SectionHead']))
+        elements.append(Paragraph(body or "—", styles['BodyText']))
+
+    # ── Composants proches du renouvellement ─────────────────────────
+    approaching = rapport.get("composants_proches_renouvellement", [])
+    if approaching:
+        elements.append(Paragraph("🔧  Composants proches du renouvellement", styles['SectionHead']))
+        for c in approaching:
+            jours = c.get("jours_restants", 0)
+            label = "DÉPASSÉ" if jours < 0 else f"dans {jours} jours"
+            marque = f" – {c['marque']}" if c.get("marque") else ""
+            elements.append(Paragraph(
+                f"• {c.get('composant','').capitalize()}{marque} (prothèse {c.get('prothese_type','')}) — "
+                f"renouvellement le {c.get('date_renouvellement','')} ({label})",
+                styles['RenewalItem']
+            ))
+
+    # ── Disclaimer ───────────────────────────────────────────────────
+    elements.append(Spacer(1, 20))
+    elements.append(Table([['']], colWidths=[17*cm]))
+    elements[-1].setStyle(TableStyle([
+        ('LINEABOVE', (0,0), (-1,-1), 0.5, colors.HexColor('#e0d9cf')),
+        ('TOPPADDING', (0,0), (-1,-1), 0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+    ]))
+    elements.append(Paragraph(
+        "Ce rapport est une synthèse automatique des données déclaratives du patient. "
+        "Il ne constitue pas un avis médical, un diagnostic ou une recommandation thérapeutique. "
+        "Stumpr – DIGICORPEX",
+        styles['Disclaimer']
+    ))
+
+    doc.build(elements)
+    buffer.seek(0)
+    nom_safe = (patient.get('nom', 'patient') if patient else 'patient').lower().replace(' ', '-')
+    filename = f"stumpr-rapport-{nom_safe}-{periode}j.pdf"
+
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Access-Control-Expose-Headers": "Content-Disposition"
+        }
+    )
+
+
+@api_router.post("/patient/rapport/{rapport_id}/share")
+async def share_rapport(rapport_id: str, current_user: dict = Depends(get_current_user)):
+    rapport = await db.rapports.find_one({"id": rapport_id, "user_id": current_user["id"]})
+    if not rapport:
+        raise HTTPException(status_code=404, detail="Rapport non trouvé")
+
+    share_id = str(uuid.uuid4())
+    expires_at = datetime.now(timezone.utc) + timedelta(days=30)
+    share_doc = {
+        "share_id": share_id,
+        "type": "rapport",
+        "rapport_id": rapport_id,
+        "user_id": current_user["id"],
+        "expires_at": expires_at.isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.shares.insert_one(share_doc)
+    return {"share_id": share_id, "expires_at": expires_at.isoformat(), "url": f"/rapport/partage/{share_id}"}
+
+
+@api_router.get("/shared/rapport/{share_id}", response_model=RapportResponse)
+async def get_shared_rapport(share_id: str):
+    share = await db.shares.find_one({"share_id": share_id, "type": "rapport"}, {"_id": 0})
+    if not share:
+        raise HTTPException(status_code=404, detail="Lien de partage non trouvé")
+    expires_at = datetime.fromisoformat(share["expires_at"])
+    if datetime.now(timezone.utc) > expires_at:
+        raise HTTPException(status_code=410, detail="Ce lien de partage a expiré")
+    rapport = await db.rapports.find_one({"id": share["rapport_id"]}, {"_id": 0})
+    if not rapport:
+        raise HTTPException(status_code=404, detail="Rapport non trouvé")
+    return RapportResponse(**rapport)
 
 # ======================== ANNUAIRE MODELS ========================
 

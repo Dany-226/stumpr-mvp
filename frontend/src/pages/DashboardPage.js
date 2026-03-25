@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, AlertTriangle, Activity, Calendar } from "lucide-react";
+import { ArrowLeft, Plus, AlertTriangle, Activity, Calendar, Sparkles } from "lucide-react";
 import axios from "axios";
 import {
   Chart as ChartJS,
@@ -334,15 +334,26 @@ export default function DashboardPage() {
               Tableau de bord
             </h1>
           </div>
-          <button
-            onClick={() => navigate("/journal")}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-white"
-            style={{ backgroundColor: "#1d7a72" }}
-            data-testid="nav-journal"
-          >
-            <Plus size={18} />
-            Nouveau journal
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate("/rapport")}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium"
+              style={{ backgroundColor: "#e6f3f2", color: "#0e6b63" }}
+              data-testid="nav-rapport"
+            >
+              <Sparkles size={16} />
+              Rapport IA
+            </button>
+            <button
+              onClick={() => navigate("/journal")}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-white"
+              style={{ backgroundColor: "#1d7a72" }}
+              data-testid="nav-journal"
+            >
+              <Plus size={18} />
+              Nouveau journal
+            </button>
+          </div>
         </div>
       </header>
 
