@@ -142,6 +142,7 @@ class PatientResponse(BaseModel):
     prochain_rdv: Optional[str] = None
     notes_medicales: Optional[str] = None
     activites: List[str] = []
+    protheses: List[ProtheseResponse] = []
     created_at: str
     updated_at: str
 
@@ -158,6 +159,72 @@ class LPPRSearchResult(BaseModel):
     categorie: Optional[str] = None
     application: Optional[str] = None
 
+# ======================== PROTHESE MODELS ========================
+
+# LPPR renewal delays per composant type (years) — default fallbacks
+LPPR_DELAYS_PAR_TYPE: dict = {
+    "emboiture": 3,
+    "pied_prothetique": 5,
+    "genou_prothetique": 5,
+    "manchon_liner": 1,
+    "attaches_suspension": 3,
+    "cosmetique_pied": 5,
+    "autre": 5,
+}
+
+def calculate_renewal_date(date_attribution: Optional[str], type_composant: str, duree_ans: Optional[int] = None) -> Optional[str]:
+    if not date_attribution:
+        return None
+    try:
+        d = datetime.fromisoformat(date_attribution.replace('Z', '+00:00')) if 'T' in date_attribution else datetime.strptime(date_attribution, '%Y-%m-%d')
+        years = duree_ans or LPPR_DELAYS_PAR_TYPE.get(type_composant, 5)
+        renewal = d.replace(year=d.year + years)
+        return renewal.strftime('%Y-%m-%d')
+    except Exception:
+        return None
+
+class ComposantCreate(BaseModel):
+    type: str  # emboiture, pied_prothetique, genou_prothetique, manchon_liner, attaches_suspension, cosmetique_pied, autre
+    marque: Optional[str] = None
+    reference_lppr: Optional[str] = None
+    nomenclature: Optional[str] = None
+    tarif: Optional[float] = None
+    duree_ans: Optional[int] = None
+    date_attribution: Optional[str] = None
+    notes: Optional[str] = None
+
+class ComposantResponse(BaseModel):
+    id: str
+    type: str
+    marque: Optional[str] = None
+    reference_lppr: Optional[str] = None
+    nomenclature: Optional[str] = None
+    tarif: Optional[float] = None
+    duree_ans: Optional[int] = None
+    date_attribution: Optional[str] = None
+    date_renouvellement_eligible: Optional[str] = None
+    notes: Optional[str] = None
+
+class ProtheseCreate(BaseModel):
+    type: str  # principale, secours, bain, sport, autre
+    date_attribution: Optional[str] = None
+    notes: Optional[str] = None
+
+class ProtheseUpdate(BaseModel):
+    type: Optional[str] = None
+    statut: Optional[str] = None  # active, inactive
+    date_attribution: Optional[str] = None
+    notes: Optional[str] = None
+
+class ProtheseResponse(BaseModel):
+    id: str
+    type: str
+    statut: str
+    date_attribution: Optional[str] = None
+    notes: Optional[str] = None
+    composants: List[ComposantResponse] = []
+    created_at: str
+
 # ======================== JOURNAL MODELS ========================
 
 class ComponentPain(BaseModel):
@@ -165,8 +232,10 @@ class ComponentPain(BaseModel):
     score: int = Field(ge=0, le=10)
 
 class JournalDouleurs(BaseModel):
-    composants: List[ComponentPain] = []
+    globale: int = Field(ge=0, le=10, default=0)
+    prothese_id: Optional[str] = None
     fantome: int = Field(ge=0, le=10, default=0)
+    composants: List[ComponentPain] = []  # kept for backward compat
 
 class JournalBienEtre(BaseModel):
     fatigue: int = Field(ge=0, le=4, default=2)
@@ -324,15 +393,16 @@ async def search_lppr(q: str = Query(..., min_length=2)):
 async def create_patient(patient: PatientCreate, current_user: dict = Depends(get_current_user)):
     patient_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
-    
+
     patient_doc = {
         "id": patient_id,
         "user_id": current_user["id"],
         **patient.model_dump(),
+        "protheses": [],
         "created_at": now,
         "updated_at": now
     }
-    
+
     await db.patients.insert_one(patient_doc)
     del patient_doc["_id"]
     return PatientResponse(**patient_doc)
@@ -372,6 +442,91 @@ async def delete_patient(patient_id: str, current_user: dict = Depends(get_curre
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Fiche patient non trouvée")
     return {"message": "Fiche patient supprimée"}
+
+# ======================== PROTHESE ROUTES ========================
+
+@api_router.get("/patient/protheses", response_model=List[ProtheseResponse])
+async def list_protheses(current_user: dict = Depends(get_current_user)):
+    patient = await db.patients.find_one({"user_id": current_user["id"]}, {"_id": 0})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Fiche patient non trouvée")
+    return patient.get("protheses", [])
+
+@api_router.post("/patient/protheses", response_model=ProtheseResponse)
+async def create_prothese(prothese: ProtheseCreate, current_user: dict = Depends(get_current_user)):
+    patient = await db.patients.find_one({"user_id": current_user["id"]}, {"_id": 0})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Fiche patient non trouvée — créez d'abord votre fiche")
+
+    prothese_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+    prothese_doc = {
+        "id": prothese_id,
+        "type": prothese.type,
+        "statut": "active",
+        "date_attribution": prothese.date_attribution,
+        "notes": prothese.notes,
+        "composants": [],
+        "created_at": now,
+    }
+
+    await db.patients.update_one(
+        {"user_id": current_user["id"]},
+        {"$push": {"protheses": prothese_doc}, "$set": {"updated_at": now}}
+    )
+    return ProtheseResponse(**prothese_doc)
+
+@api_router.put("/patient/protheses/{prothese_id}", response_model=ProtheseResponse)
+async def update_prothese(prothese_id: str, update: ProtheseUpdate, current_user: dict = Depends(get_current_user)):
+    patient = await db.patients.find_one({"user_id": current_user["id"]}, {"_id": 0})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Fiche patient non trouvée")
+
+    protheses = patient.get("protheses", [])
+    prothese = next((p for p in protheses if p["id"] == prothese_id), None)
+    if not prothese:
+        raise HTTPException(status_code=404, detail="Prothèse non trouvée")
+
+    update_fields = {f"protheses.$.{k}": v for k, v in update.model_dump(exclude_none=True).items()}
+    now = datetime.now(timezone.utc).isoformat()
+    update_fields["updated_at"] = now
+
+    await db.patients.update_one(
+        {"user_id": current_user["id"], "protheses.id": prothese_id},
+        {"$set": update_fields}
+    )
+
+    # Return updated prothese
+    updated_patient = await db.patients.find_one({"user_id": current_user["id"]}, {"_id": 0})
+    updated_prothese = next((p for p in updated_patient.get("protheses", []) if p["id"] == prothese_id), prothese)
+    return ProtheseResponse(**updated_prothese)
+
+@api_router.post("/patient/protheses/{prothese_id}/composants", response_model=ComposantResponse)
+async def add_composant(prothese_id: str, composant: ComposantCreate, current_user: dict = Depends(get_current_user)):
+    patient = await db.patients.find_one({"user_id": current_user["id"]}, {"_id": 0})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Fiche patient non trouvée")
+
+    protheses = patient.get("protheses", [])
+    prothese = next((p for p in protheses if p["id"] == prothese_id), None)
+    if not prothese:
+        raise HTTPException(status_code=404, detail="Prothèse non trouvée")
+
+    composant_id = str(uuid.uuid4())
+    renewal_date = calculate_renewal_date(composant.date_attribution, composant.type, composant.duree_ans)
+
+    composant_doc = {
+        "id": composant_id,
+        **composant.model_dump(),
+        "date_renouvellement_eligible": renewal_date,
+    }
+
+    now = datetime.now(timezone.utc).isoformat()
+    await db.patients.update_one(
+        {"user_id": current_user["id"], "protheses.id": prothese_id},
+        {"$push": {"protheses.$.composants": composant_doc}, "$set": {"updated_at": now}}
+    )
+    return ComposantResponse(**composant_doc)
 
 # ======================== SHARE ROUTES ========================
 
