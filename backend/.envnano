@@ -1,6 +1,0 @@
-nano ~/Desktop/stumpr-mvp/backend/.env
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=stumpr
-JWT_SECRET=stumpr-dev-secret-2024
-ANTHROPIC_API_KEY=
-AIRTABLE_API_KEY=patKXdedwuD653ttv.ae2ab867c2cbc8271ac5d5f0c0d8d94fc54d1a7cad8e4c2a05561d54a65c4f28
