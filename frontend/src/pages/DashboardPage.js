@@ -330,7 +330,7 @@ export default function DashboardPage() {
             >
               <ArrowLeft size={20} />
             </button>
-            <h1 className="text-xl font-bold" style={{ fontFamily: "Georgia, serif", color: "#1d7a72" }}>
+            <h1 className="text-xl font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1d7a72" }}>
               Tableau de bord
             </h1>
           </div>
@@ -412,7 +412,7 @@ export default function DashboardPage() {
           <>
             {/* Pain chart */}
             <section className="stumpr-card mb-6" data-testid="chart-douleurs">
-              <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: "Georgia, serif", color: "#1a1f2e" }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
                 📈 Évolution des douleurs
               </h3>
               <div style={{ height: "300px" }}>
@@ -422,7 +422,7 @@ export default function DashboardPage() {
 
             {/* Wellbeing chart */}
             <section className="stumpr-card mb-6" data-testid="chart-bienetre">
-              <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: "Georgia, serif", color: "#1a1f2e" }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
                 💪 Évolution du bien-être
               </h3>
               <div style={{ height: "300px" }}>
@@ -433,7 +433,7 @@ export default function DashboardPage() {
             {/* Activities chart */}
             {Object.keys(activityCounts).length > 0 && (
               <section className="stumpr-card mb-6" data-testid="chart-activites">
-                <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: "Georgia, serif", color: "#1a1f2e" }}>
+                <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
                   🏃 Activités réalisées
                 </h3>
                 <div style={{ height: `${Math.max(200, Object.keys(activityCounts).length * 40)}px` }}>
@@ -444,7 +444,7 @@ export default function DashboardPage() {
 
             {/* Recent entries */}
             <section className="stumpr-card" data-testid="historique">
-              <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: "Georgia, serif", color: "#1a1f2e" }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
                 📋 Historique récent
               </h3>
               <div className="space-y-3">

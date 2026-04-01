@@ -131,7 +131,7 @@ export default function SharedViewPage() {
       <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#f8f9fc' }}>
         <div className="stumpr-card text-center max-w-md">
           <AlertTriangle size={48} className="mx-auto mb-4" style={{ color: '#d64545' }} />
-          <h2 className="text-xl font-semibold mb-2" style={{ fontFamily: 'Georgia, serif', color: '#1a1f2e' }}>
+          <h2 className="text-xl font-semibold mb-2" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: '#1a1f2e' }}>
             {error}
           </h2>
           <p className="mb-6" style={{ color: '#8892a4' }}>
@@ -163,7 +163,7 @@ export default function SharedViewPage() {
         <div className="mb-6">
           <h2 
             className="text-3xl font-bold"
-            style={{ fontFamily: 'Georgia, serif', color: '#1a1f2e' }}
+            style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: '#1a1f2e' }}
           >
             Fiche Patient
           </h2>
@@ -223,7 +223,7 @@ export default function SharedViewPage() {
               >
                 <h4 
                   className="font-semibold mb-3"
-                  style={{ fontFamily: 'Georgia, serif', color: '#1a1f2e' }}
+                  style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: '#1a1f2e' }}
                 >
                   Composant {index + 1}
                 </h4>

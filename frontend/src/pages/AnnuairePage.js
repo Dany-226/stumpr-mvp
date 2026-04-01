@@ -76,7 +76,7 @@ const AvisModal = ({ etablissement, onClose, onSuccess }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
       <div className="w-full max-w-md rounded-[20px] p-6 bg-white shadow-xl">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: "#1a1f2e" }}>
+          <h3 className="text-lg font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
             Donner un avis
           </h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -177,7 +177,7 @@ const AddEtablissementModal = ({ onClose, onSuccess }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
       <div className="w-full max-w-lg rounded-[20px] p-6 bg-white shadow-xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-5">
-          <h3 className="text-lg font-bold" style={{ fontFamily: "Georgia, serif", color: "#1a1f2e" }}>
+          <h3 className="text-lg font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
             Ajouter un établissement
           </h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -262,7 +262,7 @@ const EtablissementCard = ({ etab, onAvisClick }) => (
         <TypeBadge type={etab.type} />
         <h3
           className="font-bold text-base mt-2 leading-tight"
-          style={{ fontFamily: "Georgia, serif", color: "#1a1f2e" }}
+          style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}
         >
           {etab.nom}
         </h3>
@@ -390,7 +390,7 @@ export default function AnnuairePage() {
             <ArrowLeft size={20} style={{ color: "#1a1f2e" }} />
           </button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold" style={{ fontFamily: "Georgia, serif", color: "#1a1f2e" }}>
+            <h1 className="text-xl font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
               Annuaire
             </h1>
             <p className="text-xs" style={{ color: "#8892a4" }}>CRF & prothésistes recommandés</p>

@@ -37,7 +37,7 @@ export default function RegisterPage() {
       localStorage.setItem("stumpr_token", response.data.access_token);
       localStorage.setItem("stumpr_user", JSON.stringify(response.data.user));
       toast.success("Compte créé avec succès !");
-      navigate("/fiche-patient");
+      navigate("/onboarding");
     } catch (error) {
       const message = error.response?.data?.detail || "Erreur lors de l'inscription";
       toast.error(message);
@@ -66,7 +66,7 @@ export default function RegisterPage() {
         <div className="stumpr-card">
           <h2 
             className="text-2xl font-semibold mb-6 text-center"
-            style={{ fontFamily: 'Georgia, serif', color: '#1a1f2e' }}
+            style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: '#1a1f2e' }}
           >
             Inscription
           </h2>

@@ -9,6 +9,7 @@ import DashboardPage from "./pages/DashboardPage";
 import AnnuairePage from "./pages/AnnuairePage";
 import FichesDroitsPage from "./pages/FichesDroitsPage";
 import RapportPage from "./pages/RapportPage";
+import OnboardingPage from "./pages/OnboardingPage";
 import "./App.css";
 
 // Auth helper
@@ -93,6 +94,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <RapportPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <OnboardingPage />
               </ProtectedRoute>
             }
           />

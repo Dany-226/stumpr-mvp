@@ -123,6 +123,33 @@ class PatientCreate(BaseModel):
     # Section 5 - Activités
     activites: Optional[List[str]] = []
 
+class PatientResponse(BaseModel):
+    id: str
+    user_id: str
+    prenom: str
+    nom: str
+    date_naissance: Optional[str] = None
+    email: str
+    telephone: Optional[str] = None
+    niveau_activite: Optional[str] = None
+    niveau_amputation: str
+    cote: Optional[str] = None
+    date_amputation: Optional[str] = None
+    cause: Optional[str] = None
+    notes_moignon: Optional[str] = None
+    composants: List[LPPRComponent] = []
+    ortho_referent: Optional[str] = None
+    cabinet_centre: Optional[str] = None
+    telephone_ortho: Optional[str] = None
+    medecin_prescripteur: Optional[str] = None
+    specialite_prescripteur: Optional[str] = None
+    prochain_rdv: Optional[str] = None
+    notes_medicales: Optional[str] = None
+    activites: List[str] = []
+    protheses: List[ProtheseResponse] = []
+    created_at: str
+    updated_at: str
+
 class ShareLinkResponse(BaseModel):
     share_id: str
     expires_at: str
@@ -132,7 +159,7 @@ class LPPRSearchResult(BaseModel):
     code: str
     nomenclature: str
     tarif: Optional[float] = None
-    duree_ans: Optional[float] = None
+    duree_ans: Optional[int] = None
     categorie: Optional[str] = None
     application: Optional[str] = None
 
@@ -166,7 +193,7 @@ class ComposantCreate(BaseModel):
     reference_lppr: Optional[str] = None
     nomenclature: Optional[str] = None
     tarif: Optional[float] = None
-    duree_ans: Optional[float] = None
+    duree_ans: Optional[int] = None
     date_attribution: Optional[str] = None
     notes: Optional[str] = None
 
@@ -201,33 +228,6 @@ class ProtheseResponse(BaseModel):
     notes: Optional[str] = None
     composants: List[ComposantResponse] = []
     created_at: str
-
-class PatientResponse(BaseModel):
-    id: str
-    user_id: str
-    prenom: str
-    nom: str
-    date_naissance: Optional[str] = None
-    email: str
-    telephone: Optional[str] = None
-    niveau_activite: Optional[str] = None
-    niveau_amputation: str
-    cote: Optional[str] = None
-    date_amputation: Optional[str] = None
-    cause: Optional[str] = None
-    notes_moignon: Optional[str] = None
-    composants: List[LPPRComponent] = []
-    ortho_referent: Optional[str] = None
-    cabinet_centre: Optional[str] = None
-    telephone_ortho: Optional[str] = None
-    medecin_prescripteur: Optional[str] = None
-    specialite_prescripteur: Optional[str] = None
-    prochain_rdv: Optional[str] = None
-    notes_medicales: Optional[str] = None
-    activites: List[str] = []
-    protheses: List[ProtheseResponse] = []
-    created_at: str
-    updated_at: str
 
 # ======================== JOURNAL MODELS ========================
 
@@ -428,17 +428,13 @@ async def update_patient(patient_id: str, patient: PatientCreate, current_user: 
     existing = await db.patients.find_one({"id": patient_id, "user_id": current_user["id"]})
     if not existing:
         raise HTTPException(status_code=404, detail="Fiche patient non trouvée")
-
+    
     now = datetime.now(timezone.utc).isoformat()
-    # Exclure les champs None pour ne pas écraser les données existantes
-    # Ne jamais toucher aux champs protheses, user_id, id, created_at
-    PROTECTED = {"protheses", "user_id", "id", "created_at"}
     update_data = {
-        k: v for k, v in patient.model_dump().items()
-        if k not in PROTECTED
+        **patient.model_dump(),
+        "updated_at": now
     }
-    update_data["updated_at"] = now
-
+    
     await db.patients.update_one({"id": patient_id}, {"$set": update_data})
     
     updated = await db.patients.find_one({"id": patient_id}, {"_id": 0})
@@ -535,20 +531,6 @@ async def add_composant(prothese_id: str, composant: ComposantCreate, current_us
         {"$push": {"protheses.$.composants": composant_doc}, "$set": {"updated_at": now}}
     )
     return ComposantResponse(**composant_doc)
-
-@api_router.delete("/patient/protheses/{prothese_id}/composants/{composant_id}", status_code=204)
-async def delete_composant(prothese_id: str, composant_id: str, current_user: dict = Depends(get_current_user)):
-    patient = await db.patients.find_one({"user_id": current_user["id"]}, {"_id": 0})
-    if not patient:
-        raise HTTPException(status_code=404, detail="Fiche patient non trouvée")
-    prothese = next((p for p in patient.get("protheses", []) if p["id"] == prothese_id), None)
-    if not prothese:
-        raise HTTPException(status_code=404, detail="Prothèse non trouvée")
-    now = datetime.now(timezone.utc).isoformat()
-    await db.patients.update_one(
-        {"user_id": current_user["id"], "protheses.id": prothese_id},
-        {"$pull": {"protheses.$.composants": {"id": composant_id}}, "$set": {"updated_at": now}}
-    )
 
 # ======================== SHARE ROUTES ========================
 

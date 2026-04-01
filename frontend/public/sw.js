@@ -1,3 +1,10 @@
+// Bypass complet en développement local
+if (location.hostname === 'localhost') {
+  self.addEventListener('fetch', (event) => {
+    event.respondWith(fetch(event.request));
+  });
+} else {
+
 const CACHE_NAME = "stumpr-v1";
 
 const STATIC_ASSETS = [
@@ -74,3 +81,5 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
+} // end else (not localhost)

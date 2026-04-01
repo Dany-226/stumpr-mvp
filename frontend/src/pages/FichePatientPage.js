@@ -234,7 +234,7 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
       reference_lppr: item.code,
       nomenclature: item.nomenclature,
       tarif: item.tarif || null,
-      duree_ans: item.duree_ans || null,
+      duree_ans: item.duree_ans != null ? Math.round(item.duree_ans) : null,
     }));
   };
 
@@ -310,13 +310,19 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
   );
 };
 
-const ComposantRow = ({ composant }) => {
+const ComposantRow = ({ composant, onDelete }) => {
+  console.log('composant:', composant);
   const typeLabel = COMPOSANT_TYPES.find(t => t.value === composant.type)?.label || composant.type;
+  const rawName = composant.nomenclature || typeLabel;
+  const displayName = rawName.length > 40 ? rawName.slice(0, 40) + "…" : rawName;
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b last:border-0"
       style={{ borderColor: "#e0d9cf" }}>
       <div className="flex-1">
-        <span className="text-sm font-medium" style={{ color: "#1a1f2e" }}>{typeLabel}</span>
+        <span className="text-sm font-medium" style={{ color: "#1a1f2e" }}>{displayName}</span>
+        {composant.nomenclature && (
+          <span className="text-xs ml-2" style={{ color: "#8892a4" }}>{typeLabel}</span>
+        )}
         {composant.marque && (
           <span className="text-sm ml-2" style={{ color: "#3d4a5c" }}>— {composant.marque}</span>
         )}
@@ -326,14 +332,21 @@ const ComposantRow = ({ composant }) => {
           </span>
         )}
       </div>
-      <div className="mt-1 sm:mt-0 sm:ml-4 flex-shrink-0">
+      <div className="mt-1 sm:mt-0 sm:ml-4 flex-shrink-0 flex items-center gap-2">
         <RenewalBadge renewalDate={composant.date_renouvellement_eligible} />
+        <button
+          type="button"
+          onClick={onDelete}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "#e53e3e", padding: 4 }}
+        >
+          <Trash2 size={14} />
+        </button>
       </div>
     </div>
   );
 };
 
-const ProtheseCard = ({ prothese, onDeactivate, onAddComposant }) => {
+const ProtheseCard = ({ prothese, onDeactivate, onAddComposant, onDeleteComposant }) => {
   const [expanded, setExpanded] = useState(true);
   const [confirmDeactivate, setConfirmDeactivate] = useState(false);
   const typeConfig = PROTHESE_TYPES[prothese.type] || PROTHESE_TYPES.autre;
@@ -377,7 +390,7 @@ const ProtheseCard = ({ prothese, onDeactivate, onAddComposant }) => {
               Composants ({prothese.composants.length})
             </h5>
             {prothese.composants.length > 0 ? (
-              prothese.composants.map((c) => <ComposantRow key={c.id} composant={c} />)
+              prothese.composants.map((c, index) => <ComposantRow key={c.id || index} composant={c} onDelete={() => onDeleteComposant && onDeleteComposant(prothese.id, c.id || index)} />)
             ) : (
               <p className="text-sm" style={{ color: "#8892a4" }}>Aucun composant ajouté.</p>
             )}
@@ -544,6 +557,20 @@ export default function FichePatientPage() {
       toast.success("Prothèse archivée");
     } catch {
       toast.error("Erreur lors de la désactivation");
+    }
+  };
+
+  const handleDeleteComposant = async (protheseId, composantId) => {
+    try {
+      await axios.delete(`${API}/patient/protheses/${protheseId}/composants/${composantId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProtheses(prev => prev.map(p =>
+        p.id === protheseId ? { ...p, composants: p.composants.filter(c => c.id !== composantId) } : p
+      ));
+      toast.success("Composant supprimé");
+    } catch {
+      toast.error("Erreur lors de la suppression");
     }
   };
 
@@ -810,6 +837,7 @@ export default function FichePatientPage() {
               prothese={p}
               onDeactivate={handleDeactivateProthese}
               onAddComposant={(pid) => setAddComposantFor(pid)}
+              onDeleteComposant={handleDeleteComposant}
             />
           ))}
 
@@ -829,6 +857,7 @@ export default function FichePatientPage() {
                   prothese={p}
                   onDeactivate={handleDeactivateProthese}
                   onAddComposant={(pid) => setAddComposantFor(pid)}
+              onDeleteComposant={handleDeleteComposant}
                 />
               ))}
             </div>

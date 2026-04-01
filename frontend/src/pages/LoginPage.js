@@ -29,7 +29,17 @@ export default function LoginPage() {
       localStorage.setItem("stumpr_token", response.data.access_token);
       localStorage.setItem("stumpr_user", JSON.stringify(response.data.user));
       toast.success("Connexion réussie !");
-      navigate("/fiche-patient");
+
+      const patientsRes = await axios.get(`${API}/patients`, {
+        headers: { Authorization: `Bearer ${response.data.access_token}` },
+      });
+      const patients = patientsRes.data;
+      if (Array.isArray(patients) && patients.length > 0) {
+        const id = patients[0].id || patients[0]._id;
+        navigate(`/fiche-patient/${id}`);
+      } else {
+        navigate("/onboarding");
+      }
     } catch (error) {
       const message = error.response?.data?.detail || "Erreur de connexion";
       toast.error(message);
