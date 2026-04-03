@@ -244,7 +244,7 @@ const ComposantRow = ({ composant, onDelete }) => {
   const rawName = composant.nomenclature || typeLabel;
   const displayName = rawName.length > 40 ? rawName.slice(0, 40) + "…" : rawName;
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 rounded-xl bg-surface-container-low px-3 mb-1">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between rounded-xl bg-surface-container-low px-4 py-3 mb-1">
       <div className="flex-1">
         <span className="text-sm font-medium text-on-surface">{displayName}</span>
         {composant.nomenclature && (
@@ -264,7 +264,7 @@ const ComposantRow = ({ composant, onDelete }) => {
         <button
           type="button"
           onClick={onDelete}
-          className="p-1 rounded-lg hover:bg-error/10 text-error"
+          className="p-1 rounded-lg hover:bg-tertiary/10 text-tertiary"
         >
           <Trash2 size={14} />
         </button>
@@ -281,12 +281,12 @@ const ProtheseCard = ({ prothese, onDeactivate, onAddComposant, onDeleteComposan
 
   return (
     <div
-      className={`rounded-2xl mb-4 overflow-hidden shadow-sm ${isActive ? "bg-surface-container-lowest" : "bg-surface-container opacity-70"}`}
+      className={`rounded-3xl p-6 mb-4 shadow-sm ${isActive ? "bg-surface-container-lowest" : "bg-surface-container opacity-70"}`}
     >
       {/* Card header */}
-      <div className="flex items-center justify-between px-5 py-4">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
-          <span className="px-3 py-1 rounded-full text-xs font-bold"
+          <span className="px-4 py-1 rounded-full text-xs font-bold"
             style={{ backgroundColor: typeConfig.bg, color: typeConfig.text }}>
             {typeConfig.label}
           </span>
@@ -306,7 +306,7 @@ const ProtheseCard = ({ prothese, onDeactivate, onAddComposant, onDeleteComposan
 
       {/* Card body */}
       {expanded && (
-        <div className="px-5 pb-4">
+        <div className="pt-2">
           {prothese.notes && (
             <p className="text-sm mb-4 text-on-surface-variant">{prothese.notes}</p>
           )}
@@ -588,34 +588,34 @@ export default function FichePatientPage() {
       )}
 
       {/* Header */}
-      <header className="glass-nav sticky top-0 z-40 flex items-center justify-between px-4 py-3">
+      <header className="glass-nav sticky top-0 z-40 flex items-center justify-between px-4 py-3 border-b border-outline-variant/10">
         <StumprLogo size={22} />
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1 flex-wrap">
           <button onClick={() => navigate("/journal")}
-            className="text-sm font-medium px-3 py-2 rounded-xl bg-secondary-container text-on-secondary-container"
+            className="text-sm font-bold px-4 py-2 rounded-xl bg-secondary/10 text-secondary"
             data-testid="nav-journal">
-            📝 Journal
+            Journal
           </button>
           <button onClick={() => navigate("/tableau-de-bord")}
-            className="text-sm font-medium px-3 py-2 rounded-xl bg-surface-container text-on-surface-variant"
+            className="text-sm font-medium px-4 py-2 rounded-xl text-on-surface-variant hover:text-on-surface"
             data-testid="nav-dashboard">
-            📊 Tableau
+            Tableau
           </button>
           <button onClick={() => navigate("/annuaire")}
-            className="text-sm font-medium px-3 py-2 rounded-xl bg-surface-container text-on-surface-variant"
+            className="text-sm font-medium px-4 py-2 rounded-xl text-on-surface-variant hover:text-on-surface"
             data-testid="nav-annuaire">
-            🏥 Annuaire
+            Annuaire
           </button>
           <button onClick={() => navigate("/fiches-droits")}
-            className="text-sm font-medium px-3 py-2 rounded-xl bg-surface-container text-on-surface-variant"
+            className="text-sm font-medium px-4 py-2 rounded-xl text-on-surface-variant hover:text-on-surface"
             data-testid="nav-fiches-droits">
-            📋 Droits
+            Droits
           </button>
-          <span className="text-sm hidden sm:inline text-on-surface-variant">
+          <span className="text-sm hidden sm:inline text-on-surface-variant ml-2">
             {user.prenom} {user.nom}
           </span>
           <button onClick={handleLogout}
-            className="bg-surface-container text-on-surface rounded-xl px-3 py-2 font-medium flex items-center gap-2"
+            className="bg-surface-container text-on-surface rounded-xl px-3 py-2 font-medium flex items-center gap-2 ml-1"
             data-testid="logout-btn">
             <LogOut size={16} />
             <span className="hidden sm:inline">Déconnexion</span>
@@ -630,7 +630,7 @@ export default function FichePatientPage() {
 
         {/* SECTION 1 — Identité */}
         <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-identite">
-          <h3 className="font-headline font-bold text-lg text-on-surface mb-4">Identité patient</h3>
+          <h3 className="font-headline font-bold text-xl text-on-surface mb-6 border-l-4 border-secondary pl-4">Identité patient</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="prenom">Prénom *</label>
@@ -680,7 +680,7 @@ export default function FichePatientPage() {
 
         {/* SECTION 2 — Amputation */}
         <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-amputation">
-          <h3 className="font-headline font-bold text-lg text-on-surface mb-4">Amputation</h3>
+          <h3 className="font-headline font-bold text-xl text-on-surface mb-6 border-l-4 border-secondary pl-4">Amputation</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="niveau_amputation">Niveau d'amputation *</label>
@@ -728,7 +728,7 @@ export default function FichePatientPage() {
         {/* SECTION 3 — Mes prothèses */}
         <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-protheses">
           <div className="flex items-center justify-between mb-5">
-            <h3 className="font-headline font-bold text-lg text-on-surface">Mes prothèses</h3>
+            <h3 className="font-headline font-bold text-xl text-on-surface border-l-4 border-secondary pl-4">Mes prothèses</h3>
             {id ? (
               <button
                 onClick={() => setShowAddProthese(true)}
@@ -792,7 +792,7 @@ export default function FichePatientPage() {
 
         {/* SECTION 4 — Suivi médical */}
         <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-suivi">
-          <h3 className="font-headline font-bold text-lg text-on-surface mb-4">Suivi médical</h3>
+          <h3 className="font-headline font-bold text-xl text-on-surface mb-6 border-l-4 border-secondary pl-4">Suivi médical</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="ortho_referent">Orthoprothésiste référent</label>
@@ -849,7 +849,7 @@ export default function FichePatientPage() {
 
         {/* SECTION 5 — Activités quotidiennes */}
         <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-activites">
-          <h3 className="font-headline font-bold text-lg text-on-surface mb-4">Activités quotidiennes</h3>
+          <h3 className="font-headline font-bold text-xl text-on-surface mb-6 border-l-4 border-secondary pl-4">Activités quotidiennes</h3>
           <p className="mb-5 text-on-surface-variant">
             Sélectionnez les activités que vous pratiquez régulièrement
           </p>
@@ -860,10 +860,14 @@ export default function FichePatientPage() {
               return (
                 <button key={activity.id} type="button"
                   onClick={() => handleActivityToggle(activity.id)}
-                  className={`stumpr-activity-toggle ${isActive ? "active" : ""}`}
+                  className={`rounded-2xl flex flex-col items-center gap-2 p-4 cursor-pointer transition-all font-medium text-sm ${
+                    isActive
+                      ? "bg-secondary/10 border-2 border-secondary text-secondary"
+                      : "bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container border-2 border-transparent"
+                  }`}
                   data-testid={`activity-${activity.id}`}>
                   <Icon size={24} />
-                  <span className="text-sm text-center font-medium">{activity.label}</span>
+                  <span className="text-center">{activity.label}</span>
                 </button>
               );
             })}
@@ -889,16 +893,16 @@ export default function FichePatientPage() {
         {/* Action buttons */}
         <div className="flex flex-wrap gap-4 justify-center pb-8">
           <button onClick={handleSave} disabled={saving}
-            className="bg-primary text-on-primary rounded-xl px-6 py-3 font-bold hover:opacity-90 flex items-center gap-2" data-testid="save-btn">
+            className="bg-primary text-white rounded-2xl px-8 py-4 font-bold hover:opacity-90 shadow-sm flex items-center gap-2" data-testid="save-btn">
             {saving ? <div className="spinner" /> : <Save size={18} />}
             Enregistrer ma fiche
           </button>
           <button onClick={handleExportPDF}
-            className="bg-surface-container text-on-surface rounded-xl px-6 py-3 font-bold flex items-center gap-2" data-testid="export-pdf-btn">
+            className="bg-surface-container text-on-surface rounded-2xl px-8 py-4 font-bold shadow-sm flex items-center gap-2" data-testid="export-pdf-btn">
             <FileDown size={18} /> Exporter PDF
           </button>
           <button onClick={handleShare} disabled={shareLoading}
-            className="bg-surface-container text-on-surface rounded-xl px-6 py-3 font-bold flex items-center gap-2" data-testid="share-btn">
+            className="bg-surface-container text-on-surface rounded-2xl px-8 py-4 font-bold shadow-sm flex items-center gap-2" data-testid="share-btn">
             {shareLoading ? <div className="spinner" /> : <Share2 size={18} />}
             Partager
           </button>
