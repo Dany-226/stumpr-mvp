@@ -860,11 +860,18 @@ export default function FichePatientPage() {
               return (
                 <button key={activity.id} type="button"
                   onClick={() => handleActivityToggle(activity.id)}
-                  className={`rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer transition-all font-medium text-sm border-2 ${
-                    isActive
-                      ? "bg-secondary/10 border-secondary text-secondary"
-                      : "bg-surface-container-lowest border-transparent text-on-surface-variant hover:border-outline-variant"
-                  }`}
+                  style={{
+                    backgroundColor: isActive ? 'rgba(0,106,99,0.1)' : '#ffffff',
+                    border: isActive ? '2px solid #006a63' : '2px solid #e4e9ed',
+                    borderRadius: '16px',
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: isActive ? '#006a63' : '#424750',
+                    cursor: 'pointer',
+                  }}
                   data-testid={`activity-${activity.id}`}>
                   <Icon size={24} />
                   <span className="text-center">{activity.label}</span>

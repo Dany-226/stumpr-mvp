@@ -248,30 +248,6 @@ code {
     padding: 14px;
 }
 
-/* Activity toggle buttons */
-.stumpr-activity-toggle {
-    background: var(--stumpr-bg);
-    border: 1.5px solid var(--stumpr-border);
-    border-radius: 12px;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    color: var(--stumpr-text-muted);
-}
-
-.stumpr-activity-toggle:hover {
-    border-color: rgba(14, 107, 99, 0.5);
-}
-
-.stumpr-activity-toggle.active {
-    background: var(--stumpr-primary-light);
-    border-color: rgba(14, 107, 99, 0.3);
-    color: var(--stumpr-primary);
-}
 
 /* Badge styles */
 .stumpr-badge-ok {
