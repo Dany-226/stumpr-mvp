@@ -588,7 +588,7 @@ export default function FichePatientPage() {
       )}
 
       {/* Header */}
-      <header className="glass-nav sticky top-0 z-40 flex items-center justify-between px-4 py-3 border-b border-outline-variant/10">
+      <header className="glass-nav sticky top-0 z-40 flex items-center justify-between px-4 py-3 border-b border-outline-variant/10" style={{ backgroundColor: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)' }}>
         <StumprLogo size={22} />
         <div className="flex items-center gap-1 flex-wrap">
           <button onClick={() => navigate("/journal")}
@@ -860,10 +860,10 @@ export default function FichePatientPage() {
               return (
                 <button key={activity.id} type="button"
                   onClick={() => handleActivityToggle(activity.id)}
-                  className={`rounded-2xl flex flex-col items-center gap-2 p-4 cursor-pointer transition-all font-medium text-sm ${
+                  className={`rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer transition-all font-medium text-sm border-2 ${
                     isActive
-                      ? "bg-secondary/10 border-2 border-secondary text-secondary"
-                      : "bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container border-2 border-transparent"
+                      ? "bg-secondary/10 border-secondary text-secondary"
+                      : "bg-surface-container-lowest border-transparent text-on-surface-variant hover:border-outline-variant"
                   }`}
                   data-testid={`activity-${activity.id}`}>
                   <Icon size={24} />
@@ -893,7 +893,8 @@ export default function FichePatientPage() {
         {/* Action buttons */}
         <div className="flex flex-wrap gap-4 justify-center pb-8">
           <button onClick={handleSave} disabled={saving}
-            className="bg-primary text-white rounded-2xl px-8 py-4 font-bold hover:opacity-90 shadow-sm flex items-center gap-2" data-testid="save-btn">
+            className="bg-primary text-white rounded-2xl px-8 py-4 font-bold hover:opacity-90 shadow-sm flex items-center gap-2"
+            style={{ backgroundColor: '#00386c', color: '#ffffff' }} data-testid="save-btn">
             {saving ? <div className="spinner" /> : <Save size={18} />}
             Enregistrer ma fiche
           </button>
