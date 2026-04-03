@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { Search } from "lucide-react";
 import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -40,11 +39,24 @@ export default function LPPRSearch({ onSelect, hideTarif = false }) {
   return (
     <div style={{ marginBottom: 16 }}>
       <label className="stumpr-label">Recherche LPPR (optionnel)</label>
+      <div style={{ display: "flex", gap: 6, overflowX: "auto", flexWrap: "nowrap", marginBottom: 8, paddingBottom: 2 }}>
+        {["Manchon", "Emboîture", "Emboîture tibiale", "Emboîture fémorale", "Genou", "Pied Classe I", "Pied Classe II", "Pied Classe III", "Pied rigide", "Main", "Myoélectrique", "Adaptateur rotation", "Amortisseur", "Aqualeg", "Genou monoaxial", "Genou polycentrique", "MPK", "Hanche"].map((cat) => (
+          <button
+            key={cat}
+            type="button"
+            onClick={() => setQuery(cat)}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#e6f3f2"; e.currentTarget.style.color = "#0e6b63"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#f0ece6"; e.currentTarget.style.color = "#3d4a5c"; }}
+            style={{ flexShrink: 0, background: "#f0ece6", color: "#3d4a5c", border: "none", borderRadius: 20, padding: "4px 10px", fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
       <div style={{ position: "relative" }}>
-        <Search size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#8892a4" }} />
         <input
           type="text"
-          className="stumpr-input pl-9"
+          className="stumpr-input"
           placeholder="Code ou nom du composant..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}

@@ -1,14 +1,16 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
-  Save, FileDown, Share2, LogOut, Plus, Trash2, Search, X,
+  Save, FileDown, Share2, LogOut, Plus, Trash2, X,
   Power, ChevronDown, ChevronUp, Eye, EyeOff,
   Footprints, PersonStanding, ShoppingCart, Car, Bike,
   Waves, CircleDot, Mountain, Briefcase, Armchair, Trophy
 } from "lucide-react";
 import axios from "axios";
 import StumprLogo from "../components/StumprLogo";
+import LPPRSearch from "../components/LPPRSearch";
+import { COMPOSANT_TYPES } from "../constants/patient";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -46,15 +48,6 @@ const PROTHESE_TYPES = {
   autre:      { label: "Autre",      bg: "#f3e5f5", text: "#7b1fa2" },
 };
 
-const COMPOSANT_TYPES = [
-  { value: "emboiture",          label: "Emboîture" },
-  { value: "pied_prothetique",   label: "Pied prothétique" },
-  { value: "genou_prothetique",  label: "Genou prothétique" },
-  { value: "manchon_liner",      label: "Manchon / Liner" },
-  { value: "attaches_suspension",label: "Attaches / Suspension" },
-  { value: "cosmetique_pied",    label: "Cosmétique pied" },
-  { value: "autre",              label: "Autre" },
-];
 
 // ======================== SHARED COMPONENTS ========================
 
@@ -74,78 +67,6 @@ const RenewalBadge = ({ renewalDate }) => {
   return <span className="stumpr-badge-ok">Renouvellement estimé : {formatted}</span>;
 };
 
-const LPPRSearch = ({ onSelect }) => {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const token = localStorage.getItem("stumpr_token");
-
-  const search = useCallback(async (q) => {
-    if (q.length < 2) { setResults([]); return; }
-    setLoading(true);
-    try {
-      const res = await axios.get(`${API}/lppr/search`, {
-        params: { q },
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setResults(res.data);
-      setOpen(true);
-    } catch {}
-    finally { setLoading(false); }
-  }, [token]);
-
-  useEffect(() => {
-    const t = setTimeout(() => search(query), 300);
-    return () => clearTimeout(t);
-  }, [query, search]);
-
-  const handleSelect = (item) => {
-    onSelect(item);
-    setQuery("");
-    setResults([]);
-    setOpen(false);
-  };
-
-  return (
-    <div className="relative mb-4">
-      <label className="stumpr-label">Recherche LPPR (optionnel)</label>
-      <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#8892a4" }} />
-        <input
-          type="text"
-          className="stumpr-input pl-9"
-          placeholder="Code ou nom du composant..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        {loading && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 rounded-full animate-spin"
-            style={{ borderColor: "#0e6b63", borderTopColor: "transparent" }} />
-        )}
-      </div>
-      {open && results.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 stumpr-dropdown">
-          {results.map((item, i) => (
-            <div key={i} className="stumpr-dropdown-item" onClick={() => handleSelect(item)}>
-              <div className="font-semibold text-sm" style={{ color: "#1a1f2e" }}>
-                [{item.code}] {item.nomenclature}
-              </div>
-              <div className="text-xs mt-0.5" style={{ color: "#8892a4" }}>
-                {item.tarif ? `${item.tarif}€` : "Tarif N/A"} · {item.duree_ans ? `${item.duree_ans} ans` : ""} · {item.categorie || ""}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-      {open && query.length >= 2 && results.length === 0 && !loading && (
-        <div className="absolute z-50 w-full mt-1 stumpr-dropdown p-4 text-center text-sm" style={{ color: "#8892a4" }}>
-          Aucun résultat
-        </div>
-      )}
-    </div>
-  );
-};
 
 // ======================== PROTHESE COMPONENTS ========================
 
@@ -223,7 +144,7 @@ const AddProtheseModal = ({ onClose, onAdd }) => {
 
 const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
   const [form, setForm] = useState({
-    type: "emboiture", marque: "", reference_lppr: "", nomenclature: "",
+    type: "Emboîture", marque: "", reference_lppr: "", nomenclature: "",
     tarif: null, duree_ans: null, date_attribution: "", notes: "",
   });
   const [saving, setSaving] = useState(false);
@@ -235,6 +156,7 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
       nomenclature: item.nomenclature,
       tarif: item.tarif || null,
       duree_ans: item.duree_ans != null ? Math.round(item.duree_ans) : null,
+      type: item.categorie || f.type,
     }));
   };
 
@@ -311,7 +233,6 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
 };
 
 const ComposantRow = ({ composant, onDelete }) => {
-  console.log('composant:', composant);
   const typeLabel = COMPOSANT_TYPES.find(t => t.value === composant.type)?.label || composant.type;
   const rawName = composant.nomenclature || typeLabel;
   const displayName = rawName.length > 40 ? rawName.slice(0, 40) + "…" : rawName;

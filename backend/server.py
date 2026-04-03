@@ -361,11 +361,11 @@ async def search_lppr(q: str = Query(..., min_length=2)):
         
         # Build filter formula - search in Nomenclature (text) and Code (converted to string)
         q_lower = q.lower()
-        filter_formula = f'OR(SEARCH("{q_lower}",LOWER({{Nomenclature}})),SEARCH("{q}",CONCATENATE({{Code}},"")))'
+        filter_formula = f'OR(SEARCH("{q_lower}",LOWER({{Nomenclature}})),SEARCH("{q}",CONCATENATE({{Code}},"")),SEARCH("{q_lower}",LOWER({{Catégorie}})))'
         
         params = {
             "filterByFormula": filter_formula,
-            "maxRecords": 8,
+            "maxRecords": 20,
             "fields[]": ["Code", "Nomenclature", "Tarif TTC", "Durée de prise en charge", "Catégorie", "Application produit"]
         }
         
