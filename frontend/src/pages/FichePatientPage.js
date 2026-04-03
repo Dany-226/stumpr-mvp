@@ -59,12 +59,12 @@ const RenewalBadge = ({ renewalDate }) => {
   const formatted = renewal.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
 
   if (diffMonths < 0)
-    return <span className="stumpr-badge-danger">Renouvellement dépassé : {formatted}</span>;
+    return <span className="bg-tertiary-fixed text-tertiary rounded-full px-3 py-1 text-sm font-bold">Renouvellement dépassé : {formatted}</span>;
   if (diffMonths <= 1)
-    return <span className="stumpr-badge-danger">Renouvellement urgent : {formatted}</span>;
+    return <span className="bg-tertiary-fixed text-tertiary rounded-full px-3 py-1 text-sm font-bold">Renouvellement urgent : {formatted}</span>;
   if (diffMonths <= 6)
-    return <span className="stumpr-badge-warning">Renouvellement dans {Math.ceil(diffMonths)} mois : {formatted}</span>;
-  return <span className="stumpr-badge-ok">Renouvellement estimé : {formatted}</span>;
+    return <span className="bg-secondary-fixed text-on-secondary-fixed rounded-full px-3 py-1 text-sm font-bold">Renouvellement dans {Math.ceil(diffMonths)} mois : {formatted}</span>;
+  return <span className="bg-primary-fixed text-on-primary-fixed rounded-full px-3 py-1 text-sm font-bold">Renouvellement estimé : {formatted}</span>;
 };
 
 
@@ -83,32 +83,30 @@ const AddProtheseModal = ({ onClose, onAdd }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40">
+      <div className="w-full max-w-md rounded-3xl bg-surface-container-lowest p-6 shadow-xl">
         <div className="flex justify-between items-center mb-5">
-          <h3 className="text-lg font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
+          <h3 className="font-headline font-bold text-lg text-on-surface">
             Ajouter une prothèse
           </h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100">
-            <X size={20} style={{ color: "#8892a4" }} />
+          <button onClick={onClose} className="p-1 rounded-xl hover:bg-surface-container">
+            <X size={20} className="text-on-surface-variant" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="stumpr-label">Type de prothèse *</label>
+            <label className="text-sm font-medium text-on-surface-variant mb-1 block">Type de prothèse *</label>
             <div className="grid grid-cols-2 gap-2 mt-1">
               {Object.entries(PROTHESE_TYPES).map(([key, cfg]) => (
                 <button
                   key={key}
                   type="button"
                   onClick={() => setForm(f => ({ ...f, type: key }))}
-                  className="px-3 py-2 rounded-xl border-2 text-sm font-semibold transition-all"
+                  className="px-3 py-2 rounded-xl text-sm font-semibold transition-all"
                   style={{
-                    borderColor: form.type === key ? cfg.text : "#e0d9cf",
-                    backgroundColor: form.type === key ? cfg.bg : "white",
-                    color: form.type === key ? cfg.text : "#8892a4",
+                    backgroundColor: form.type === key ? cfg.bg : "var(--color-surface-container)",
+                    color: form.type === key ? cfg.text : "var(--color-on-surface-variant)",
                   }}
                 >
                   {cfg.label}
@@ -118,21 +116,24 @@ const AddProtheseModal = ({ onClose, onAdd }) => {
           </div>
 
           <div className="mb-4">
-            <label className="stumpr-label">Date d'attribution</label>
-            <input type="date" className="stumpr-input"
+            <label className="text-sm font-medium text-on-surface-variant mb-1 block">Date d'attribution</label>
+            <input type="date"
+              className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30"
               value={form.date_attribution}
               onChange={(e) => setForm(f => ({ ...f, date_attribution: e.target.value }))} />
           </div>
 
           <div className="mb-5">
-            <label className="stumpr-label">Notes (optionnel)</label>
-            <textarea className="stumpr-input" rows={2} placeholder="Description, usage..."
+            <label className="text-sm font-medium text-on-surface-variant mb-1 block">Notes (optionnel)</label>
+            <textarea
+              className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30"
+              rows={2} placeholder="Description, usage..."
               value={form.notes}
               onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))} />
           </div>
 
           <button type="submit" disabled={saving}
-            className="stumpr-btn-primary w-full flex items-center justify-center gap-2">
+            className="bg-primary text-on-primary rounded-xl px-6 py-3 font-bold hover:opacity-90 w-full flex items-center justify-center gap-2">
             {saving ? <div className="spinner" /> : <Plus size={18} />}
             Ajouter la prothèse
           </button>
@@ -169,15 +170,14 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40">
+      <div className="w-full max-w-md rounded-3xl bg-surface-container-lowest p-6 shadow-xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-5">
-          <h3 className="text-lg font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
+          <h3 className="font-headline font-bold text-lg text-on-surface">
             Ajouter un composant
           </h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100">
-            <X size={20} style={{ color: "#8892a4" }} />
+          <button onClick={onClose} className="p-1 rounded-xl hover:bg-surface-container">
+            <X size={20} className="text-on-surface-variant" />
           </button>
         </div>
 
@@ -185,44 +185,51 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
           <LPPRSearch onSelect={handleLPPRSelect} />
 
           {form.reference_lppr && (
-            <div className="mb-4 p-3 rounded-xl text-sm" style={{ backgroundColor: "#e6f3f2" }}>
-              <div className="font-semibold" style={{ color: "#0e6b63" }}>[{form.reference_lppr}]</div>
-              <div style={{ color: "#3d4a5c" }}>{form.nomenclature}</div>
-              {form.tarif && <div style={{ color: "#8892a4" }}>{form.tarif}€ · {form.duree_ans ? `${form.duree_ans} ans` : ""}</div>}
+            <div className="mb-4 p-3 rounded-xl text-sm bg-surface-container-low">
+              <div className="font-semibold text-secondary">[{form.reference_lppr}]</div>
+              <div className="text-on-surface">{form.nomenclature}</div>
+              {form.tarif && <div className="text-on-surface-variant">{form.tarif}€ · {form.duree_ans ? `${form.duree_ans} ans` : ""}</div>}
             </div>
           )}
 
           <div className="mb-4">
-            <label className="stumpr-label">Type de composant *</label>
-            <select className="stumpr-select" value={form.type}
+            <label className="text-sm font-medium text-on-surface-variant mb-1 block">Type de composant *</label>
+            <select
+              className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
+              value={form.type}
               onChange={(e) => setForm(f => ({ ...f, type: e.target.value }))} required>
               {COMPOSANT_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </div>
 
           <div className="mb-4">
-            <label className="stumpr-label">Marque</label>
-            <input type="text" className="stumpr-input" placeholder="Ex: Ottobock, Össur..."
+            <label className="text-sm font-medium text-on-surface-variant mb-1 block">Marque</label>
+            <input type="text"
+              className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+              placeholder="Ex: Ottobock, Össur..."
               value={form.marque}
               onChange={(e) => setForm(f => ({ ...f, marque: e.target.value }))} />
           </div>
 
           <div className="mb-4">
-            <label className="stumpr-label">Date d'attribution</label>
-            <input type="date" className="stumpr-input"
+            <label className="text-sm font-medium text-on-surface-variant mb-1 block">Date d'attribution</label>
+            <input type="date"
+              className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30"
               value={form.date_attribution}
               onChange={(e) => setForm(f => ({ ...f, date_attribution: e.target.value }))} />
           </div>
 
           <div className="mb-5">
-            <label className="stumpr-label">Notes</label>
-            <textarea className="stumpr-input" rows={2} placeholder="Observations..."
+            <label className="text-sm font-medium text-on-surface-variant mb-1 block">Notes</label>
+            <textarea
+              className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+              rows={2} placeholder="Observations..."
               value={form.notes}
               onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))} />
           </div>
 
           <button type="submit" disabled={saving}
-            className="stumpr-btn-primary w-full flex items-center justify-center gap-2">
+            className="bg-primary text-on-primary rounded-xl px-6 py-3 font-bold hover:opacity-90 w-full flex items-center justify-center gap-2">
             {saving ? <div className="spinner" /> : <Plus size={18} />}
             Ajouter le composant
           </button>
@@ -237,18 +244,17 @@ const ComposantRow = ({ composant, onDelete }) => {
   const rawName = composant.nomenclature || typeLabel;
   const displayName = rawName.length > 40 ? rawName.slice(0, 40) + "…" : rawName;
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b last:border-0"
-      style={{ borderColor: "#e0d9cf" }}>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 rounded-xl bg-surface-container-low px-3 mb-1">
       <div className="flex-1">
-        <span className="text-sm font-medium" style={{ color: "#1a1f2e" }}>{displayName}</span>
+        <span className="text-sm font-medium text-on-surface">{displayName}</span>
         {composant.nomenclature && (
-          <span className="text-xs ml-2" style={{ color: "#8892a4" }}>{typeLabel}</span>
+          <span className="text-xs ml-2 text-on-surface-variant">{typeLabel}</span>
         )}
         {composant.marque && (
-          <span className="text-sm ml-2" style={{ color: "#3d4a5c" }}>— {composant.marque}</span>
+          <span className="text-sm ml-2 text-on-surface-variant">— {composant.marque}</span>
         )}
         {composant.reference_lppr && (
-          <span className="text-xs ml-2 px-2 py-0.5 rounded-full" style={{ backgroundColor: "#f0ece6", color: "#8892a4" }}>
+          <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">
             {composant.reference_lppr}
           </span>
         )}
@@ -258,7 +264,7 @@ const ComposantRow = ({ composant, onDelete }) => {
         <button
           type="button"
           onClick={onDelete}
-          style={{ background: "none", border: "none", cursor: "pointer", color: "#e53e3e", padding: 4 }}
+          className="p-1 rounded-lg hover:bg-error/10 text-error"
         >
           <Trash2 size={14} />
         </button>
@@ -274,8 +280,9 @@ const ProtheseCard = ({ prothese, onDeactivate, onAddComposant, onDeleteComposan
   const isActive = prothese.statut === "active";
 
   return (
-    <div className="rounded-2xl border mb-4 overflow-hidden"
-      style={{ borderColor: isActive ? "#e0d9cf" : "#d0cbc3", backgroundColor: isActive ? "white" : "#faf8f5", opacity: isActive ? 1 : 0.7 }}>
+    <div
+      className={`rounded-2xl mb-4 overflow-hidden shadow-sm ${isActive ? "bg-surface-container-lowest" : "bg-surface-container opacity-70"}`}
+    >
       {/* Card header */}
       <div className="flex items-center justify-between px-5 py-4">
         <div className="flex items-center gap-3">
@@ -284,17 +291,16 @@ const ProtheseCard = ({ prothese, onDeactivate, onAddComposant, onDeleteComposan
             {typeConfig.label}
           </span>
           {!isActive && (
-            <span className="px-2 py-0.5 rounded-full text-xs font-medium"
-              style={{ backgroundColor: "#f0ece6", color: "#8892a4" }}>Archivée</span>
+            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-surface-container text-on-surface-variant">Archivée</span>
           )}
           {prothese.date_attribution && (
-            <span className="text-xs" style={{ color: "#8892a4" }}>
+            <span className="text-xs text-on-surface-variant">
               Depuis le {new Date(prothese.date_attribution).toLocaleDateString("fr-FR")}
             </span>
           )}
         </div>
-        <button onClick={() => setExpanded(e => !e)} className="p-1 rounded-lg hover:bg-gray-50">
-          {expanded ? <ChevronUp size={18} style={{ color: "#8892a4" }} /> : <ChevronDown size={18} style={{ color: "#8892a4" }} />}
+        <button onClick={() => setExpanded(e => !e)} className="p-1 rounded-xl hover:bg-surface-container">
+          {expanded ? <ChevronUp size={18} className="text-on-surface-variant" /> : <ChevronDown size={18} className="text-on-surface-variant" />}
         </button>
       </div>
 
@@ -302,18 +308,18 @@ const ProtheseCard = ({ prothese, onDeactivate, onAddComposant, onDeleteComposan
       {expanded && (
         <div className="px-5 pb-4">
           {prothese.notes && (
-            <p className="text-sm mb-4" style={{ color: "#3d4a5c" }}>{prothese.notes}</p>
+            <p className="text-sm mb-4 text-on-surface-variant">{prothese.notes}</p>
           )}
 
           {/* Composants */}
           <div className="mb-4">
-            <h5 className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: "#8892a4" }}>
+            <h5 className="text-xs font-bold uppercase tracking-wide mb-2 text-on-surface-variant">
               Composants ({prothese.composants.length})
             </h5>
             {prothese.composants.length > 0 ? (
               prothese.composants.map((c, index) => <ComposantRow key={c.id || index} composant={c} onDelete={() => onDeleteComposant && onDeleteComposant(prothese.id, c.id || index)} />)
             ) : (
-              <p className="text-sm" style={{ color: "#8892a4" }}>Aucun composant ajouté.</p>
+              <p className="text-sm text-on-surface-variant">Aucun composant ajouté.</p>
             )}
           </div>
 
@@ -322,26 +328,22 @@ const ProtheseCard = ({ prothese, onDeactivate, onAddComposant, onDeleteComposan
             <div className="flex items-center gap-3 mt-4">
               <button
                 onClick={() => onAddComposant(prothese.id)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold"
-                style={{ backgroundColor: "#e6f3f2", color: "#0e6b63" }}>
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-secondary-container text-on-secondary-container">
                 <Plus size={15} /> Composant
               </button>
               {!confirmDeactivate ? (
                 <button
                   onClick={() => setConfirmDeactivate(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium"
-                  style={{ backgroundColor: "#f5f0e8", color: "#8892a4", border: "1px solid #e0d9cf" }}>
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-surface-container text-on-surface-variant">
                   <Power size={15} /> Désactiver
                 </button>
               ) : (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm" style={{ color: "#d64545" }}>Confirmer ?</span>
+                  <span className="text-sm text-error">Confirmer ?</span>
                   <button onClick={() => { onDeactivate(prothese.id); setConfirmDeactivate(false); }}
-                    className="px-3 py-1.5 rounded-lg text-sm font-semibold"
-                    style={{ backgroundColor: "#fdeaea", color: "#d64545" }}>Oui</button>
+                    className="px-3 py-1.5 rounded-xl text-sm font-semibold bg-error/10 text-error">Oui</button>
                   <button onClick={() => setConfirmDeactivate(false)}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium"
-                    style={{ backgroundColor: "#f5f0e8", color: "#8892a4" }}>Non</button>
+                    className="px-3 py-1.5 rounded-xl text-sm font-medium bg-surface-container text-on-surface-variant">Non</button>
                 </div>
               )}
             </div>
@@ -556,11 +558,10 @@ export default function FichePatientPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#f5f0e8" }}>
+      <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4"
-            style={{ borderColor: "#e0d9cf", borderTopColor: "#0e6b63" }} />
-          <p style={{ color: "#8892a4" }}>Chargement...</p>
+          <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4 border-surface-container-high border-t-secondary" />
+          <p className="text-on-surface-variant">Chargement...</p>
         </div>
       </div>
     );
@@ -570,7 +571,7 @@ export default function FichePatientPage() {
   const inactiveProtheses = protheses.filter(p => p.statut === "inactive");
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f5f0e8" }}>
+    <div className="min-h-screen bg-surface">
       {/* Modals */}
       {showAddProthese && (
         <AddProtheseModal
@@ -587,38 +588,34 @@ export default function FichePatientPage() {
       )}
 
       {/* Header */}
-      <header className="app-header sticky top-0 z-40">
+      <header className="glass-nav sticky top-0 z-40 flex items-center justify-between px-4 py-3">
         <StumprLogo size={22} />
         <div className="flex items-center gap-2 flex-wrap">
           <button onClick={() => navigate("/journal")}
-            className="text-sm font-medium px-3 py-2 rounded-lg"
-            style={{ backgroundColor: "#e6f3f2", color: "#0e6b63" }}
+            className="text-sm font-medium px-3 py-2 rounded-xl bg-secondary-container text-on-secondary-container"
             data-testid="nav-journal">
             📝 Journal
           </button>
           <button onClick={() => navigate("/tableau-de-bord")}
-            className="text-sm font-medium px-3 py-2 rounded-lg"
-            style={{ backgroundColor: "#f5f0e8", color: "#3d4a5c", border: "1px solid #e0d9cf" }}
+            className="text-sm font-medium px-3 py-2 rounded-xl bg-surface-container text-on-surface-variant"
             data-testid="nav-dashboard">
             📊 Tableau
           </button>
           <button onClick={() => navigate("/annuaire")}
-            className="text-sm font-medium px-3 py-2 rounded-lg"
-            style={{ backgroundColor: "#f5f0e8", color: "#3d4a5c", border: "1px solid #e0d9cf" }}
+            className="text-sm font-medium px-3 py-2 rounded-xl bg-surface-container text-on-surface-variant"
             data-testid="nav-annuaire">
             🏥 Annuaire
           </button>
           <button onClick={() => navigate("/fiches-droits")}
-            className="text-sm font-medium px-3 py-2 rounded-lg"
-            style={{ backgroundColor: "#f5f0e8", color: "#3d4a5c", border: "1px solid #e0d9cf" }}
+            className="text-sm font-medium px-3 py-2 rounded-xl bg-surface-container text-on-surface-variant"
             data-testid="nav-fiches-droits">
             📋 Droits
           </button>
-          <span className="text-sm hidden sm:inline" style={{ color: "#3d4a5c" }}>
+          <span className="text-sm hidden sm:inline text-on-surface-variant">
             {user.prenom} {user.nom}
           </span>
           <button onClick={handleLogout}
-            className="stumpr-btn-outline flex items-center gap-2 py-2 px-3"
+            className="bg-surface-container text-on-surface rounded-xl px-3 py-2 font-medium flex items-center gap-2"
             data-testid="logout-btn">
             <LogOut size={16} />
             <span className="hidden sm:inline">Déconnexion</span>
@@ -626,49 +623,54 @@ export default function FichePatientPage() {
         </div>
       </header>
 
-      <main className="container-main">
-        <h2 className="text-3xl font-bold mb-8"
-          style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
+      <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+        <h2 className="font-headline font-bold text-3xl text-on-surface mb-8">
           {id ? "Ma fiche patient" : "Créer ma fiche patient"}
         </h2>
 
         {/* SECTION 1 — Identité */}
-        <section className="stumpr-card mb-6 animate-fade-in" data-testid="section-identite">
-          <h3 className="section-header">Identité patient</h3>
+        <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-identite">
+          <h3 className="font-headline font-bold text-lg text-on-surface mb-4">Identité patient</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="stumpr-label" htmlFor="prenom">Prénom *</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="prenom">Prénom *</label>
               <input type="text" id="prenom" name="prenom" data-testid="input-prenom"
-                className="stumpr-input" placeholder="Votre prénom"
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                placeholder="Votre prénom"
                 value={formData.prenom} onChange={handleChange} required />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="nom">Nom *</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="nom">Nom *</label>
               <input type="text" id="nom" name="nom" data-testid="input-nom"
-                className="stumpr-input" placeholder="Votre nom"
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                placeholder="Votre nom"
                 value={formData.nom} onChange={handleChange} required />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="date_naissance">Date de naissance</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="date_naissance">Date de naissance</label>
               <input type="date" id="date_naissance" name="date_naissance" data-testid="input-date-naissance"
-                className="stumpr-input" value={formData.date_naissance} onChange={handleChange} />
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30"
+                value={formData.date_naissance} onChange={handleChange} />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="email">Email *</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="email">Email *</label>
               <input type="email" id="email" name="email" data-testid="input-email"
-                className="stumpr-input" placeholder="votre@email.com"
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                placeholder="votre@email.com"
                 value={formData.email} onChange={handleChange} required />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="telephone">Téléphone</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="telephone">Téléphone</label>
               <input type="tel" id="telephone" name="telephone" data-testid="input-telephone"
-                className="stumpr-input" placeholder="06 XX XX XX XX"
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                placeholder="06 XX XX XX XX"
                 value={formData.telephone} onChange={handleChange} />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="niveau_activite">Niveau d'activité</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="niveau_activite">Niveau d'activité</label>
               <select id="niveau_activite" name="niveau_activite" data-testid="select-niveau-activite"
-                className="stumpr-select" value={formData.niveau_activite} onChange={handleChange}>
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
+                value={formData.niveau_activite} onChange={handleChange}>
                 <option value="">Sélectionner...</option>
                 {NIVEAUX_ACTIVITE.map(n => <option key={n} value={n}>{n}</option>)}
               </select>
@@ -677,75 +679,79 @@ export default function FichePatientPage() {
         </section>
 
         {/* SECTION 2 — Amputation */}
-        <section className="stumpr-card mb-6 animate-fade-in" data-testid="section-amputation">
-          <h3 className="section-header">Amputation</h3>
+        <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-amputation">
+          <h3 className="font-headline font-bold text-lg text-on-surface mb-4">Amputation</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="stumpr-label" htmlFor="niveau_amputation">Niveau d'amputation *</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="niveau_amputation">Niveau d'amputation *</label>
               <select id="niveau_amputation" name="niveau_amputation" data-testid="select-niveau-amputation"
-                className="stumpr-select" value={formData.niveau_amputation} onChange={handleChange} required>
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
+                value={formData.niveau_amputation} onChange={handleChange} required>
                 <option value="">Sélectionner...</option>
                 {NIVEAUX_AMPUTATION.map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="cote">Côté</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="cote">Côté</label>
               <select id="cote" name="cote" data-testid="select-cote"
-                className="stumpr-select" value={formData.cote} onChange={handleChange}>
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
+                value={formData.cote} onChange={handleChange}>
                 <option value="">Sélectionner...</option>
                 {COTES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="date_amputation">Date d'amputation</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="date_amputation">Date d'amputation</label>
               <input type="date" id="date_amputation" name="date_amputation" data-testid="input-date-amputation"
-                className="stumpr-input" value={formData.date_amputation} onChange={handleChange} />
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30"
+                value={formData.date_amputation} onChange={handleChange} />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="cause">Cause</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="cause">Cause</label>
               <select id="cause" name="cause" data-testid="select-cause"
-                className="stumpr-select" value={formData.cause} onChange={handleChange}>
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
+                value={formData.cause} onChange={handleChange}>
                 <option value="">Sélectionner...</option>
                 {CAUSES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="stumpr-label" htmlFor="notes_moignon">Notes sur le moignon</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="notes_moignon">Notes sur le moignon</label>
               <textarea id="notes_moignon" name="notes_moignon" data-testid="textarea-notes-moignon"
-                className="stumpr-input" rows={3} placeholder="État du moignon, sensibilité, particularités..."
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                rows={3} placeholder="État du moignon, sensibilité, particularités..."
                 value={formData.notes_moignon} onChange={handleChange} />
             </div>
           </div>
         </section>
 
         {/* SECTION 3 — Mes prothèses */}
-        <section className="stumpr-card mb-6 animate-fade-in" data-testid="section-protheses">
+        <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-protheses">
           <div className="flex items-center justify-between mb-5">
-            <h3 className="section-header mb-0">Mes prothèses</h3>
+            <h3 className="font-headline font-bold text-lg text-on-surface">Mes prothèses</h3>
             {id ? (
               <button
                 onClick={() => setShowAddProthese(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm"
-                style={{ backgroundColor: "#0e6b63", color: "white" }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm bg-primary text-on-primary"
                 data-testid="add-prothese-btn">
                 <Plus size={16} /> Ajouter une prothèse
               </button>
             ) : (
-              <span className="text-sm" style={{ color: "#8892a4" }}>Enregistrez d'abord la fiche</span>
+              <span className="text-sm text-on-surface-variant">Enregistrez d'abord la fiche</span>
             )}
           </div>
 
           {!id && (
-            <div className="text-center py-8 rounded-xl" style={{ backgroundColor: "#f5f0e8", color: "#8892a4" }}>
+            <div className="text-center py-8 rounded-2xl bg-surface-container text-on-surface-variant">
               <p className="text-sm">Créez votre fiche patient pour pouvoir ajouter des prothèses.</p>
             </div>
           )}
 
           {id && activeProtheses.length === 0 && inactiveProtheses.length === 0 && (
-            <div className="text-center py-10 rounded-xl" style={{ backgroundColor: "#f5f0e8" }}>
+            <div className="text-center py-10 rounded-2xl bg-surface-container">
               <div className="text-4xl mb-3">🦾</div>
-              <p className="font-medium mb-1" style={{ color: "#3d4a5c" }}>Aucune prothèse enregistrée</p>
-              <p className="text-sm" style={{ color: "#8892a4" }}>
+              <p className="font-medium mb-1 text-on-surface">Aucune prothèse enregistrée</p>
+              <p className="text-sm text-on-surface-variant">
                 Cliquez sur « Ajouter une prothèse » pour commencer.
               </p>
             </div>
@@ -767,8 +773,7 @@ export default function FichePatientPage() {
             <div className="mt-4">
               <button
                 onClick={() => setShowInactive(v => !v)}
-                className="flex items-center gap-2 text-sm font-medium"
-                style={{ color: "#8892a4" }}>
+                className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
                 {showInactive ? <EyeOff size={16} /> : <Eye size={16} />}
                 {showInactive ? "Masquer" : "Afficher"} l'historique ({inactiveProtheses.length} archivée{inactiveProtheses.length > 1 ? "s" : ""})
               </button>
@@ -778,7 +783,7 @@ export default function FichePatientPage() {
                   prothese={p}
                   onDeactivate={handleDeactivateProthese}
                   onAddComposant={(pid) => setAddComposantFor(pid)}
-              onDeleteComposant={handleDeleteComposant}
+                  onDeleteComposant={handleDeleteComposant}
                 />
               ))}
             </div>
@@ -786,59 +791,66 @@ export default function FichePatientPage() {
         </section>
 
         {/* SECTION 4 — Suivi médical */}
-        <section className="stumpr-card mb-6 animate-fade-in" data-testid="section-suivi">
-          <h3 className="section-header">Suivi médical</h3>
+        <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-suivi">
+          <h3 className="font-headline font-bold text-lg text-on-surface mb-4">Suivi médical</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="stumpr-label" htmlFor="ortho_referent">Orthoprothésiste référent</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="ortho_referent">Orthoprothésiste référent</label>
               <input type="text" id="ortho_referent" name="ortho_referent" data-testid="input-ortho-referent"
-                className="stumpr-input" placeholder="Nom de l'orthoprothésiste"
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                placeholder="Nom de l'orthoprothésiste"
                 value={formData.ortho_referent} onChange={handleChange} />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="cabinet_centre">Cabinet / Centre</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="cabinet_centre">Cabinet / Centre</label>
               <input type="text" id="cabinet_centre" name="cabinet_centre" data-testid="input-cabinet"
-                className="stumpr-input" placeholder="Nom du cabinet ou centre"
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                placeholder="Nom du cabinet ou centre"
                 value={formData.cabinet_centre} onChange={handleChange} />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="telephone_ortho">Téléphone ortho</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="telephone_ortho">Téléphone ortho</label>
               <input type="tel" id="telephone_ortho" name="telephone_ortho" data-testid="input-tel-ortho"
-                className="stumpr-input" placeholder="01 XX XX XX XX"
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                placeholder="01 XX XX XX XX"
                 value={formData.telephone_ortho} onChange={handleChange} />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="medecin_prescripteur">Médecin prescripteur</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="medecin_prescripteur">Médecin prescripteur</label>
               <input type="text" id="medecin_prescripteur" name="medecin_prescripteur" data-testid="input-medecin"
-                className="stumpr-input" placeholder="Nom du médecin"
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                placeholder="Nom du médecin"
                 value={formData.medecin_prescripteur} onChange={handleChange} />
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="specialite_prescripteur">Spécialité prescripteur</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="specialite_prescripteur">Spécialité prescripteur</label>
               <select id="specialite_prescripteur" name="specialite_prescripteur" data-testid="select-specialite"
-                className="stumpr-select" value={formData.specialite_prescripteur} onChange={handleChange}>
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
+                value={formData.specialite_prescripteur} onChange={handleChange}>
                 <option value="">Sélectionner...</option>
                 {SPECIALITES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
-              <label className="stumpr-label" htmlFor="prochain_rdv">Prochain rendez-vous</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="prochain_rdv">Prochain rendez-vous</label>
               <input type="date" id="prochain_rdv" name="prochain_rdv" data-testid="input-prochain-rdv"
-                className="stumpr-input" value={formData.prochain_rdv} onChange={handleChange} />
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30"
+                value={formData.prochain_rdv} onChange={handleChange} />
             </div>
             <div className="md:col-span-2">
-              <label className="stumpr-label" htmlFor="notes_medicales">Notes médicales générales</label>
+              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="notes_medicales">Notes médicales générales</label>
               <textarea id="notes_medicales" name="notes_medicales" data-testid="textarea-notes-medicales"
-                className="stumpr-input" rows={3} placeholder="Autres informations médicales importantes..."
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
+                rows={3} placeholder="Autres informations médicales importantes..."
                 value={formData.notes_medicales} onChange={handleChange} />
             </div>
           </div>
         </section>
 
         {/* SECTION 5 — Activités quotidiennes */}
-        <section className="stumpr-card mb-6 animate-fade-in" data-testid="section-activites">
-          <h3 className="section-header">Activités quotidiennes</h3>
-          <p className="mb-5" style={{ color: "#3d4a5c" }}>
+        <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-activites">
+          <h3 className="font-headline font-bold text-lg text-on-surface mb-4">Activités quotidiennes</h3>
+          <p className="mb-5 text-on-surface-variant">
             Sélectionnez les activités que vous pratiquez régulièrement
           </p>
           <div className="activity-grid">
@@ -860,14 +872,14 @@ export default function FichePatientPage() {
 
         {/* Share URL */}
         {shareUrl && (
-          <div className="stumpr-card mb-6 animate-fade-in" style={{ backgroundColor: "#e8f5f4" }}>
+          <div className="bg-secondary-container/40 rounded-2xl p-6 shadow-sm animate-fade-in">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-semibold mb-1" style={{ color: "#0e6b63" }}>Lien de partage créé</h4>
-                <p className="text-sm break-all" style={{ color: "#3d4a5c" }}>{shareUrl}</p>
-                <p className="text-xs mt-1" style={{ color: "#8892a4" }}>Valide pendant 30 jours</p>
+                <h4 className="font-semibold mb-1 text-secondary">Lien de partage créé</h4>
+                <p className="text-sm break-all text-on-surface">{shareUrl}</p>
+                <p className="text-xs mt-1 text-on-surface-variant">Valide pendant 30 jours</p>
               </div>
-              <button onClick={() => setShareUrl(null)} className="p-2 hover:bg-white/50 rounded-lg" style={{ color: "#0e6b63" }}>
+              <button onClick={() => setShareUrl(null)} className="p-2 hover:bg-surface-container/50 rounded-xl text-secondary">
                 <X size={20} />
               </button>
             </div>
@@ -877,16 +889,16 @@ export default function FichePatientPage() {
         {/* Action buttons */}
         <div className="flex flex-wrap gap-4 justify-center pb-8">
           <button onClick={handleSave} disabled={saving}
-            className="stumpr-btn-primary flex items-center gap-2" data-testid="save-btn">
+            className="bg-primary text-on-primary rounded-xl px-6 py-3 font-bold hover:opacity-90 flex items-center gap-2" data-testid="save-btn">
             {saving ? <div className="spinner" /> : <Save size={18} />}
             Enregistrer ma fiche
           </button>
           <button onClick={handleExportPDF}
-            className="stumpr-btn-outline flex items-center gap-2" data-testid="export-pdf-btn">
+            className="bg-surface-container text-on-surface rounded-xl px-6 py-3 font-bold flex items-center gap-2" data-testid="export-pdf-btn">
             <FileDown size={18} /> Exporter PDF
           </button>
           <button onClick={handleShare} disabled={shareLoading}
-            className="stumpr-btn-outline flex items-center gap-2" data-testid="share-btn">
+            className="bg-surface-container text-on-surface rounded-xl px-6 py-3 font-bold flex items-center gap-2" data-testid="share-btn">
             {shareLoading ? <div className="spinner" /> : <Share2 size={18} />}
             Partager
           </button>
