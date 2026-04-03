@@ -1,7 +1,35 @@
+@import './styles/theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Global resets (design system) ─────────────────────────────────── */
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: #f6fafe;
+  color: #171c1f;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Touch targets minimum 48px pour accessibilité */
+button, a, input, select {
+  min-height: 48px;
+}
+
+/* No-line rule : pas de borders 1px solid pour délimiter les sections */
+/* Les séparations se font par background-color uniquement */
+
+/* Ghost border fallback si nécessaire */
+.ghost-border {
+  border: 1px solid rgba(194, 198, 209, 0.15);
+}
+
+/* ── Legacy body (conservé pour safe-area iPhone) ───────────────────── */
 body {
     margin: 0;
     font-family: "DM Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
