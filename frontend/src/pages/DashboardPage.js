@@ -48,27 +48,21 @@ const ACTIVITY_LABELS = {
 };
 
 // Stat card component
-const StatCard = ({ icon: Icon, label, value, subValue, color, bgColor }) => (
-  <div
-    className="p-5 rounded-2xl border"
-    style={{ backgroundColor: bgColor, borderColor: "#e2e6ed" }}
-  >
+const StatCard = ({ icon: Icon, label, value, subValue, color }) => (
+  <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
     <div className="flex items-center gap-3 mb-2">
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center"
-        style={{ backgroundColor: `${color}20` }}
-      >
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-secondary/10">
         <Icon size={20} style={{ color }} />
       </div>
-      <span className="text-sm font-medium" style={{ color: "#8892a4" }}>
+      <span className="text-sm font-medium text-on-surface-variant">
         {label}
       </span>
     </div>
-    <p className="text-2xl font-bold" style={{ color: "#1a1f2e" }}>
+    <p className="text-2xl font-bold font-headline text-on-surface">
       {value}
     </p>
     {subValue && (
-      <p className="text-xs mt-1" style={{ color: "#8892a4" }}>
+      <p className="text-xs text-on-surface-variant mt-1">
         {subValue}
       </p>
     )}
@@ -77,17 +71,16 @@ const StatCard = ({ icon: Icon, label, value, subValue, color, bgColor }) => (
 
 // Period selector tabs
 const PeriodTabs = ({ selected, onChange }) => (
-  <div className="flex gap-2 p-1 rounded-xl" style={{ backgroundColor: "#f8f9fc" }}>
+  <div className="bg-surface-container rounded-xl p-1 flex gap-1">
     {[7, 14, 30].map((days) => (
       <button
         key={days}
         onClick={() => onChange(days)}
-        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+        className={
           selected === days
-            ? "bg-white shadow-sm"
-            : "hover:bg-white/50"
-        }`}
-        style={{ color: selected === days ? "#1d7a72" : "#8892a4" }}
+            ? "bg-surface-container-lowest shadow-sm text-secondary font-bold rounded-lg px-4 py-2 text-sm"
+            : "text-on-surface-variant hover:bg-surface-container-lowest rounded-lg px-4 py-2 text-sm"
+        }
         data-testid={`period-${days}j`}
       >
         {days}j
@@ -120,7 +113,7 @@ export default function DashboardPage() {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
-      
+
       setStats(statsRes.data);
       setEntries(entriesRes.data);
     } catch (error) {
@@ -305,40 +298,38 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#f8f9fc" }}>
+      <div className="min-h-screen bg-surface flex items-center justify-center">
         <div className="text-center">
-          <div
-            className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4"
-            style={{ borderColor: "#e2e6ed", borderTopColor: "#1d7a72" }}
-          />
-          <p style={{ color: "#8892a4" }}>Chargement...</p>
+          <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4 border-secondary border-t-transparent" />
+          <p className="text-on-surface-variant">Chargement...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f8f9fc" }}>
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="bg-white border-b border-[#e2e6ed] px-6 py-4 sticky top-0 z-50">
+      <header
+        className="border-b border-outline-variant/10 px-6 py-4 sticky top-0 z-50"
+        style={{ backgroundColor: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)' }}
+      >
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate("/fiche-patient")}
-              className="p-2 rounded-lg hover:bg-[#f8f9fc] transition-colors"
-              style={{ color: "#3d4a5c" }}
+              className="text-on-surface-variant hover:bg-surface-container rounded-xl p-2"
             >
               <ArrowLeft size={20} />
             </button>
-            <h1 className="text-xl font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1d7a72" }}>
+            <h1 className="font-headline font-bold text-xl text-primary">
               Tableau de bord
             </h1>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate("/rapport")}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium"
-              style={{ backgroundColor: "#e6f3f2", color: "#0e6b63" }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-secondary/10 text-secondary"
               data-testid="nav-rapport"
             >
               <Sparkles size={16} />
@@ -346,8 +337,8 @@ export default function DashboardPage() {
             </button>
             <button
               onClick={() => navigate("/journal")}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-white"
-              style={{ backgroundColor: "#1d7a72" }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium"
+              style={{ backgroundColor: '#006a63', color: '#fff' }}
               data-testid="nav-journal"
             >
               <Plus size={18} />
@@ -361,7 +352,7 @@ export default function DashboardPage() {
       <main className="max-w-4xl mx-auto p-6">
         {/* Period selector */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold" style={{ color: "#1a1f2e" }}>
+          <h2 className="font-headline font-bold text-lg text-on-surface">
             Période d'analyse
           </h2>
           <PeriodTabs selected={period} onChange={setPeriod} />
@@ -375,7 +366,6 @@ export default function DashboardPage() {
             value={`${stats?.avg_pain_composants || 0}/10`}
             subValue={`Fantôme: ${stats?.avg_fantome || 0}/10`}
             color="#1d7a72"
-            bgColor="white"
           />
           <StatCard
             icon={Calendar}
@@ -383,7 +373,6 @@ export default function DashboardPage() {
             value={`${stats?.active_days || 0}/${stats?.total_days || period}`}
             subValue={`${Math.round((stats?.active_days / stats?.total_days) * 100) || 0}% d'activité`}
             color="#e08c2a"
-            bgColor="white"
           />
           <StatCard
             icon={AlertTriangle}
@@ -391,19 +380,18 @@ export default function DashboardPage() {
             value={stats?.alerts_count || 0}
             subValue="Score ≥ 7"
             color={stats?.alerts_count > 0 ? "#d64545" : "#2d9e6b"}
-            bgColor="white"
           />
         </div>
 
         {entries.length === 0 ? (
-          <div className="stumpr-card text-center py-12">
-            <p className="text-lg mb-4" style={{ color: "#8892a4" }}>
+          <div className="bg-surface-container-lowest rounded-3xl p-12 text-center shadow-sm">
+            <p className="text-on-surface-variant text-lg mb-4">
               Aucune entrée de journal sur cette période
             </p>
             <button
               onClick={() => navigate("/journal")}
-              className="px-6 py-3 rounded-xl font-medium text-white"
-              style={{ backgroundColor: "#1d7a72" }}
+              className="rounded-xl px-6 py-3 font-bold"
+              style={{ backgroundColor: '#006a63', color: '#fff' }}
             >
               Créer ma première entrée
             </button>
@@ -411,9 +399,9 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* Pain chart */}
-            <section className="stumpr-card mb-6" data-testid="chart-douleurs">
-              <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
-                📈 Évolution des douleurs
+            <section className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm mb-6" data-testid="chart-douleurs">
+              <h3 className="font-headline font-bold text-lg text-on-surface mb-4">
+                Évolution des douleurs
               </h3>
               <div style={{ height: "300px" }}>
                 <Line data={painChartData} options={painChartOptions} />
@@ -421,9 +409,9 @@ export default function DashboardPage() {
             </section>
 
             {/* Wellbeing chart */}
-            <section className="stumpr-card mb-6" data-testid="chart-bienetre">
-              <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
-                💪 Évolution du bien-être
+            <section className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm mb-6" data-testid="chart-bienetre">
+              <h3 className="font-headline font-bold text-lg text-on-surface mb-4">
+                Évolution du bien-être
               </h3>
               <div style={{ height: "300px" }}>
                 <Line data={wellbeingChartData} options={wellbeingChartOptions} />
@@ -432,9 +420,9 @@ export default function DashboardPage() {
 
             {/* Activities chart */}
             {Object.keys(activityCounts).length > 0 && (
-              <section className="stumpr-card mb-6" data-testid="chart-activites">
-                <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
-                  🏃 Activités réalisées
+              <section className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm mb-6" data-testid="chart-activites">
+                <h3 className="font-headline font-bold text-lg text-on-surface mb-4">
+                  Activités réalisées
                 </h3>
                 <div style={{ height: `${Math.max(200, Object.keys(activityCounts).length * 40)}px` }}>
                   <Bar data={activityChartData} options={activityChartOptions} />
@@ -443,9 +431,9 @@ export default function DashboardPage() {
             )}
 
             {/* Recent entries */}
-            <section className="stumpr-card" data-testid="historique">
-              <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
-                📋 Historique récent
+            <section className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm mb-6" data-testid="historique">
+              <h3 className="font-headline font-bold text-lg text-on-surface mb-4">
+                Historique récent
               </h3>
               <div className="space-y-3">
                 {entries.slice(0, 7).map((entry) => {
@@ -453,24 +441,23 @@ export default function DashboardPage() {
                     ? entry.douleurs.composants.reduce((sum, c) => sum + c.score, 0) / entry.douleurs.composants.length
                     : 0;
                   const painBadge = getPainBadge(Math.max(avgPain, entry.douleurs?.fantome || 0));
-                  
+
                   return (
                     <div
                       key={entry.id}
-                      className="flex items-center justify-between p-4 rounded-xl border"
-                      style={{ borderColor: "#e2e6ed" }}
+                      className="flex items-center justify-between bg-surface-container-low rounded-xl p-4"
                     >
                       <div>
-                        <p className="font-medium text-sm" style={{ color: "#1a1f2e" }}>
+                        <p className="text-sm font-medium text-on-surface">
                           {formatDate(entry.created_at)}
                         </p>
-                        <p className="text-xs mt-1" style={{ color: "#8892a4" }}>
+                        <p className="text-xs text-on-surface-variant mt-1">
                           {entry.activites?.map((a) => ACTIVITY_LABELS[a]?.split(" ")[0] || "").join(" ") || "Aucune activité"}
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
                         <span
-                          className="text-xs font-semibold px-3 py-1 rounded-full"
+                          className="rounded-full px-3 py-1 text-xs font-bold"
                           style={{ backgroundColor: painBadge.bg, color: painBadge.color }}
                         >
                           Douleur: {Math.round(avgPain)}/10
