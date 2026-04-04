@@ -49,110 +49,109 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f5f0e8' }}>
-      {/* White header with logo */}
-      <header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e0d9cf', padding: '16px 24px' }}>
+    <div className="min-h-screen bg-surface flex flex-col">
+      {/* Header */}
+      <header
+        className="border-b border-outline-variant/10 px-6 py-4"
+        style={{ backgroundColor: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)' }}
+      >
         <StumprLogo size={22} />
       </header>
 
+      {/* Central zone */}
       <div className="flex-1 flex items-center justify-center p-6">
-      <div className="w-full max-w-md animate-fade-in">
-        {/* Subtitle */}
-        <div className="text-center mb-8">
-          <p className="text-lg font-medium" style={{ color: '#3d4a5c' }}>
+        <div className="w-full max-w-md animate-fade-in">
+
+          {/* Tagline */}
+          <p className="font-headline text-center text-on-surface-variant mb-8 text-lg">
             Vos droits, vos besoins, enfin clairs.
           </p>
-        </div>
 
-        {/* Login Card */}
-        <div className="stumpr-card">
-          <h2
-            className="text-2xl mb-6 text-center"
-            style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', fontWeight: 700, color: '#1a1f2e' }}
-          >
-            Connexion
-          </h2>
+          {/* Login Card */}
+          <div className="bg-surface-container-lowest rounded-3xl p-8 shadow-sm w-full max-w-md">
+            <h2 className="font-headline font-bold text-2xl text-on-surface text-center mb-6">
+              Connexion
+            </h2>
 
-          <form onSubmit={handleSubmit}>
-            {/* Email */}
-            <div className="mb-5">
-              <label className="stumpr-label" htmlFor="email">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                data-testid="login-email-input"
-                className="stumpr-input"
-                placeholder="votre@email.com"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            {/* Password */}
-            <div className="mb-6">
-              <label className="stumpr-label" htmlFor="password">
-                Mot de passe
-              </label>
-              <div className="relative">
+            <form onSubmit={handleSubmit}>
+              {/* Email */}
+              <div className="mb-5">
+                <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="email">
+                  Email
+                </label>
                 <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  data-testid="login-password-input"
-                  className="stumpr-input pr-12"
-                  placeholder="••••••••"
-                  value={formData.password}
+                  type="email"
+                  id="email"
+                  name="email"
+                  data-testid="login-email-input"
+                  className="w-full bg-surface-container rounded-xl px-4 py-3 border-none outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline"
+                  placeholder="votre@email.com"
+                  value={formData.email}
                   onChange={handleChange}
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
-                  style={{ color: '#8892a4' }}
-                  data-testid="toggle-password-visibility"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
               </div>
-            </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              data-testid="login-submit-btn"
-              className="stumpr-btn-primary w-full flex items-center justify-center gap-2"
-              disabled={loading}
-            >
-              {loading ? (
-                <div className="spinner" />
-              ) : (
-                <>
-                  <LogIn size={18} />
-                  Se connecter
-                </>
-              )}
-            </button>
-          </form>
+              {/* Password */}
+              <div className="mb-6">
+                <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="password">
+                  Mot de passe
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    data-testid="login-password-input"
+                    className="w-full bg-surface-container rounded-xl px-4 py-3 border-none outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline pr-12"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-on-surface-variant"
+                    data-testid="toggle-password-visibility"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
 
-          {/* Register Link */}
-          <p className="text-center mt-6" style={{ color: '#3d4a5c' }}>
-            Pas encore de compte ?{" "}
-            <Link
-              to="/register"
-              data-testid="register-link"
-              className="font-semibold hover:underline"
-              style={{ color: '#1d7a72' }}
-            >
-              Créer un compte
-            </Link>
-          </p>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                data-testid="login-submit-btn"
+                className="w-full bg-primary text-white rounded-xl py-4 font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: '#00386c', color: '#ffffff' }}
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="spinner" />
+                ) : (
+                  <>
+                    <LogIn size={18} />
+                    Se connecter
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Register Link */}
+            <p className="text-center mt-6 text-on-surface-variant">
+              Pas encore de compte ?{" "}
+              <Link
+                to="/register"
+                data-testid="register-link"
+                className="text-secondary font-semibold hover:underline"
+              >
+                Créer un compte
+              </Link>
+            </p>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );
