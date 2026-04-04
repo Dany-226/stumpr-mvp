@@ -17,6 +17,9 @@ import {
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const TOTAL_STEPS = 3;
 
+const INPUT_CLS = "w-full bg-surface-container rounded-xl px-4 py-3 border-none outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline";
+const LABEL_CLS = "text-sm font-medium text-on-surface-variant mb-1 block";
+
 // ── Stepper indicator ──────────────────────────────────────────────────────
 function StepIndicator({ current }) {
   return (
@@ -25,8 +28,8 @@ function StepIndicator({ current }) {
         <div key={n} style={{ display: "flex", alignItems: "center" }}>
           <div style={{
             width: 32, height: 32, borderRadius: "50%",
-            backgroundColor: n <= current ? "#0e6b63" : "#e0d9cf",
-            color: n <= current ? "#fff" : "#8892a4",
+            backgroundColor: n <= current ? "#006a63" : "#eaeef2",
+            color: n <= current ? "#fff" : "#737781",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontWeight: 700, fontSize: 14,
             transition: "background-color 0.2s",
@@ -36,7 +39,7 @@ function StepIndicator({ current }) {
           {i < 2 && (
             <div style={{
               width: 48, height: 2,
-              backgroundColor: n < current ? "#0e6b63" : "#e0d9cf",
+              backgroundColor: n < current ? "#006a63" : "#eaeef2",
               transition: "background-color 0.2s",
             }} />
           )}
@@ -52,52 +55,52 @@ function StepProfil({ data, onChange, errors }) {
 
   return (
     <div>
-      <h2 style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', fontWeight: 700, fontSize: 20, color: "#1a1f2e", marginBottom: 4 }}>
+      <h2 className="font-headline font-bold text-xl text-on-surface mb-1">
         Mon profil
       </h2>
-      <p style={{ color: "#8892a4", fontSize: 14, marginBottom: 24 }}>
+      <p className="text-sm text-on-surface-variant mb-6">
         Ces informations permettent de personnaliser vos droits de remboursement.
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+      <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
-          <label className="stumpr-label">Prénom *</label>
+          <label className={LABEL_CLS}>Prénom *</label>
           <input
-            className={`stumpr-input${errors.prenom ? " border-red-400" : ""}`}
+            className={INPUT_CLS}
             value={data.prenom}
             onChange={(e) => onChange("prenom", e.target.value)}
             placeholder="Jean"
           />
-          {errors.prenom && <p style={{ color: "#e53e3e", fontSize: 12, marginTop: 4 }}>{errors.prenom}</p>}
+          {errors.prenom && <p className="text-error text-xs mt-1">{errors.prenom}</p>}
         </div>
         <div>
-          <label className="stumpr-label">Nom *</label>
+          <label className={LABEL_CLS}>Nom *</label>
           <input
-            className={`stumpr-input${errors.nom ? " border-red-400" : ""}`}
+            className={INPUT_CLS}
             value={data.nom}
             onChange={(e) => onChange("nom", e.target.value)}
             placeholder="Dupont"
           />
-          {errors.nom && <p style={{ color: "#e53e3e", fontSize: 12, marginTop: 4 }}>{errors.nom}</p>}
+          {errors.nom && <p className="text-error text-xs mt-1">{errors.nom}</p>}
         </div>
       </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <label className="stumpr-label">Email *</label>
+      <div className="mb-3">
+        <label className={LABEL_CLS}>Email *</label>
         <input
-          className="stumpr-input"
+          className={INPUT_CLS}
           type="email"
           value={data.email || user.email || ""}
           onChange={(e) => onChange("email", e.target.value)}
           placeholder="votre@email.com"
         />
-        {errors.email && <p style={{ color: "#e53e3e", fontSize: 12, marginTop: 4 }}>{errors.email}</p>}
+        {errors.email && <p className="text-error text-xs mt-1">{errors.email}</p>}
       </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <label className="stumpr-label">Téléphone</label>
+      <div className="mb-3">
+        <label className={LABEL_CLS}>Téléphone</label>
         <input
-          className="stumpr-input"
+          className={INPUT_CLS}
           type="tel"
           value={data.telephone}
           onChange={(e) => onChange("telephone", e.target.value)}
@@ -105,20 +108,20 @@ function StepProfil({ data, onChange, errors }) {
         />
       </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <label className="stumpr-label">Date de naissance</label>
+      <div className="mb-3">
+        <label className={LABEL_CLS}>Date de naissance</label>
         <input
-          className="stumpr-input"
+          className={INPUT_CLS}
           type="date"
           value={data.date_naissance}
           onChange={(e) => onChange("date_naissance", e.target.value)}
         />
       </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <label className="stumpr-label">Niveau d'amputation *</label>
+      <div className="mb-3">
+        <label className={LABEL_CLS}>Niveau d'amputation *</label>
         <select
-          className={`stumpr-select${errors.niveau_amputation ? " border-red-400" : ""}`}
+          className={INPUT_CLS + " cursor-pointer"}
           value={data.niveau_amputation}
           onChange={(e) => onChange("niveau_amputation", e.target.value)}
         >
@@ -127,14 +130,14 @@ function StepProfil({ data, onChange, errors }) {
             <option key={n} value={n}>{n}</option>
           ))}
         </select>
-        {errors.niveau_amputation && <p style={{ color: "#e53e3e", fontSize: 12, marginTop: 4 }}>{errors.niveau_amputation}</p>}
+        {errors.niveau_amputation && <p className="text-error text-xs mt-1">{errors.niveau_amputation}</p>}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+      <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
-          <label className="stumpr-label">Côté</label>
+          <label className={LABEL_CLS}>Côté</label>
           <select
-            className="stumpr-select"
+            className={INPUT_CLS + " cursor-pointer"}
             value={data.cote}
             onChange={(e) => onChange("cote", e.target.value)}
           >
@@ -143,9 +146,9 @@ function StepProfil({ data, onChange, errors }) {
           </select>
         </div>
         <div>
-          <label className="stumpr-label">Cause</label>
+          <label className={LABEL_CLS}>Cause</label>
           <select
-            className="stumpr-select"
+            className={INPUT_CLS + " cursor-pointer"}
             value={data.cause}
             onChange={(e) => onChange("cause", e.target.value)}
           >
@@ -155,20 +158,20 @@ function StepProfil({ data, onChange, errors }) {
         </div>
       </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <label className="stumpr-label">Date d'amputation</label>
+      <div className="mb-3">
+        <label className={LABEL_CLS}>Date d'amputation</label>
         <input
-          className="stumpr-input"
+          className={INPUT_CLS}
           type="date"
           value={data.date_amputation}
           onChange={(e) => onChange("date_amputation", e.target.value)}
         />
       </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <label className="stumpr-label">Niveau d'activité</label>
+      <div className="mb-3">
+        <label className={LABEL_CLS}>Niveau d'activité</label>
         <select
-          className="stumpr-select"
+          className={INPUT_CLS + " cursor-pointer"}
           value={data.niveau_activite}
           onChange={(e) => onChange("niveau_activite", e.target.value)}
         >
@@ -184,30 +187,38 @@ function StepProfil({ data, onChange, errors }) {
 function StepProthese({ data, onChange }) {
   return (
     <div>
-      <h2 style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', fontWeight: 700, fontSize: 20, color: "#1a1f2e", marginBottom: 4 }}>
+      <h2 className="font-headline font-bold text-xl text-on-surface mb-1">
         Ma prothèse principale
       </h2>
-      <p style={{ color: "#8892a4", fontSize: 14, marginBottom: 24 }}>
+      <p className="text-sm text-on-surface-variant mb-6">
         Vous pourrez en ajouter d'autres dans votre fiche patient.
       </p>
 
-      <label className="stumpr-label">Type de prothèse</label>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-        {Object.entries(PROTHESE_TYPES).map(([key, { label, bg, text }]) => (
+      <label className={LABEL_CLS}>Type de prothèse</label>
+      <div className="grid grid-cols-2 gap-3 mb-5">
+        {Object.entries(PROTHESE_TYPES).map(([key, { label }]) => (
           <button
             key={key}
             type="button"
             onClick={() => onChange("type", key)}
-            style={{
-              padding: "12px 8px",
+            style={data.type === key ? {
+              backgroundColor: 'rgba(0,106,99,0.1)',
+              border: '2px solid #006a63',
               borderRadius: 12,
-              border: `2px solid ${data.type === key ? text : "#e0d9cf"}`,
-              backgroundColor: data.type === key ? bg : "#fff",
-              color: data.type === key ? text : "#3d4a5c",
-              fontWeight: data.type === key ? 700 : 500,
+              padding: '12px 8px',
+              color: '#006a63',
+              fontWeight: 700,
               fontSize: 14,
-              cursor: "pointer",
-              transition: "all 0.15s",
+              cursor: 'pointer',
+            } : {
+              backgroundColor: '#ffffff',
+              border: '2px solid #e4e9ed',
+              borderRadius: 12,
+              padding: '12px 8px',
+              color: '#424750',
+              fontWeight: 500,
+              fontSize: 14,
+              cursor: 'pointer',
             }}
           >
             {label}
@@ -215,22 +226,21 @@ function StepProthese({ data, onChange }) {
         ))}
       </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <label className="stumpr-label">Date d'attribution</label>
+      <div className="mb-3">
+        <label className={LABEL_CLS}>Date d'attribution</label>
         <input
-          className="stumpr-input"
+          className={INPUT_CLS}
           type="date"
           value={data.date_attribution}
           onChange={(e) => onChange("date_attribution", e.target.value)}
         />
       </div>
 
-      <div style={{ marginBottom: 12 }}>
-        <label className="stumpr-label">Notes (optionnel)</label>
+      <div className="mb-3">
+        <label className={LABEL_CLS}>Notes (optionnel)</label>
         <textarea
-          className="stumpr-input"
+          className={INPUT_CLS + " resize-y"}
           rows={3}
-          style={{ resize: "vertical" }}
           value={data.notes}
           onChange={(e) => onChange("notes", e.target.value)}
           placeholder="Marque, modèle, remarques..."
@@ -244,18 +254,17 @@ function StepProthese({ data, onChange }) {
 function StepComposants({ composants, onAdd, onRemove, onUpdate }) {
   return (
     <div>
-      <h2 style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', fontWeight: 700, fontSize: 20, color: "#1a1f2e", marginBottom: 4 }}>
+      <h2 className="font-headline font-bold text-xl text-on-surface mb-1">
         Composants
       </h2>
-      <p style={{ color: "#8892a4", fontSize: 14, marginBottom: 24 }}>
+      <p className="text-sm text-on-surface-variant mb-6">
         Ajoutez les composants de votre prothèse (emboîture, pied, manchon…).
       </p>
 
       {composants.length === 0 && (
         <button
           type="button"
-          className="stumpr-btn-outline w-full"
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+          className="w-full bg-surface-container text-on-surface rounded-xl py-3 font-bold flex items-center justify-center gap-2 border-none"
           onClick={onAdd}
         >
           <Plus size={16} />
@@ -264,24 +273,21 @@ function StepComposants({ composants, onAdd, onRemove, onUpdate }) {
       )}
 
       {composants.map((comp, idx) => (
-        <div key={comp._id} style={{ marginBottom: 8 }}>
-          <div className="component-card" style={{ position: "relative", overflow: "visible" }}>
+        <div key={comp._id} className="mb-2">
+          <div className="bg-surface-container-low rounded-2xl p-5 mb-3 relative overflow-visible">
             <button
               type="button"
               onClick={() => onRemove(idx)}
-              style={{
-                position: "absolute", top: 12, right: 12,
-                background: "none", border: "none", cursor: "pointer",
-                color: "#e53e3e", padding: 4,
-              }}
+              className="absolute top-3 right-3 p-1 text-tertiary hover:bg-tertiary/10 rounded-lg"
+              style={{ background: "none", border: "none", cursor: "pointer" }}
             >
               <Trash2 size={16} />
             </button>
 
-            <div style={{ marginBottom: 10 }}>
-              <label className="stumpr-label">Type de composant</label>
+            <div className="mb-3">
+              <label className={LABEL_CLS}>Type de composant</label>
               <select
-                className="stumpr-select"
+                className={INPUT_CLS + " cursor-pointer"}
                 value={comp.type}
                 onChange={(e) => onUpdate(idx, "type", e.target.value)}
               >
@@ -292,10 +298,10 @@ function StepComposants({ composants, onAdd, onRemove, onUpdate }) {
               </select>
             </div>
 
-            <div style={{ marginBottom: 10 }}>
-              <label className="stumpr-label">Marque / Modèle</label>
+            <div className="mb-3">
+              <label className={LABEL_CLS}>Marque / Modèle</label>
               <input
-                className="stumpr-input"
+                className={INPUT_CLS}
                 value={comp.marque}
                 onChange={(e) => onUpdate(idx, "marque", e.target.value)}
                 placeholder="Ex: Ottobock, Össur..."
@@ -313,18 +319,15 @@ function StepComposants({ composants, onAdd, onRemove, onUpdate }) {
             />
 
             {comp.lppr_code && (
-              <div style={{
-                padding: "8px 12px", borderRadius: 8, backgroundColor: "#e6f3f2",
-                fontSize: 13, color: "#0e6b63", marginBottom: 10,
-              }}>
+              <div className="bg-secondary/10 text-secondary rounded-xl px-3 py-2 text-sm mb-3">
                 [{comp.lppr_code}] {comp.lppr_label}
               </div>
             )}
 
             <div>
-              <label className="stumpr-label">Date d'attribution</label>
+              <label className={LABEL_CLS}>Date d'attribution</label>
               <input
-                className="stumpr-input"
+                className={INPUT_CLS}
                 type="date"
                 value={comp.date_attribution}
                 onChange={(e) => onUpdate(idx, "date_attribution", e.target.value)}
@@ -334,8 +337,7 @@ function StepComposants({ composants, onAdd, onRemove, onUpdate }) {
 
           <button
             type="button"
-            className="stumpr-btn-outline w-full"
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 8 }}
+            className="w-full bg-surface-container text-on-surface rounded-xl py-3 font-bold flex items-center justify-center gap-2 border-none mt-2"
             onClick={onAdd}
           >
             <Plus size={16} />
@@ -463,22 +465,28 @@ export default function OnboardingPage() {
   const isLastStep = step === TOTAL_STEPS;
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#f5f0e8" }}>
+    <div className="min-h-screen bg-surface flex flex-col">
       {/* Header */}
-      <header style={{ backgroundColor: "#ffffff", borderBottom: "1px solid #e0d9cf", padding: "16px 24px" }}>
+      <header
+        className="border-b border-outline-variant/10 px-6 py-4"
+        style={{ backgroundColor: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)' }}
+      >
         <StumprLogo size={22} />
       </header>
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 20px" }}>
-        <div style={{ width: "100%", maxWidth: 480 }}>
+      {/* Central zone */}
+      <div className="flex-1 flex flex-col items-center px-5 py-8">
+        <div className="w-full max-w-lg">
+
           {/* Progress label */}
-          <p style={{ textAlign: "center", fontSize: 13, color: "#8892a4", marginBottom: 12 }}>
+          <p className="text-center text-sm text-on-surface-variant mb-3">
             Étape {step} sur {TOTAL_STEPS}
           </p>
 
           <StepIndicator current={step} />
 
-          <div className="stumpr-card" style={{ padding: 28 }}>
+          {/* Main card */}
+          <div className="bg-surface-container-lowest rounded-3xl p-8 shadow-sm">
             {step === 1 && (
               <StepProfil
                 data={profil}
@@ -495,19 +503,16 @@ export default function OnboardingPage() {
                     onChange={(field, value) => setProthese((p) => ({ ...p, [field]: value }))}
                   />
                 ) : (
-                  <div style={{ textAlign: "center", padding: "32px 0", color: "#8892a4" }}>
-                    <p style={{ fontSize: 16, marginBottom: 8 }}>Prothèse ignorée</p>
-                    <p style={{ fontSize: 13 }}>Vous pourrez l'ajouter depuis votre fiche patient.</p>
+                  <div className="text-center py-8 text-on-surface-variant">
+                    <p className="text-base mb-2">Prothèse ignorée</p>
+                    <p className="text-sm">Vous pourrez l'ajouter depuis votre fiche patient.</p>
                   </div>
                 )}
                 <button
                   type="button"
                   onClick={() => setSkipProthese((v) => !v)}
-                  style={{
-                    background: "none", border: "none", cursor: "pointer",
-                    color: "#8892a4", fontSize: 13, textDecoration: "underline",
-                    marginTop: 8, display: "block", width: "100%", textAlign: "center",
-                  }}
+                  className="text-sm text-on-surface-variant underline mt-2 block w-full text-center"
+                  style={{ background: "none", border: "none", cursor: "pointer" }}
                 >
                   {skipProthese ? "Renseigner ma prothèse" : "Je renseignerai plus tard"}
                 </button>
@@ -524,19 +529,16 @@ export default function OnboardingPage() {
                     onUpdate={updateComposant}
                   />
                 ) : (
-                  <div style={{ textAlign: "center", padding: "32px 0", color: "#8892a4" }}>
-                    <p style={{ fontSize: 16, marginBottom: 8 }}>Composants ignorés</p>
-                    <p style={{ fontSize: 13 }}>Vous pourrez les ajouter depuis votre fiche patient.</p>
+                  <div className="text-center py-8 text-on-surface-variant">
+                    <p className="text-base mb-2">Composants ignorés</p>
+                    <p className="text-sm">Vous pourrez les ajouter depuis votre fiche patient.</p>
                   </div>
                 )}
                 <button
                   type="button"
                   onClick={() => setSkipComposants((v) => !v)}
-                  style={{
-                    background: "none", border: "none", cursor: "pointer",
-                    color: "#8892a4", fontSize: 13, textDecoration: "underline",
-                    marginTop: 8, display: "block", width: "100%", textAlign: "center",
-                  }}
+                  className="text-sm text-on-surface-variant underline mt-2 block w-full text-center"
+                  style={{ background: "none", border: "none", cursor: "pointer" }}
                 >
                   {skipComposants ? "Renseigner mes composants" : "Je renseignerai plus tard"}
                 </button>
@@ -548,8 +550,7 @@ export default function OnboardingPage() {
               {step > 1 && (
                 <button
                   type="button"
-                  className="stumpr-btn-outline"
-                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                  className="bg-surface-container text-on-surface rounded-xl py-3 font-bold flex-1 flex items-center justify-center gap-2 border-none"
                   onClick={handleBack}
                   disabled={submitting}
                 >
@@ -560,9 +561,8 @@ export default function OnboardingPage() {
               {!isLastStep ? (
                 <button
                   type="button"
-                  className="stumpr-btn-primary"
-                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
                   onClick={handleNext}
+                  style={{ flex: 1, backgroundColor: '#00386c', color: '#fff', borderRadius: 12, padding: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, border: 'none', cursor: 'pointer' }}
                 >
                   Suivant
                   <ChevronRight size={16} />
@@ -570,10 +570,9 @@ export default function OnboardingPage() {
               ) : (
                 <button
                   type="button"
-                  className="stumpr-btn-primary"
-                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
                   onClick={handleFinish}
                   disabled={submitting}
+                  style={{ flex: 1, backgroundColor: '#00386c', color: '#fff', borderRadius: 12, padding: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, border: 'none', cursor: 'pointer' }}
                 >
                   {submitting ? <div className="spinner" /> : "Terminer"}
                 </button>
