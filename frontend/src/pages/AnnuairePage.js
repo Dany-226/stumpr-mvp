@@ -33,13 +33,7 @@ const Stars = ({ note, size = 16 }) => {
 const TypeBadge = ({ type }) => {
   const isCRF = type === "CRF";
   return (
-    <span
-      className="text-xs font-semibold px-2.5 py-1 rounded-full"
-      style={{
-        backgroundColor: isCRF ? "#e8f4f3" : "#f0eeff",
-        color: isCRF ? "#1d7a72" : "#6d4fc2",
-      }}
-    >
+    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isCRF ? "bg-secondary/10 text-secondary" : "bg-primary/10 text-primary"}`}>
       {isCRF ? "Centre de Rééducation" : "Prothésiste"}
     </span>
   );
@@ -73,41 +67,40 @@ const AvisModal = ({ etablissement, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
-      <div className="w-full max-w-md rounded-[20px] p-6 bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
+      <div className="bg-surface-container-lowest rounded-3xl p-6 shadow-xl w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
+          <h3 className="font-headline font-bold text-lg text-on-surface">
             Donner un avis
           </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-on-surface-variant hover:bg-surface-container rounded-xl p-1">
             <X size={20} />
           </button>
         </div>
-        <p className="text-sm mb-4" style={{ color: "#8892a4" }}>{etablissement.nom}</p>
+        <p className="text-sm text-on-surface-variant mb-4">{etablissement.nom}</p>
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: "#1a1f2e" }}>Votre prénom</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1">Votre prénom</label>
             <input
               value={auteur}
               onChange={(e) => setAuteur(e.target.value)}
-              className="w-full border rounded-xl px-3 py-2 text-sm outline-none focus:ring-2"
-              style={{ borderColor: "#e2e6ed", focusRingColor: "#1d7a72" }}
+              className="w-full bg-surface-container rounded-xl border-none px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline"
               placeholder="ex: Marie"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "#1a1f2e" }}>Note</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-2">Note</label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
                   key={n}
                   type="button"
                   onClick={() => setNote(n)}
-                  className="w-10 h-10 rounded-xl border-2 text-sm font-bold transition-all"
+                  className="w-10 h-10 rounded-xl text-sm font-bold transition-all"
                   style={{
-                    borderColor: note >= n ? "#f59e0b" : "#e2e6ed",
+                    border: `2px solid ${note >= n ? "#f59e0b" : "#e4e9ed"}`,
                     backgroundColor: note >= n ? "#fef3c7" : "white",
-                    color: note >= n ? "#d97706" : "#8892a4",
+                    color: note >= n ? "#d97706" : "#737781",
                   }}
                 >
                   {n}
@@ -116,21 +109,20 @@ const AvisModal = ({ etablissement, onClose, onSuccess }) => {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: "#1a1f2e" }}>Commentaire (optionnel)</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1">Commentaire (optionnel)</label>
             <textarea
               value={commentaire}
               onChange={(e) => setCommentaire(e.target.value)}
               rows={3}
-              className="w-full border rounded-xl px-3 py-2 text-sm outline-none resize-none"
-              style={{ borderColor: "#e2e6ed" }}
+              className="w-full bg-surface-container rounded-xl border-none px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline resize-y"
               placeholder="Partagez votre expérience..."
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity"
-            style={{ backgroundColor: "#1d7a72", opacity: loading ? 0.7 : 1 }}
+            className="w-full rounded-xl py-3 font-bold"
+            style={{ backgroundColor: '#00386c', color: '#fff', opacity: loading ? 0.7 : 1 }}
           >
             {loading ? "Envoi..." : "Publier l'avis"}
           </button>
@@ -168,36 +160,33 @@ const AddEtablissementModal = ({ onClose, onSuccess }) => {
     }
   };
 
-  const inputClass = "w-full border rounded-xl px-3 py-2 text-sm outline-none";
-  const inputStyle = { borderColor: "#e2e6ed" };
-  const labelClass = "block text-sm font-medium mb-1";
-  const labelStyle = { color: "#1a1f2e" };
+  const inputCls = "w-full bg-surface-container rounded-xl border-none px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
-      <div className="w-full max-w-lg rounded-[20px] p-6 bg-white shadow-xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
+      <div className="bg-surface-container-lowest rounded-3xl p-6 shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-5">
-          <h3 className="text-lg font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
+          <h3 className="font-headline font-bold text-lg text-on-surface">
             Ajouter un établissement
           </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-on-surface-variant hover:bg-surface-container rounded-xl p-1">
             <X size={20} />
           </button>
         </div>
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <label className={labelClass} style={labelStyle}>Type</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1">Type</label>
             <div className="flex gap-3">
               {["CRF", "Prothesiste"].map((t) => (
                 <button
                   key={t}
                   type="button"
                   onClick={() => set("type", t)}
-                  className="flex-1 py-2 rounded-xl border-2 text-sm font-semibold transition-all"
+                  className="flex-1 py-2 rounded-xl text-sm font-semibold transition-all"
                   style={{
-                    borderColor: form.type === t ? "#1d7a72" : "#e2e6ed",
-                    backgroundColor: form.type === t ? "#e8f4f3" : "white",
-                    color: form.type === t ? "#1d7a72" : "#8892a4",
+                    border: `2px solid ${form.type === t ? "#006a63" : "#e4e9ed"}`,
+                    backgroundColor: form.type === t ? "rgba(0,106,99,0.1)" : "white",
+                    color: form.type === t ? "#006a63" : "#737781",
                   }}
                 >
                   {t === "CRF" ? "Centre de Rééducation" : "Prothésiste"}
@@ -206,42 +195,42 @@ const AddEtablissementModal = ({ onClose, onSuccess }) => {
             </div>
           </div>
           <div>
-            <label className={labelClass} style={labelStyle}>Nom de l'établissement *</label>
-            <input value={form.nom} onChange={(e) => set("nom", e.target.value)} className={inputClass} style={inputStyle} placeholder="ex: Centre de Rééducation de Berck" />
+            <label className="block text-sm font-medium text-on-surface-variant mb-1">Nom de l'établissement *</label>
+            <input value={form.nom} onChange={(e) => set("nom", e.target.value)} className={inputCls} placeholder="ex: Centre de Rééducation de Berck" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelClass} style={labelStyle}>Ville *</label>
-              <input value={form.ville} onChange={(e) => set("ville", e.target.value)} className={inputClass} style={inputStyle} placeholder="ex: Lyon" />
+              <label className="block text-sm font-medium text-on-surface-variant mb-1">Ville *</label>
+              <input value={form.ville} onChange={(e) => set("ville", e.target.value)} className={inputCls} placeholder="ex: Lyon" />
             </div>
             <div>
-              <label className={labelClass} style={labelStyle}>Département *</label>
-              <input value={form.departement} onChange={(e) => set("departement", e.target.value)} className={inputClass} style={inputStyle} placeholder="ex: 69" />
+              <label className="block text-sm font-medium text-on-surface-variant mb-1">Département *</label>
+              <input value={form.departement} onChange={(e) => set("departement", e.target.value)} className={inputCls} placeholder="ex: 69" />
             </div>
           </div>
           <div>
-            <label className={labelClass} style={labelStyle}>Adresse</label>
-            <input value={form.adresse} onChange={(e) => set("adresse", e.target.value)} className={inputClass} style={inputStyle} placeholder="ex: 12 rue de la Santé" />
+            <label className="block text-sm font-medium text-on-surface-variant mb-1">Adresse</label>
+            <input value={form.adresse} onChange={(e) => set("adresse", e.target.value)} className={inputCls} placeholder="ex: 12 rue de la Santé" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelClass} style={labelStyle}>Téléphone</label>
-              <input value={form.telephone} onChange={(e) => set("telephone", e.target.value)} className={inputClass} style={inputStyle} placeholder="04 XX XX XX XX" />
+              <label className="block text-sm font-medium text-on-surface-variant mb-1">Téléphone</label>
+              <input value={form.telephone} onChange={(e) => set("telephone", e.target.value)} className={inputCls} placeholder="04 XX XX XX XX" />
             </div>
             <div>
-              <label className={labelClass} style={labelStyle}>Site web</label>
-              <input value={form.site_web} onChange={(e) => set("site_web", e.target.value)} className={inputClass} style={inputStyle} placeholder="www.exemple.fr" />
+              <label className="block text-sm font-medium text-on-surface-variant mb-1">Site web</label>
+              <input value={form.site_web} onChange={(e) => set("site_web", e.target.value)} className={inputCls} placeholder="www.exemple.fr" />
             </div>
           </div>
           <div>
-            <label className={labelClass} style={labelStyle}>Notes communautaires</label>
-            <textarea value={form.notes_communautaires} onChange={(e) => set("notes_communautaires", e.target.value)} rows={3} className={`${inputClass} resize-none`} style={inputStyle} placeholder="Infos pratiques, spécialités, accès PMR..." />
+            <label className="block text-sm font-medium text-on-surface-variant mb-1">Notes communautaires</label>
+            <textarea value={form.notes_communautaires} onChange={(e) => set("notes_communautaires", e.target.value)} rows={3} className={`${inputCls} resize-y`} placeholder="Infos pratiques, spécialités, accès PMR..." />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity"
-            style={{ backgroundColor: "#1d7a72", opacity: loading ? 0.7 : 1 }}
+            className="w-full rounded-xl py-3 font-bold"
+            style={{ backgroundColor: '#00386c', color: '#fff', opacity: loading ? 0.7 : 1 }}
           >
             {loading ? "Ajout en cours..." : "Ajouter l'établissement"}
           </button>
@@ -253,41 +242,35 @@ const AddEtablissementModal = ({ onClose, onSuccess }) => {
 
 // ─── Card établissement ───────────────────────────────────────────────────────
 const EtablissementCard = ({ etab, onAvisClick }) => (
-  <div
-    className="bg-white rounded-[20px] border p-5 flex flex-col gap-3 hover:shadow-md transition-shadow"
-    style={{ borderColor: "#e2e6ed" }}
-  >
+  <div className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm flex flex-col gap-3">
     <div className="flex items-start justify-between gap-2">
       <div className="flex-1 min-w-0">
         <TypeBadge type={etab.type} />
-        <h3
-          className="font-bold text-base mt-2 leading-tight"
-          style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}
-        >
+        <h3 className="font-headline font-bold text-lg text-on-surface mt-2 leading-tight">
           {etab.nom}
         </h3>
         <div className="flex items-center gap-1.5 mt-1">
-          <MapPin size={13} style={{ color: "#8892a4" }} />
-          <span className="text-sm" style={{ color: "#8892a4" }}>
+          <MapPin size={13} className="text-outline" />
+          <span className="text-sm text-on-surface-variant">
             {etab.ville}{etab.departement ? ` (${etab.departement})` : ""}
           </span>
         </div>
         {etab.adresse && (
-          <p className="text-xs mt-0.5" style={{ color: "#aab0bc" }}>{etab.adresse}</p>
+          <p className="text-xs mt-0.5 text-on-surface-variant">{etab.adresse}</p>
         )}
       </div>
       <div className="flex flex-col items-end gap-1 shrink-0">
         <div className="flex items-center gap-1">
           <Stars note={etab.note_moyenne} />
         </div>
-        <span className="text-xs" style={{ color: "#8892a4" }}>
+        <span className="text-xs text-on-surface-variant">
           {etab.note_moyenne > 0 ? `${etab.note_moyenne}/5` : "Pas encore noté"} · {etab.nombre_avis} avis
         </span>
       </div>
     </div>
 
     {etab.notes_communautaires && (
-      <p className="text-sm rounded-xl px-3 py-2" style={{ backgroundColor: "#f8f9fc", color: "#4a5568" }}>
+      <p className="text-sm rounded-xl px-3 py-2 bg-surface-container text-on-surface-variant">
         {etab.notes_communautaires}
       </p>
     )}
@@ -296,10 +279,9 @@ const EtablissementCard = ({ etab, onAvisClick }) => (
       {etab.telephone && (
         <a
           href={`tel:${etab.telephone}`}
-          className="flex items-center gap-1.5 text-sm font-medium hover:opacity-80 transition-opacity"
-          style={{ color: "#1d7a72" }}
+          className="flex items-center gap-1.5 text-sm font-medium hover:opacity-80 transition-opacity text-secondary"
         >
-          <Phone size={14} />
+          <Phone size={14} className="text-outline" />
           {etab.telephone}
         </a>
       )}
@@ -308,40 +290,37 @@ const EtablissementCard = ({ etab, onAvisClick }) => (
           href={etab.site_web.startsWith("http") ? etab.site_web : `https://${etab.site_web}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm font-medium hover:opacity-80 transition-opacity"
-          style={{ color: "#1d7a72" }}
+          className="flex items-center gap-1.5 text-sm font-medium hover:opacity-80 transition-opacity text-secondary"
         >
-          <Globe size={14} />
+          <Globe size={14} className="text-outline" />
           Site web
         </a>
       )}
       <button
         onClick={() => onAvisClick(etab)}
-        className="ml-auto flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all hover:opacity-80"
-        style={{ borderColor: "#1d7a72", color: "#1d7a72" }}
+        className="ml-auto bg-surface-container text-on-surface rounded-xl px-4 py-2 text-sm font-medium border-none"
       >
-        <Star size={13} />
-        Donner un avis
+        <span className="flex items-center gap-1.5">
+          <Star size={13} />
+          Donner un avis
+        </span>
       </button>
     </div>
 
     {etab.avis && etab.avis.length > 0 && (
-      <div className="border-t pt-3 space-y-2" style={{ borderColor: "#f0f2f5" }}>
+      <div className="pt-2 space-y-2">
         {etab.avis.slice(-2).reverse().map((a, i) => (
-          <div key={i} className="flex gap-2 items-start">
-            <div
-              className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-              style={{ backgroundColor: "#e8f4f3", color: "#1d7a72" }}
-            >
+          <div key={i} className="bg-surface-container-low rounded-2xl p-3 flex gap-2 items-start">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 bg-secondary/10 text-secondary">
               {a.auteur?.[0]?.toUpperCase()}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold" style={{ color: "#1a1f2e" }}>{a.auteur}</span>
+                <span className="text-sm font-bold text-on-surface">{a.auteur}</span>
                 <Stars note={a.note} size={12} />
               </div>
               {a.commentaire && (
-                <p className="text-xs mt-0.5" style={{ color: "#4a5568" }}>{a.commentaire}</p>
+                <p className="text-sm mt-0.5 text-on-surface-variant">{a.commentaire}</p>
               )}
             </div>
           </div>
@@ -382,69 +361,73 @@ export default function AnnuairePage() {
   }, [fetchEtablissements]);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f8f9fc" }}>
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <div className="sticky top-0 z-10 border-b" style={{ backgroundColor: "white", borderColor: "#e2e6ed" }}>
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-gray-100 transition-colors">
-            <ArrowLeft size={20} style={{ color: "#1a1f2e" }} />
+      <header
+        className="border-b border-outline-variant/10 px-6 py-4 sticky top-0 z-50"
+        style={{ backgroundColor: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)' }}
+      >
+        <div className="max-w-2xl mx-auto flex items-center gap-3">
+          <button onClick={() => navigate(-1)} className="text-on-surface-variant hover:bg-surface-container rounded-xl p-2">
+            <ArrowLeft size={20} />
           </button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
+            <h1 className="font-headline font-bold text-xl text-primary">
               Annuaire
             </h1>
-            <p className="text-xs" style={{ color: "#8892a4" }}>CRF & prothésistes recommandés</p>
+            <p className="text-xs text-on-surface-variant">CRF & prothésistes recommandés</p>
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white"
-            style={{ backgroundColor: "#1d7a72" }}
+            className="flex items-center gap-2 rounded-xl px-4 py-2 font-bold text-sm"
+            style={{ backgroundColor: '#006a63', color: '#fff' }}
           >
             <Plus size={16} />
             Ajouter
           </button>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-2xl mx-auto px-4 py-5 space-y-4">
         {/* Barre de recherche */}
         <div className="relative">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: "#8892a4" }} />
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
           <input
             value={searchVille}
             onChange={(e) => setSearchVille(e.target.value)}
             placeholder="Rechercher par ville..."
-            className="w-full pl-10 pr-4 py-3 rounded-[20px] border text-sm outline-none"
-            style={{ borderColor: "#e2e6ed", backgroundColor: "white" }}
+            className="w-full pl-10 pr-10 bg-surface-container rounded-2xl border-none py-3 text-sm outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline"
           />
           {searchVille && (
             <button onClick={() => setSearchVille("")} className="absolute right-3.5 top-1/2 -translate-y-1/2">
-              <X size={16} style={{ color: "#8892a4" }} />
+              <X size={16} className="text-outline" />
             </button>
           )}
         </div>
 
         {/* Filtres type */}
-        <div className="flex gap-2">
-          {[
-            { value: "", label: "Tous" },
-            { value: "CRF", label: "CRF" },
-            { value: "Prothesiste", label: "Prothésistes" },
-          ].map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setFilterType(f.value)}
-              className="px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all"
-              style={{
-                borderColor: filterType === f.value ? "#1d7a72" : "#e2e6ed",
-                backgroundColor: filterType === f.value ? "#1d7a72" : "white",
-                color: filterType === f.value ? "white" : "#8892a4",
-              }}
-            >
-              {f.label}
-            </button>
-          ))}
-          <span className="ml-auto text-sm self-center" style={{ color: "#8892a4" }}>
+        <div className="flex items-center gap-2">
+          <div className="bg-surface-container rounded-xl p-1 flex gap-1">
+            {[
+              { value: "", label: "Tous" },
+              { value: "CRF", label: "CRF" },
+              { value: "Prothesiste", label: "Prothésistes" },
+            ].map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setFilterType(f.value)}
+                className={
+                  filterType === f.value
+                    ? "rounded-lg px-4 py-2 text-sm shadow-sm"
+                    : "text-on-surface-variant rounded-lg px-4 py-2 text-sm hover:bg-surface-container-lowest"
+                }
+                style={filterType === f.value ? { backgroundColor: '#ffffff', color: '#006a63', fontWeight: 700 } : {}}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <span className="ml-auto text-sm text-on-surface-variant">
             {etablissements.length} résultat{etablissements.length !== 1 ? "s" : ""}
           </span>
         </div>
@@ -452,22 +435,22 @@ export default function AnnuairePage() {
         {/* Liste */}
         {loading ? (
           <div className="py-16 text-center">
-            <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin mx-auto" style={{ borderColor: "#1d7a72", borderTopColor: "transparent" }} />
-            <p className="text-sm mt-3" style={{ color: "#8892a4" }}>Chargement...</p>
+            <div className="w-8 h-8 rounded-full border-2 border-secondary border-t-transparent animate-spin mx-auto" />
+            <p className="text-sm mt-3 text-on-surface-variant">Chargement...</p>
           </div>
         ) : etablissements.length === 0 ? (
-          <div className="py-16 text-center">
-            <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: "#e8f4f3" }}>
-              <MapPin size={28} style={{ color: "#1d7a72" }} />
+          <div className="bg-surface-container-lowest rounded-3xl p-12 text-center shadow-sm">
+            <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-secondary/10">
+              <MapPin size={28} className="text-secondary" />
             </div>
-            <p className="font-semibold" style={{ color: "#1a1f2e" }}>Aucun établissement trouvé</p>
-            <p className="text-sm mt-1" style={{ color: "#8892a4" }}>
+            <p className="font-semibold text-on-surface">Aucun établissement trouvé</p>
+            <p className="text-sm mt-1 text-on-surface-variant">
               {searchVille ? `Aucun résultat pour "${searchVille}"` : "Soyez le premier à ajouter un établissement !"}
             </p>
             <button
               onClick={() => setShowAddModal(true)}
-              className="mt-4 px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
-              style={{ backgroundColor: "#1d7a72" }}
+              className="mt-4 rounded-xl px-6 py-3 font-bold text-sm"
+              style={{ backgroundColor: '#006a63', color: '#fff' }}
             >
               Ajouter un établissement
             </button>
