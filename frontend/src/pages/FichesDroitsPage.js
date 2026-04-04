@@ -7,7 +7,7 @@ const FICHES = [
   {
     id: 1,
     icon: RefreshCw,
-    color: "#0e6b63",
+    color: "#006a63",
     bgColor: "#e6f3f2",
     titre: "Mon renouvellement de prothèse",
     resume: "Quand peut-on renouveler ? Comment initier la demande soi-même ? Quels délais selon le composant ?",
@@ -125,96 +125,67 @@ const FicheModal = ({ fiche, onClose }) => {
   const Icon = fiche.icon;
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(26,31,46,0.5)" }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div
-        className="w-full max-w-2xl bg-white rounded-[20px] shadow-2xl flex flex-col"
-        style={{ maxHeight: "90vh" }}
-      >
+      <div className="bg-surface-container-lowest rounded-3xl shadow-xl max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto">
         {/* Header modal */}
-        <div className="flex items-start justify-between p-6 border-b" style={{ borderColor: "#e0d9cf" }}>
+        <div className="px-6 pt-6 pb-4 flex justify-between items-start">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: fiche.bgColor }}>
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ backgroundColor: fiche.bgColor }}
+            >
               <Icon size={20} style={{ color: fiche.color }} />
             </div>
-            <h2
-              style={{
-                fontFamily: '"Plus Jakarta Sans", sans-serif',
-                fontWeight: 800,
-                fontSize: 20,
-                letterSpacing: "-0.025em",
-                color: "#1a1f2e",
-              }}
-            >
+            <h2 className="font-headline font-bold text-xl text-on-surface">
               {fiche.titre}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-gray-100 transition-colors shrink-0 ml-4"
-            style={{ color: "#8892a4" }}
+            className="text-on-surface-variant hover:bg-surface-container rounded-xl p-2 shrink-0 ml-4"
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* Contenu scrollable */}
-        <div className="overflow-y-auto flex-1 p-6 space-y-6">
+        {/* Corps modal */}
+        <div className="px-6 pb-6 space-y-2">
           {/* Disclaimer */}
           <div
             className="flex gap-3 rounded-xl p-4"
             style={{ backgroundColor: "#fdf8e3", border: "1px solid #f0e0a0" }}
           >
             <span style={{ fontSize: 16, lineHeight: 1.5 }}>⚠️</span>
-            <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: 13, color: "#7a6020", lineHeight: 1.6 }}>
+            <p className="text-xs text-on-surface-variant leading-relaxed">
               Ces informations sont données à titre indicatif et ne constituent pas un conseil juridique. Vérifiez les règles applicables à votre situation sur{" "}
-              <a href="https://www.ameli.fr" target="_blank" rel="noopener noreferrer" style={{ color: "#0e6b63", fontWeight: 600, textDecoration: "underline" }}>ameli.fr</a>
+              <a href="https://www.ameli.fr" target="_blank" rel="noopener noreferrer" style={{ color: "#006a63", fontWeight: 600, textDecoration: "underline" }}>ameli.fr</a>
               {" "}ou auprès de votre CPAM.
             </p>
           </div>
 
           {fiche.contenu.map((bloc, i) => (
             <div key={i}>
-              <h3
-                className="mb-2"
-                style={{
-                  fontFamily: '"Plus Jakarta Sans", sans-serif',
-                  fontWeight: 700,
-                  fontSize: 15,
-                  color: fiche.color,
-                }}
-              >
+              <h3 className="font-headline font-bold text-base text-on-surface border-l-4 border-secondary pl-4 mb-2 mt-6">
                 {bloc.section}
               </h3>
-              <div
-                style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 14,
-                  lineHeight: 1.75,
-                  color: "#3d4a5c",
-                  whiteSpace: "pre-line",
-                }}
-              >
+              <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-line">
                 {bloc.texte}
-              </div>
+              </p>
             </div>
           ))}
-        </div>
 
-        {/* Footer */}
-        <div className="p-5 border-t" style={{ borderColor: "#e0d9cf" }}>
-          <button
-            onClick={onClose}
-            className="w-full py-3 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
-            style={{
-              backgroundColor: "#0e6b63",
-              fontFamily: '"DM Sans", sans-serif',
-            }}
-          >
-            J'ai compris
-          </button>
+          {/* Footer bouton */}
+          <div className="pt-4">
+            <button
+              onClick={onClose}
+              className="w-full py-3 rounded-xl text-sm font-bold text-white hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: "#00386c" }}
+            >
+              J'ai compris
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -227,45 +198,26 @@ const FicheCard = ({ fiche, onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="w-full text-left bg-white rounded-[20px] border p-5 flex gap-4 hover:shadow-md transition-all group"
-      style={{ borderColor: "#e0d9cf" }}
+      className="w-full text-left bg-surface-container-lowest rounded-3xl p-6 shadow-sm mb-4 hover:shadow-md transition-shadow"
     >
       <div
-        className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
+        className="rounded-2xl p-3 w-12 h-12 flex items-center justify-center"
         style={{ backgroundColor: fiche.bgColor }}
       >
         <Icon size={22} style={{ color: fiche.color }} />
       </div>
-      <div className="flex-1 min-w-0">
-        <h3
-          className="mb-1"
-          style={{
-            fontFamily: '"Plus Jakarta Sans", sans-serif',
-            fontWeight: 700,
-            fontSize: 15,
-            color: "#1a1f2e",
-            letterSpacing: "-0.015em",
-          }}
-        >
-          {fiche.titre}
-        </h3>
-        <p
-          className="line-clamp-2"
-          style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 13,
-            color: "#8892a4",
-            lineHeight: 1.6,
-          }}
-        >
-          {fiche.resume}
-        </p>
-      </div>
-      <div className="shrink-0 self-center" style={{ color: "#e0d9cf" }}>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <h3 className="font-headline font-bold text-lg text-on-surface mt-3 mb-1">
+        {fiche.titre}
+      </h3>
+      <p className="text-sm text-on-surface-variant">
+        {fiche.resume}
+      </p>
+      <span className="text-secondary font-bold text-sm mt-4 flex items-center gap-1 hover:opacity-70">
+        Lire la fiche
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
           <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-      </div>
+      </span>
     </button>
   );
 };
@@ -276,42 +228,39 @@ export default function FichesDroitsPage() {
   const [ficheOuverte, setFicheOuverte] = useState(null);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f5f0e8" }}>
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="app-header sticky top-0 z-10">
-        <StumprLogo size={22} />
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl"
-          style={{ backgroundColor: "#f5f0e8", color: "#3d4a5c", border: "1px solid #e0d9cf" }}
-        >
-          <ArrowLeft size={16} />
-          Retour
-        </button>
+      <header
+        className="border-b border-outline-variant/10 px-6 py-4 sticky top-0 z-50"
+        style={{ backgroundColor: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)' }}
+      >
+        <div className="max-w-2xl mx-auto flex items-center justify-between">
+          <button
+            onClick={() => navigate(-1)}
+            className="text-on-surface-variant hover:bg-surface-container rounded-xl p-2"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <h1 className="font-headline font-bold text-xl text-primary">
+            Fiches droits
+          </h1>
+          <div className="w-9" />
+        </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8">
         {/* Titre section */}
-        <div className="mb-8">
-          <h1
-            style={{
-              fontFamily: '"Plus Jakarta Sans", sans-serif',
-              fontWeight: 800,
-              fontSize: 28,
-              letterSpacing: "-0.025em",
-              color: "#1a1f2e",
-              marginBottom: 8,
-            }}
-          >
-            Fiches droits
-          </h1>
-          <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: 15, color: "#8892a4" }}>
+        <div className="mb-6">
+          <h2 className="font-headline font-bold text-2xl text-on-surface mb-2">
+            Vos droits
+          </h2>
+          <p className="text-on-surface-variant text-sm">
             Vos droits en matière d'appareillage, expliqués simplement.
           </p>
         </div>
 
         {/* Liste des fiches */}
-        <div className="space-y-3">
+        <div>
           {FICHES.map((fiche) => (
             <FicheCard
               key={fiche.id}
@@ -322,10 +271,7 @@ export default function FichesDroitsPage() {
         </div>
 
         {/* Note bas de page */}
-        <p
-          className="text-center mt-8 text-xs"
-          style={{ fontFamily: '"DM Sans", sans-serif', color: "#aab0bc" }}
-        >
+        <p className="text-center mt-8 text-xs text-on-surface-variant">
           Ces fiches sont à titre informatif. Pour toute situation spécifique, consultez un professionnel de santé ou un conseiller CPAM.
         </p>
       </main>
