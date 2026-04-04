@@ -428,9 +428,18 @@ export default function OnboardingPage() {
       // 3. Créer les composants si non skippés et si prothèse créée
       if (!skipComposants && proteseId && composants.length > 0) {
         for (const comp of composants) {
+          const payload = {
+            type: comp.type,
+            marque: comp.marque || null,
+            reference_lppr: comp.lppr_code || null,
+            nomenclature: comp.lppr_label || null,
+            tarif: comp.lppr_tarif ?? null,
+            duree_ans: comp.lppr_duree_ans ?? null,
+            date_attribution: comp.date_attribution || null,
+          };
           await axios.post(
             `${API}/patient/protheses/${proteseId}/composants`,
-            comp,
+            payload,
             { headers }
           );
         }
