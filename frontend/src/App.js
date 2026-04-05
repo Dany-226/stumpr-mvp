@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
+import axios from "axios";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import FichePatientPage from "./pages/FichePatientPage";
@@ -12,9 +13,33 @@ import RapportPage from "./pages/RapportPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import "./App.css";
 
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("stumpr_token");
+      localStorage.removeItem("stumpr_user");
+      window.location.href = "/";
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth helper
 const isAuthenticated = () => {
-  return localStorage.getItem("stumpr_token") !== null;
+  const token = localStorage.getItem("stumpr_token");
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (payload.exp && Date.now() / 1000 > payload.exp) {
+      localStorage.removeItem("stumpr_token");
+      localStorage.removeItem("stumpr_user");
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 // Protected Route component
@@ -27,10 +52,10 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f0e8' }}>
-      <Toaster 
-        position="top-center" 
-        richColors 
+    <div className="min-h-screen bg-surface">
+      <Toaster
+        position="top-center"
+        richColors
         toastOptions={{
           style: {
             fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
