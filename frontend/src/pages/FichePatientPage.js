@@ -239,37 +239,293 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
   );
 };
 
+// ======================== RENEWAL GUIDE MODAL ========================
+
+const STEPS = [
+  {
+    title: "Consultation médicale",
+    text: "Consultez votre médecin prescripteur (MPR, chirurgien ou généraliste pour les renouvellements). Il évalue la nécessité et rédige une prescription motivée.",
+  },
+  {
+    title: "Bilan orthoprothétique",
+    text: "Votre orthoprothésiste contrôle l'état du composant, établit un devis détaillé avec les codes LPPR et monte la demande d'accord préalable (DAP).",
+  },
+  {
+    title: "Dépôt à la CPAM",
+    text: "Le dossier est transmis au service médical de votre CPAM. Le délai légal de réponse est de 15 jours calendaires.",
+  },
+  {
+    title: "Accord tacite ou explicite",
+    text: "Sans réponse dans les 15 jours, l'accord est réputé acquis. En cas de refus, vous recevez un courrier motivé.",
+  },
+  {
+    title: "Réalisation",
+    text: "Après accord, votre orthoprothésiste fabrique et ajuste le composant. La CPAM prend en charge les éléments inscrits à la LPPR au tarif de responsabilité.",
+  },
+];
+
+const getTips = (type) => {
+  const t = (type || "").toLowerCase();
+  if (t.includes("manchon") || t.includes("liner")) return [
+    "Signalez l'usure visible (photos utiles)",
+    "Mentionnez toute modification du volume du moignon",
+    "Indiquez les difficultés de suspension ou d'étanchéité",
+  ];
+  if (t.includes("pied")) return [
+    "Documentez la perte de restitution d'énergie",
+    "Signalez instabilité, douleurs à la marche, chutes",
+    "Précisez l'évolution de votre niveau d'activité",
+  ];
+  if (t.includes("genou") || t.includes("mpk")) return [
+    "Décrivez l'instabilité ou les blocages mécaniques",
+    "Mentionnez les chutes ou risques de chute",
+    "Pour genou MPK : vérifiez si une révision programmée est prévue à votre code LPPR",
+  ];
+  if (t.includes("embo")) return [
+    "Note importante : l'emboîture n'a pas de délai fixe universel",
+    "La CPAM examine surtout la justification clinique",
+    "Documentez : douleurs, plaies cutanées, perte de suspension, variation du volume du moignon, impossibilité de correction par simple ajustement",
+  ];
+  return [
+    "Prescription médicale récente",
+    "Compte rendu de l'orthoprothésiste",
+    "Description de l'usure ou de l'inadaptation",
+    "Impact sur votre autonomie et votre marche",
+  ];
+};
+
+const buildCourrier = (composant) => {
+  const nom = composant.nomenclature || "mon composant";
+  const type = composant.type || "composant prothétique";
+  return `Objet : Recours amiable contre le refus de prise en charge du renouvellement de ${nom}
+
+Madame, Monsieur,
+
+Je soussigné(e) [Nom Prénom], assuré(e) social(e), conteste la décision de refus notifiée le [date] concernant la prise en charge du renouvellement de ${type}.
+
+Ce renouvellement a été demandé en raison de [usure constatée / douleurs / évolution du moignon / inadaptation — à compléter], comme l'attestent les pièces médicales jointes.
+
+Je sollicite le réexamen de mon dossier au regard :
+- de mon état clinique actuel,
+- de l'usure ou de la non-réparabilité du composant,
+- de la nécessité fonctionnelle de maintien de mon autonomie,
+- des critères de renouvellement prévus par la LPPR.
+
+Veuillez agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+[Signature]
+[Nom, prénom]
+[Adresse]
+[Téléphone / email]
+
+Pièces jointes :
+- Copie de la notification de refus
+- Prescription médicale
+- Compte rendu de l'orthoprothésiste
+- Devis et DAP
+- Tout élément prouvant la gêne fonctionnelle`;
+};
+
+const RenewalGuide = ({ composant, onClose }) => {
+  const [showCourrier, setShowCourrier] = useState(false);
+
+  const renewalDate = composant.date_renouvellement_eligible
+    ? new Date(composant.date_renouvellement_eligible)
+    : null;
+  const now = new Date();
+  const diffDays = renewalDate ? (renewalDate - now) / (1000 * 60 * 60 * 24) : null;
+
+  let diagTitle, diagBadgeCls, diagText;
+  if (diffDays === null) {
+    diagTitle = "Date de renouvellement inconnue";
+    diagBadgeCls = "bg-surface-container text-on-surface-variant";
+    diagText = "Aucune date de renouvellement n'est renseignée pour ce composant.";
+  } else if (diffDays < 0) {
+    diagTitle = "Le délai réglementaire est dépassé";
+    diagBadgeCls = "bg-secondary/10 text-secondary";
+    diagText = "Le délai minimal de renouvellement prévu par la LPPR pour ce composant est écoulé. Vous pouvez initier une demande auprès de votre médecin prescripteur.\nL'accord final relève du médecin-conseil de votre CPAM, qui instruit chaque dossier individuellement.";
+  } else if (diffDays <= 90) {
+    diagTitle = "Délai bientôt atteint — anticipez";
+    diagBadgeCls = "bg-tertiary-fixed text-on-tertiary-fixed";
+    diagText = "Le délai réglementaire sera atteint dans moins de 3 mois. C'est le bon moment pour consulter votre médecin et préparer votre dossier en amont.";
+  } else {
+    diagTitle = "Délai réglementaire non atteint";
+    diagBadgeCls = "bg-surface-container text-on-surface-variant";
+    diagText = "Le délai minimal LPPR n'est pas encore écoulé pour ce composant. Un renouvellement anticipé reste possible si votre état clinique le justifie — usure, douleur, évolution du moignon, inadaptation — sur prescription médicale motivée.";
+  }
+
+  const tips = getTips(composant.type);
+  const courrier = buildCourrier(composant);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(courrier).then(() => {
+      alert("Courrier copié dans le presse-papier");
+    });
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-surface-container-lowest rounded-3xl shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4 flex justify-between items-start">
+          <div>
+            <h2 className="font-headline font-bold text-xl text-on-surface">Préparer ma demande</h2>
+            <p className="text-sm text-on-surface-variant mt-1">
+              {composant.nomenclature || composant.type}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-on-surface-variant hover:bg-surface-container rounded-xl p-2 flex-shrink-0 ml-4"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="px-6 pb-6 space-y-6">
+
+          {/* Section 1 — Diagnostic */}
+          <div>
+            <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold mb-3 ${diagBadgeCls}`}>
+              {diagTitle}
+            </span>
+            <p className="text-sm text-on-surface-variant whitespace-pre-line">{diagText}</p>
+          </div>
+
+          {/* Section 2 — Étapes */}
+          <div>
+            <h3 className="font-headline font-bold text-base text-on-surface border-l-4 border-secondary pl-4 mb-4">
+              Les étapes de votre demande
+            </h3>
+            <div>
+              {STEPS.map((step, i) => (
+                <div key={i}>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-secondary text-white font-bold text-sm flex items-center justify-center flex-shrink-0">
+                      {i + 1}
+                    </div>
+                    <div className="flex-1 pb-2">
+                      <p className="font-bold text-sm text-on-surface">{step.title}</p>
+                      <p className="text-sm text-on-surface-variant mt-1">{step.text}</p>
+                    </div>
+                  </div>
+                  {i < STEPS.length - 1 && (
+                    <div className="w-px bg-outline-variant/30 ml-4 h-4" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 3 — Conseils */}
+          <div>
+            <h3 className="font-headline font-bold text-base text-on-surface border-l-4 border-secondary pl-4 mb-3">
+              Renforcez votre dossier
+            </h3>
+            <div className="bg-surface-container-low rounded-2xl p-4">
+              <ul className="space-y-2">
+                {tips.map((tip, i) => (
+                  <li key={i} className="text-sm text-on-surface-variant">• {tip}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Section 4 — Recours */}
+          <div>
+            <h3 className="font-headline font-bold text-base text-on-surface border-l-4 border-secondary pl-4 mb-3">
+              Si la CPAM refuse
+            </h3>
+            <div className="bg-surface-container-low rounded-2xl p-4 mb-3">
+              <p className="text-sm text-on-surface-variant whitespace-pre-line">
+                {`Vous disposez de 2 mois à compter de la notification pour saisir la Commission de Recours Amiable (CRA) de votre CPAM par courrier motivé.\nSi le refus est d'ordre médical, le recours pertinent est la Commission Médicale de Recours Amiable (CMRA).\nEn cas de confirmation du refus, un recours contentieux devant le pôle social du tribunal judiciaire reste possible.`}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowCourrier(s => !s)}
+              className="text-secondary text-sm font-bold underline bg-transparent border-none cursor-pointer"
+            >
+              {showCourrier ? "Masquer le modèle de courrier CRA" : "Voir le modèle de courrier CRA"}
+            </button>
+            {showCourrier && (
+              <div className="mt-3">
+                <div className="bg-surface-container rounded-2xl p-4 font-mono text-xs text-on-surface-variant whitespace-pre-wrap mb-3">
+                  {courrier}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="text-white rounded-xl px-4 py-2 font-bold text-sm"
+                  style={{ backgroundColor: "#006a63" }}
+                >
+                  Copier le courrier
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Mention légale */}
+          <p className="text-xs text-on-surface-variant italic border-t border-outline-variant/20 pt-4">
+            Ces informations sont fournies à titre indicatif sur la base de la réglementation LPPR en vigueur (CIR-21/2022). Elles ne constituent pas un avis médical ou juridique et ne remplacent pas l'avis de votre médecin prescripteur ou orthoprothésiste. L'accord de prise en charge relève de la décision individuelle du médecin-conseil de votre CPAM.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ======================== COMPOSANT ROW ========================
+
 const ComposantRow = ({ composant, onDelete }) => {
+  const [showGuide, setShowGuide] = useState(false);
   const typeLabel = COMPOSANT_TYPES.find(t => t.value === composant.type)?.label || composant.type;
   const rawName = composant.nomenclature || typeLabel;
   const displayName = rawName.length > 40 ? rawName.slice(0, 40) + "…" : rawName;
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between rounded-xl bg-surface-container-low px-4 py-3 mb-1">
-      <div className="flex-1">
-        <span className="text-sm font-medium text-on-surface">{displayName}</span>
-        {composant.nomenclature && (
-          <span className="text-xs ml-2 text-on-surface-variant">{typeLabel}</span>
-        )}
-        {composant.marque && (
-          <span className="text-sm ml-2 text-on-surface-variant">— {composant.marque}</span>
-        )}
-        {composant.reference_lppr && (
-          <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">
-            {composant.reference_lppr}
-          </span>
-        )}
+    <>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between rounded-xl bg-surface-container-low px-4 py-3 mb-1">
+        <div className="flex-1">
+          <span className="text-sm font-medium text-on-surface">{displayName}</span>
+          {composant.nomenclature && (
+            <span className="text-xs ml-2 text-on-surface-variant">{typeLabel}</span>
+          )}
+          {composant.marque && (
+            <span className="text-sm ml-2 text-on-surface-variant">— {composant.marque}</span>
+          )}
+          {composant.reference_lppr && (
+            <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">
+              {composant.reference_lppr}
+            </span>
+          )}
+        </div>
+        <div className="mt-1 sm:mt-0 sm:ml-4 flex-shrink-0 flex items-center gap-2">
+          <RenewalBadge renewalDate={composant.date_renouvellement_eligible} />
+          {composant.date_renouvellement_eligible && (
+            <button
+              type="button"
+              onClick={() => setShowGuide(true)}
+              className="text-secondary text-xs font-bold underline cursor-pointer bg-transparent border-none"
+            >
+              Préparer ma demande
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onDelete}
+            className="p-1 rounded-lg hover:bg-tertiary/10 text-tertiary"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
       </div>
-      <div className="mt-1 sm:mt-0 sm:ml-4 flex-shrink-0 flex items-center gap-2">
-        <RenewalBadge renewalDate={composant.date_renouvellement_eligible} />
-        <button
-          type="button"
-          onClick={onDelete}
-          className="p-1 rounded-lg hover:bg-tertiary/10 text-tertiary"
-        >
-          <Trash2 size={14} />
-        </button>
-      </div>
-    </div>
+      {showGuide && (
+        <RenewalGuide composant={composant} onClose={() => setShowGuide(false)} />
+      )}
+    </>
   );
 };
 
