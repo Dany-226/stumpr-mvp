@@ -154,7 +154,7 @@ def calculate_renewal_date(date_attribution: Optional[str], type_composant: str,
         return None
     try:
         d = datetime.fromisoformat(date_attribution.replace('Z', '+00:00')) if 'T' in date_attribution else datetime.strptime(date_attribution, '%Y-%m-%d')
-        years = duree_ans or LPPR_DELAYS_PAR_TYPE.get(type_composant, 5)
+        years = int(duree_ans) if duree_ans is not None else LPPR_DELAYS_PAR_TYPE.get(type_composant, 5)
         renewal = d.replace(year=d.year + years)
         return renewal.strftime('%Y-%m-%d')
     except Exception:
