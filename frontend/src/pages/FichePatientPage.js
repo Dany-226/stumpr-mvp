@@ -642,7 +642,18 @@ export default function FichePatientPage() {
     if (id) {
       loadPatient();
     } else {
-      setFormData(prev => ({ ...prev, email: user.email || "" }));
+      axios.get(`${API}/patients`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => {
+          const patients = res.data;
+          if (Array.isArray(patients) && patients.length > 0) {
+            navigate(`/fiche-patient/${patients[0].id}`, { replace: true });
+          } else {
+            setFormData(prev => ({ ...prev, email: user.email || "" }));
+          }
+        })
+        .catch(() => {
+          setFormData(prev => ({ ...prev, email: user.email || "" }));
+        });
     }
     loadProtheses();
   }, [id]);
