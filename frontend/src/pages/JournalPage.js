@@ -20,6 +20,44 @@ const JOURNAL_ACTIVITIES = [
   { id: "repos", label: "Repos", emoji: "🛋️" },
 ];
 
+const EVENEMENTS_JOURNAL = [
+  {
+    groupe: "Appareillage",
+    items: [
+      { id: "manchon_change", label: "Changement de manchon / liner" },
+      { id: "emboiture_changee", label: "Changement d'emboîture" },
+      { id: "composant_change", label: "Nouveau composant (pied, genou...)" },
+      { id: "reglage_prothese", label: "Réglage ou ajustement de la prothèse" },
+      { id: "prothese_secours", label: "Port de la prothèse de secours" },
+      { id: "prothese_non_portee", label: "Prothèse non portée aujourd'hui" },
+    ],
+  },
+  {
+    groupe: "Moignon",
+    items: [
+      { id: "irritation_cutanee", label: "Irritation / rougeur cutanée" },
+      { id: "plaie_escarre", label: "Plaie ou escarre" },
+      { id: "sudation_excessive", label: "Sudation excessive" },
+      { id: "oedeme_moignon", label: "Œdème / gonflement du moignon" },
+      { id: "douleur_neuropathique", label: "Brûlure / décharge électrique (névrome)" },
+      { id: "point_dur_osseux", label: "Point douloureux dur localisé" },
+      { id: "reaction_allergique", label: "Réaction allergique / irritation matériau" },
+      { id: "infection_suspectee", label: "Infection suspectée (rougeur + chaleur)" },
+    ],
+  },
+  {
+    groupe: "Vie quotidienne",
+    items: [
+      { id: "chute_incident", label: "Chute ou incident mécanique" },
+      { id: "activite_intense", label: "Activité inhabituelle / effort intense" },
+      { id: "variation_poids", label: "Variation de poids récente" },
+      { id: "consultation_medicale", label: "Consultation médicale ou ortho" },
+      { id: "changement_traitement", label: "Changement de traitement médicamenteux" },
+      { id: "chaleur_voyage", label: "Période de chaleur / voyage" },
+    ],
+  },
+];
+
 const PROTHESE_TYPE_LABELS = {
   principale: "Principale",
   secours: "Secours",
@@ -139,6 +177,7 @@ export default function JournalPage() {
   const [humeur, setHumeur] = useState(2);
 
   const [activities, setActivities] = useState([]);
+  const [evenements, setEvenements] = useState([]);
   const [notes, setNotes] = useState("");
 
   const token = localStorage.getItem("stumpr_token");
@@ -203,6 +242,7 @@ export default function JournalPage() {
           bien_etre: { fatigue, sommeil, humeur },
           activites: activities,
           notes: notes || null,
+          evenements: evenements,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -367,6 +407,47 @@ export default function JournalPage() {
               />
             ))}
           </div>
+        </section>
+
+        {/* Section: Événements */}
+        <section className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm mb-6" data-testid="section-evenements">
+          <h2 className="font-headline font-bold text-lg text-on-surface mb-1">
+            Événements du jour
+          </h2>
+          <p className="text-sm text-on-surface-variant mb-4">
+            Ces informations sont transmises à votre équipe médicale.
+          </p>
+          {EVENEMENTS_JOURNAL.map((groupe) => (
+            <div key={groupe.groupe} className="mb-5">
+              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
+                {groupe.groupe}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {groupe.items.map((evt) => {
+                  const isActive = evenements.includes(evt.id);
+                  return (
+                    <button
+                      key={evt.id}
+                      type="button"
+                      data-testid={`evenement-${evt.id}`}
+                      onClick={() =>
+                        setEvenements((prev) =>
+                          isActive ? prev.filter((e) => e !== evt.id) : [...prev, evt.id]
+                        )
+                      }
+                      style={
+                        isActive
+                          ? { backgroundColor: 'rgba(0,56,108,0.08)', border: '2px solid #00386c', borderRadius: 10, padding: '8px 10px', color: '#00386c', fontWeight: 600, fontSize: 12, cursor: 'pointer', textAlign: 'left', width: '100%' }
+                          : { backgroundColor: '#ffffff', border: '2px solid #e4e9ed', borderRadius: 10, padding: '8px 10px', color: '#424750', fontWeight: 400, fontSize: 12, cursor: 'pointer', textAlign: 'left', width: '100%' }
+                      }
+                    >
+                      {evt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </section>
 
         {/* Section: Notes */}

@@ -252,6 +252,7 @@ class JournalEntryCreate(BaseModel):
     bien_etre: JournalBienEtre
     activites: List[str] = []
     notes: Optional[str] = None
+    evenements: Optional[List[str]] = []
 
 class JournalEntryResponse(BaseModel):
     id: str
@@ -263,6 +264,7 @@ class JournalEntryResponse(BaseModel):
     activites: List[str] = []
     notes: Optional[str] = None
     has_alert: bool = False
+    evenements: Optional[List[str]] = []
 
 class JournalStatsResponse(BaseModel):
     avg_pain_composants: float
@@ -818,6 +820,107 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
         labels = [activity_labels.get(a, a) for a in activites]
         elements.append(Paragraph(" • ".join(labels), styles['StumprBody']))
     
+    # Section 6 - Clinical timeline (last 30 days)
+    EVENT_LABELS = {
+        "manchon_change": "Changement manchon",
+        "emboiture_changee": "Changement emboîture",
+        "composant_change": "Nouveau composant",
+        "reglage_prothese": "Réglage prothèse",
+        "prothese_secours": "Prothèse secours",
+        "prothese_non_portee": "Prothèse non portée",
+        "irritation_cutanee": "Irritation cutanée",
+        "plaie_escarre": "Plaie/escarre",
+        "sudation_excessive": "Sudation excessive",
+        "oedeme_moignon": "Œdème moignon",
+        "douleur_neuropathique": "Douleur neuropathique",
+        "point_dur_osseux": "Point osseux douloureux",
+        "reaction_allergique": "Réaction allergique",
+        "infection_suspectee": "Infection suspectée",
+        "chute_incident": "Chute/incident",
+        "activite_intense": "Activité intense",
+        "variation_poids": "Variation poids",
+        "consultation_medicale": "Consultation médicale",
+        "changement_traitement": "Changement traitement",
+        "chaleur_voyage": "Chaleur/voyage",
+    }
+
+    thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+    journal_entries = await db.journal_entries.find(
+        {"patient_id": patient_id, "created_at": {"$gte": thirty_days_ago}},
+        {"_id": 0}
+    ).sort("created_at", 1).to_list(None)
+
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph("SUIVI CLINIQUE — 30 DERNIERS JOURS", styles['SectionTitle']))
+    elements.append(Paragraph(
+        "Données de suivi quotidien — à l'attention de l'équipe médicale",
+        ParagraphStyle('SubNote', parent=styles['StumprBody'], fontSize=9, textColor=HexColor('#8892a4'), fontName='Helvetica-Oblique')
+    ))
+    elements.append(Spacer(1, 8))
+
+    if not journal_entries:
+        elements.append(Paragraph("Aucune donnée de suivi enregistrée sur les 30 derniers jours.", styles['StumprBody']))
+    else:
+        table_data = [["Date", "Douleurs", "Événements signalés"]]
+        for e in journal_entries:
+            date_str = e.get("created_at", "")[:10]
+            try:
+                date_fmt = datetime.fromisoformat(date_str).strftime("%d/%m/%Y")
+            except Exception:
+                date_fmt = date_str
+            d_obj = e.get("douleurs", {})
+            globale = d_obj.get("globale", 0) or 0
+            fantome = d_obj.get("fantome", 0) or 0
+            max_pain = max(globale, fantome)
+            if max_pain <= 2:
+                pain_hex = '#2d9e6b'
+            elif max_pain <= 5:
+                pain_hex = '#c9a227'
+            elif max_pain <= 7:
+                pain_hex = '#e08c2a'
+            else:
+                pain_hex = '#d64545'
+            pain_str = f"G: {globale}/10 · F: {fantome}/10"
+            evts = e.get("evenements", []) or []
+            evts_str = " · ".join(EVENT_LABELS.get(ev, ev) for ev in evts) if evts else "—"
+            table_data.append([
+                Paragraph(f"<font name='Helvetica-Bold' color='#8892a4' size='9'>{date_fmt}</font>", styles['StumprBody']),
+                Paragraph(f"<font color='{pain_hex}' size='9'>{pain_str}</font>", styles['StumprBody']),
+                Paragraph(f"<font size='9' color='#3d4a5c'>{evts_str}</font>", styles['StumprBody']),
+            ])
+
+        col_widths = [2.5 * cm, 5 * cm, 8.5 * cm]
+        tbl = Table(table_data, colWidths=col_widths)
+        tbl.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f6fafe')),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 9),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1a1f2e')),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#fafafa')]),
+            ('LINEBELOW', (0, 0), (-1, -1), 0.25, colors.HexColor('#f0f0f0')),
+            ('TOPPADDING', (0, 0), (-1, -1), 5),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ]))
+        elements.append(tbl)
+
+    note_style = ParagraphStyle(
+        'TimelineNote',
+        parent=styles['StumprBody'],
+        fontSize=8,
+        textColor=colors.HexColor('#8892a4'),
+        fontName='Helvetica-Oblique',
+    )
+    elements.append(Spacer(1, 6))
+    elements.append(Paragraph(
+        "G = Douleur globale · F = Douleur fantôme · Échelle 0-10<br/>"
+        "Ces données sont déclaratives et saisies par le patient.<br/>"
+        "Elles ne constituent pas un diagnostic médical.",
+        note_style
+    ))
+
     # Footer
     elements.append(Spacer(1, 30))
     gen_date = datetime.now(timezone.utc).strftime("%d/%m/%Y à %H:%M")
@@ -869,6 +972,7 @@ async def create_journal_entry(entry: JournalEntryCreate, current_user: dict = D
         "bien_etre": entry.bien_etre.model_dump(),
         "activites": entry.activites,
         "notes": entry.notes,
+        "evenements": entry.evenements or [],
         "has_alert": has_alert
     }
     
