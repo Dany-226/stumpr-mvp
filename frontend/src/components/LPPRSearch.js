@@ -3,6 +3,19 @@ import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Pills that map to an exact Airtable Catégorie value
+const PILL_CATEGORIE_MAP = {
+  "Pied Classe I": "Pied Classe I",
+  "Pied Classe II": "Pied Classe II",
+  "Pied Classe III": "Pied Classe III",
+  "Genou monoaxial": "Genou monoaxial",
+  "Genou polycentrique": "Genou polycentrique",
+  "MPK": "MPK",
+  "Manchon": "Manchon",
+};
+
+const PILLS = ["Manchon", "Emboîture", "Emboîture tibiale", "Emboîture fémorale", "Genou", "Pied Classe I", "Pied Classe II", "Pied Classe III", "Pied rigide", "Main", "Myoélectrique", "Adaptateur rotation", "Amortisseur", "Aqualeg", "Genou monoaxial", "Genou polycentrique", "MPK", "Hanche"];
+
 export default function LPPRSearch({ onSelect, hideTarif = false }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -10,12 +23,16 @@ export default function LPPRSearch({ onSelect, hideTarif = false }) {
   const [open, setOpen] = useState(false);
   const token = localStorage.getItem("stumpr_token");
 
-  const search = useCallback(async (q) => {
-    if (q.length < 1) { setResults([]); setOpen(false); return; }
+  const search = useCallback(async ({ q, categorie } = {}) => {
+    if (!q && !categorie) { setResults([]); setOpen(false); return; }
+    if (q && q.length < 1) { setResults([]); setOpen(false); return; }
     setLoading(true);
     try {
+      const params = {};
+      if (q) params.q = q;
+      if (categorie) params.categorie = categorie;
       const res = await axios.get(`${API}/lppr/search`, {
-        params: { q },
+        params,
         headers: { Authorization: `Bearer ${token}` },
       });
       setResults(res.data);
@@ -25,9 +42,22 @@ export default function LPPRSearch({ onSelect, hideTarif = false }) {
   }, [token]);
 
   useEffect(() => {
-    const t = setTimeout(() => search(query), 300);
+    const t = setTimeout(() => {
+      if (query.length >= 1) search({ q: query });
+      else { setResults([]); setOpen(false); }
+    }, 300);
     return () => clearTimeout(t);
   }, [query, search]);
+
+  const handlePillClick = (pill) => {
+    setQuery("");
+    const exactCategorie = PILL_CATEGORIE_MAP[pill];
+    if (exactCategorie) {
+      search({ categorie: exactCategorie });
+    } else {
+      search({ q: pill });
+    }
+  };
 
   const handleSelect = (item) => {
     onSelect(item);
@@ -40,11 +70,11 @@ export default function LPPRSearch({ onSelect, hideTarif = false }) {
     <div style={{ marginBottom: 16 }}>
       <label className="stumpr-label">Recherche LPPR (optionnel)</label>
       <div style={{ display: "flex", gap: 6, overflowX: "auto", flexWrap: "nowrap", marginBottom: 8, paddingBottom: 2 }}>
-        {["Manchon", "Emboîture", "Emboîture tibiale", "Emboîture fémorale", "Genou", "Pied Classe I", "Pied Classe II", "Pied Classe III", "Pied rigide", "Main", "Myoélectrique", "Adaptateur rotation", "Amortisseur", "Aqualeg", "Genou monoaxial", "Genou polycentrique", "MPK", "Hanche"].map((cat) => (
+        {PILLS.map((cat) => (
           <button
             key={cat}
             type="button"
-            onClick={() => setQuery(cat)}
+            onClick={() => handlePillClick(cat)}
             onMouseEnter={(e) => { e.currentTarget.style.background = "#e6f3f2"; e.currentTarget.style.color = "#0e6b63"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "#f0ece6"; e.currentTarget.style.color = "#3d4a5c"; }}
             style={{ flexShrink: 0, background: "#f0ece6", color: "#3d4a5c", border: "none", borderRadius: 20, padding: "4px 10px", fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}
@@ -101,7 +131,7 @@ export default function LPPRSearch({ onSelect, hideTarif = false }) {
         </div>
       )}
 
-      {open && query.length >= 1 && results.length === 0 && !loading && (
+      {open && results.length === 0 && !loading && (
         <div style={{
           marginTop: 4,
           border: "1px solid #e0d9cf",

@@ -354,14 +354,20 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 # ======================== LPPR ROUTES ========================
 
 @api_router.get("/lppr/search", response_model=List[LPPRSearchResult])
-async def search_lppr(q: str = Query(..., min_length=2)):
+async def search_lppr(q: Optional[str] = Query(None, min_length=2), categorie: Optional[str] = Query(None)):
+    if not q and not categorie:
+        raise HTTPException(status_code=422, detail="Au moins q ou categorie est requis")
     try:
         url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE}"
         headers = {"Authorization": f"Bearer {AIRTABLE_TOKEN}"}
-        
-        # Build filter formula - search in Nomenclature (text) and Code (converted to string)
-        q_lower = q.lower()
-        filter_formula = f'OR(SEARCH("{q_lower}",LOWER({{Nomenclature}})),SEARCH("{q}",CONCATENATE({{Code}},"")),SEARCH("{q_lower}",LOWER({{Catégorie}})))'
+
+        filters = []
+        if categorie:
+            filters.append(f'LOWER({{Catégorie}})=LOWER("{categorie}")')
+        if q:
+            q_lower = q.lower()
+            filters.append(f'OR(SEARCH("{q_lower}",LOWER({{Nomenclature}})),SEARCH("{q}",CONCATENATE({{Code}},"")),SEARCH("{q_lower}",LOWER({{Catégorie}})))')
+        filter_formula = f'AND({",".join(filters)})' if len(filters) > 1 else filters[0]
         
         params = {
             "filterByFormula": filter_formula,
