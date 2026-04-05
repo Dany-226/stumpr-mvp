@@ -18,6 +18,21 @@ export const PROTHESE_TYPES = {
   autre:      { label: "Autre",      bg: "#f3e5f5", text: "#7b1fa2" },
 };
 
+export const FABRICANTS = [
+  "Ottobock",
+  "Össur",
+  "Proteor",
+  "Blatchford",
+  "Ortho Europe",
+  "Steeper",
+  "Fillauer",
+  "Colfax / DJO",
+  "Trulife",
+  "Pohlig",
+  "Afy",
+  "Autre",
+];
+
 export const COMPOSANT_TYPES = [
   { value: "Manchon", label: "Manchon" },
   { value: "Emboîture", label: "Emboîture" },

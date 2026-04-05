@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import StumprLogo from "../components/StumprLogo";
 import LPPRSearch from "../components/LPPRSearch";
-import { COMPOSANT_TYPES } from "../constants/patient";
+import { COMPOSANT_TYPES, FABRICANTS } from "../constants/patient";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -149,6 +149,8 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
     tarif: null, duree_ans: null, date_attribution: "", notes: "",
   });
   const [saving, setSaving] = useState(false);
+  const [fabricantSelect, setFabricantSelect] = useState("");
+  const [fabricantLibre, setFabricantLibre] = useState("");
 
   const handleLPPRSelect = (item) => {
     setForm(f => ({
@@ -203,12 +205,29 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
           </div>
 
           <div className="mb-4">
-            <label className="text-sm font-medium text-on-surface-variant mb-1 block">Marque</label>
-            <input type="text"
-              className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
-              placeholder="Ex: Ottobock, Össur..."
-              value={form.marque}
-              onChange={(e) => setForm(f => ({ ...f, marque: e.target.value }))} />
+            <label className="text-sm font-medium text-on-surface-variant mb-1 block">Fabricant</label>
+            <select
+              className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30"
+              value={fabricantSelect}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFabricantSelect(val);
+                if (val !== "Autre") setForm(f => ({ ...f, marque: val }));
+                else setForm(f => ({ ...f, marque: fabricantLibre }));
+              }}>
+              <option value="">— Sélectionner —</option>
+              {FABRICANTS.map(f => <option key={f} value={f}>{f}</option>)}
+            </select>
+            {fabricantSelect === "Autre" && (
+              <input type="text"
+                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 mt-2"
+                placeholder="Préciser le fabricant..."
+                value={fabricantLibre}
+                onChange={(e) => {
+                  setFabricantLibre(e.target.value);
+                  setForm(f => ({ ...f, marque: e.target.value }));
+                }} />
+            )}
           </div>
 
           <div className="mb-4">

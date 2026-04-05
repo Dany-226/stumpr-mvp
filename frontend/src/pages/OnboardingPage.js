@@ -12,6 +12,7 @@ import {
   CAUSES,
   PROTHESE_TYPES,
   COMPOSANT_TYPES,
+  FABRICANTS,
 } from "../constants/patient";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -250,6 +251,41 @@ function StepProthese({ data, onChange }) {
   );
 }
 
+// ── Fabricant picker (select + libre) ─────────────────────────────────────
+function FabricantPicker({ value, onChange }) {
+  const [sel, setSel] = useState(
+    value && !FABRICANTS.includes(value) ? "Autre" : (value || "")
+  );
+  const [libre, setLibre] = useState(
+    value && !FABRICANTS.includes(value) ? value : ""
+  );
+  return (
+    <>
+      <select
+        className="w-full bg-surface-container rounded-xl border-none px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface"
+        value={sel}
+        onChange={(e) => {
+          const v = e.target.value;
+          setSel(v);
+          if (v !== "Autre") onChange(v);
+          else onChange(libre);
+        }}
+      >
+        <option value="">— Sélectionner —</option>
+        {FABRICANTS.map((f) => <option key={f} value={f}>{f}</option>)}
+      </select>
+      {sel === "Autre" && (
+        <input
+          className="w-full bg-surface-container rounded-xl border-none px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface mt-2"
+          placeholder="Préciser le fabricant..."
+          value={libre}
+          onChange={(e) => { setLibre(e.target.value); onChange(e.target.value); }}
+        />
+      )}
+    </>
+  );
+}
+
 // ── Step 3 — Composants ────────────────────────────────────────────────────
 function StepComposants({ composants, onAdd, onRemove, onUpdate }) {
   return (
@@ -299,12 +335,10 @@ function StepComposants({ composants, onAdd, onRemove, onUpdate }) {
             </div>
 
             <div className="mb-3">
-              <label className={LABEL_CLS}>Marque / Modèle</label>
-              <input
-                className={INPUT_CLS}
+              <label className={LABEL_CLS}>Fabricant</label>
+              <FabricantPicker
                 value={comp.marque}
-                onChange={(e) => onUpdate(idx, "marque", e.target.value)}
-                placeholder="Ex: Ottobock, Össur..."
+                onChange={(v) => onUpdate(idx, "marque", v)}
               />
             </div>
 
