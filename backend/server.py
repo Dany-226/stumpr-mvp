@@ -1469,6 +1469,27 @@ async def get_shared_rapport(share_id: str):
         raise HTTPException(status_code=404, detail="Rapport non trouvé")
     return RapportResponse(**rapport)
 
+# ======================== ORTHOS UFOP ROUTES ========================
+
+class OrthoResponse(BaseModel):
+    id: str
+    nom: str
+    adresse: Optional[str] = None
+    cp: Optional[str] = None
+    ville: Optional[str] = None
+    departement: Optional[str] = None
+    telephone: Optional[str] = None
+    email: Optional[str] = None
+    site_web: Optional[str] = None
+
+@api_router.get("/orthos", response_model=List[OrthoResponse])
+async def get_orthos(departement: Optional[str] = Query(None)):
+    query = {}
+    if departement:
+        query["departement"] = departement
+    orthos = await db.orthos.find(query, {"_id": 0}).sort("nom", 1).to_list(500)
+    return [OrthoResponse(**o) for o in orthos]
+
 # ======================== ANNUAIRE MODELS ========================
 
 class Avis(BaseModel):
