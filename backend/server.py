@@ -112,14 +112,18 @@ class PatientCreate(BaseModel):
     composants: Optional[List[LPPRComponent]] = []
     
     # Section 4 - Suivi médical
-    ortho_referent: Optional[str] = None
-    cabinet_centre: Optional[str] = None
-    telephone_ortho: Optional[str] = None
+    ortho_id: Optional[str] = None
+    ortho_nom: Optional[str] = None
+    ortho_adresse: Optional[str] = None
+    ortho_cp: Optional[str] = None
+    ortho_ville: Optional[str] = None
+    ortho_telephone: Optional[str] = None
+    ortho_email: Optional[str] = None
     medecin_prescripteur: Optional[str] = None
     specialite_prescripteur: Optional[str] = None
     prochain_rdv: Optional[str] = None
     notes_medicales: Optional[str] = None
-    
+
     # Section 5 - Activités
     activites: Optional[List[str]] = []
 
@@ -217,9 +221,13 @@ class PatientResponse(BaseModel):
     cause: Optional[str] = None
     notes_moignon: Optional[str] = None
     composants: List[LPPRComponent] = []
-    ortho_referent: Optional[str] = None
-    cabinet_centre: Optional[str] = None
-    telephone_ortho: Optional[str] = None
+    ortho_id: Optional[str] = None
+    ortho_nom: Optional[str] = None
+    ortho_adresse: Optional[str] = None
+    ortho_cp: Optional[str] = None
+    ortho_ville: Optional[str] = None
+    ortho_telephone: Optional[str] = None
+    ortho_email: Optional[str] = None
     medecin_prescripteur: Optional[str] = None
     specialite_prescripteur: Optional[str] = None
     prochain_rdv: Optional[str] = None
@@ -777,10 +785,16 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
     
     # Section 4 - Suivi médical
     elements.append(Paragraph("SUIVI MÉDICAL", styles['SectionTitle']))
+    ortho_nom = patient.get("ortho_nom") or ""
+    ortho_ville = patient.get("ortho_ville") or ""
+    ortho_tel = patient.get("ortho_telephone") or ""
+    if ortho_nom:
+        ortho_parts = [p for p in [ortho_nom, ortho_ville, ortho_tel] if p]
+        ortho_display = " — ".join(ortho_parts)
+    else:
+        ortho_display = "Non renseigné"
     med_data = [
-        ["Orthoprothésiste:", patient.get("ortho_referent", "") or "Non renseigné"],
-        ["Cabinet/Centre:", patient.get("cabinet_centre", "") or "Non renseigné"],
-        ["Tél. ortho:", patient.get("telephone_ortho", "") or "Non renseigné"],
+        ["Orthoprothésiste:", ortho_display],
         ["Médecin prescripteur:", patient.get("medecin_prescripteur", "") or "Non renseigné"],
         ["Spécialité:", patient.get("specialite_prescripteur", "") or "Non renseignée"],
         ["Prochain RDV:", format_date(patient.get("prochain_rdv"))]

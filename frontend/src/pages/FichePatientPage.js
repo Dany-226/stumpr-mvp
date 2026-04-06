@@ -649,10 +649,17 @@ export default function FichePatientPage() {
     prenom: "", nom: "", date_naissance: "", email: "", telephone: "", niveau_activite: "",
     niveau_amputation: "", cote: "", date_amputation: "", cause: "", notes_moignon: "",
     composants: [],
-    ortho_referent: "", cabinet_centre: "", telephone_ortho: "",
+    ortho_id: null, ortho_nom: "", ortho_adresse: "", ortho_cp: "", ortho_ville: "",
+    ortho_telephone: "", ortho_email: "",
     medecin_prescripteur: "", specialite_prescripteur: "", prochain_rdv: "", notes_medicales: "",
     activites: [],
   });
+
+  // Ortho selector state
+  const [departementsDispos, setDepartementsDispos] = useState([]);
+  const [orthosDept, setOrthosDept] = useState([]);
+  const [selectedDept, setSelectedDept] = useState("");
+  const [orthoSelectionne, setOrthoSelectionne] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("stumpr_user") || "{}");
   const token = localStorage.getItem("stumpr_token");
@@ -675,6 +682,12 @@ export default function FichePatientPage() {
         });
     }
     loadProtheses();
+    // Charger les départements disponibles dans l'annuaire UFOP
+    axios.get(`${API}/orthos`).then(res => {
+      const depts = [...new Set(res.data.map(o => o.departement).filter(Boolean))];
+      depts.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      setDepartementsDispos(depts);
+    }).catch(() => {});
   }, [id]);
 
   const loadPatient = async () => {
@@ -1079,28 +1092,113 @@ export default function FichePatientPage() {
         {/* SECTION 4 — Suivi médical */}
         <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm animate-fade-in" data-testid="section-suivi">
           <h3 className="font-headline font-bold text-xl text-on-surface mb-6 border-l-4 border-secondary pl-4">Suivi médical</h3>
+
+          {/* Sélecteur orthoprothésiste */}
+          <div className="mb-6">
+            <label className="text-sm font-medium text-on-surface-variant mb-3 block">Mon orthoprothésiste</label>
+
+            {formData.ortho_id ? (
+              <div className="bg-secondary/10 rounded-2xl p-4">
+                <p className="font-bold text-on-surface">{formData.ortho_nom}</p>
+                {(formData.ortho_adresse || formData.ortho_ville) && (
+                  <p className="text-sm text-on-surface-variant mt-1">
+                    {[formData.ortho_adresse, formData.ortho_cp, formData.ortho_ville].filter(Boolean).join(" ")}
+                  </p>
+                )}
+                {formData.ortho_telephone && (
+                  <p className="text-sm text-on-surface-variant">{formData.ortho_telephone}</p>
+                )}
+                {formData.ortho_email && (
+                  <p className="text-sm text-on-surface-variant">{formData.ortho_email}</p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setFormData(f => ({ ...f, ortho_id: null, ortho_nom: "", ortho_adresse: "", ortho_cp: "", ortho_ville: "", ortho_telephone: "", ortho_email: "" }))}
+                  className="text-secondary text-sm underline mt-2 bg-transparent border-none cursor-pointer"
+                >
+                  Changer
+                </button>
+              </div>
+            ) : (
+              <div>
+                <select
+                  className="w-full bg-surface-container rounded-xl border-none px-4 py-3 text-sm text-on-surface outline-none focus:ring-2 focus:ring-secondary/30 mb-3"
+                  value={selectedDept}
+                  onChange={async (e) => {
+                    const dept = e.target.value;
+                    setSelectedDept(dept);
+                    setOrthoSelectionne(null);
+                    if (dept) {
+                      const res = await axios.get(`${API}/orthos`, { params: { departement: dept } });
+                      setOrthosDept(res.data);
+                    } else {
+                      setOrthosDept([]);
+                    }
+                  }}
+                >
+                  <option value="">Sélectionner un département...</option>
+                  {departementsDispos.map(d => (
+                    <option key={d} value={d}>Département {d}</option>
+                  ))}
+                </select>
+
+                {orthosDept.length > 0 && (
+                  <div className="max-h-64 overflow-y-auto space-y-2 mb-3">
+                    {orthosDept.map(ortho => {
+                      const isActive = orthoSelectionne?.id === ortho.id;
+                      return (
+                        <div
+                          key={ortho.id}
+                          onClick={() => setOrthoSelectionne(ortho)}
+                          className="rounded-2xl p-4 cursor-pointer"
+                          style={{
+                            backgroundColor: isActive ? "rgba(0,106,99,0.05)" : "var(--color-surface-container-lowest)",
+                            border: isActive ? "2px solid #006a63" : "2px solid transparent",
+                            boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                          }}
+                        >
+                          <p className="font-bold text-sm text-on-surface">{ortho.nom}</p>
+                          {ortho.adresse && (
+                            <p className="text-xs text-on-surface-variant mt-0.5">{ortho.adresse} — {ortho.cp} {ortho.ville}</p>
+                          )}
+                          {ortho.telephone && (
+                            <p className="text-xs text-on-surface-variant">{ortho.telephone}</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {orthoSelectionne && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(f => ({
+                        ...f,
+                        ortho_id: orthoSelectionne.id,
+                        ortho_nom: orthoSelectionne.nom,
+                        ortho_adresse: orthoSelectionne.adresse || "",
+                        ortho_cp: orthoSelectionne.cp || "",
+                        ortho_ville: orthoSelectionne.ville || "",
+                        ortho_telephone: orthoSelectionne.telephone || "",
+                        ortho_email: orthoSelectionne.email || "",
+                      }));
+                      setOrthoSelectionne(null);
+                      setSelectedDept("");
+                      setOrthosDept([]);
+                    }}
+                    className="font-bold text-sm rounded-xl px-6 py-3 w-full"
+                    style={{ backgroundColor: "#00386c", color: "#fff" }}
+                  >
+                    Confirmer cet orthoprothésiste
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="ortho_referent">Orthoprothésiste référent</label>
-              <input type="text" id="ortho_referent" name="ortho_referent" data-testid="input-ortho-referent"
-                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
-                placeholder="Nom de l'orthoprothésiste"
-                value={formData.ortho_referent} onChange={handleChange} />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="cabinet_centre">Cabinet / Centre</label>
-              <input type="text" id="cabinet_centre" name="cabinet_centre" data-testid="input-cabinet"
-                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
-                placeholder="Nom du cabinet ou centre"
-                value={formData.cabinet_centre} onChange={handleChange} />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="telephone_ortho">Téléphone ortho</label>
-              <input type="tel" id="telephone_ortho" name="telephone_ortho" data-testid="input-tel-ortho"
-                className="w-full bg-surface-container rounded-xl px-4 py-3 text-sm text-on-surface border-none outline-none focus:ring-2 focus:ring-secondary/30 placeholder:text-on-surface-variant/50"
-                placeholder="01 XX XX XX XX"
-                value={formData.telephone_ortho} onChange={handleChange} />
-            </div>
             <div>
               <label className="text-sm font-medium text-on-surface-variant mb-1 block" htmlFor="medecin_prescripteur">Médecin prescripteur</label>
               <input type="text" id="medecin_prescripteur" name="medecin_prescripteur" data-testid="input-medecin"
