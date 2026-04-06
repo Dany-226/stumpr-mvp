@@ -956,6 +956,8 @@ async def create_journal_entry(entry: JournalEntryCreate, current_user: dict = D
     
     # Check if any pain score >= 7 for alert
     has_alert = False
+    if entry.douleurs.globale >= 7:
+        has_alert = True
     for comp_pain in entry.douleurs.composants:
         if comp_pain.score >= 7:
             has_alert = True
@@ -1034,10 +1036,15 @@ async def get_journal_stats(
     entries_by_day = []
     
     for entry in entries:
-        # Pain from components
         douleurs = entry.get("douleurs", {})
-        for comp in douleurs.get("composants", []):
-            total_pain_composants.append(comp.get("score", 0))
+        # Pain: prefer globale if set, fallback to avg of composants
+        globale = douleurs.get("globale", 0) or 0
+        comp_list = douleurs.get("composants", [])
+        if globale > 0 or not comp_list:
+            pain_value = globale
+        else:
+            pain_value = sum(c.get("score", 0) for c in comp_list) / max(len(comp_list), 1)
+        total_pain_composants.append(pain_value)
         total_fantome.append(douleurs.get("fantome", 0))
         
         # Well-being
@@ -1059,11 +1066,9 @@ async def get_journal_stats(
         created_dt = datetime.fromisoformat(entry["created_at"].replace('Z', '+00:00'))
         date_str = created_dt.strftime("%d/%m")
         
-        avg_comp_pain = sum([c.get("score", 0) for c in douleurs.get("composants", [])]) / max(len(douleurs.get("composants", [])), 1)
-        
         entries_by_day.append({
             "date": date_str,
-            "pain_composants": round(avg_comp_pain, 1),
+            "pain_composants": round(pain_value, 1),
             "fantome": douleurs.get("fantome", 0),
             "fatigue": bien_etre.get("fatigue", 2),
             "sommeil": bien_etre.get("sommeil", 2),
