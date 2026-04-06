@@ -1,0 +1,296 @@
+nom,adresse,cp,ville,departement,telephone,email,site_web
+ATLANTIQUE ORTHO,317 route de Toulouse,33140,Villenave D’Ornon,33,05 56 49 09 09,,https://atlantiqueortho.com
+PROTEOR MÉRIGNAC,498 avenue de Verdun,33700,Merignac,33,05 56 12 06 86,merignac.sante@proteor.com,http://www.proteor.com
+ALBATROS BÈGLES,14 avenue Jeanne d'Arc,33130,Bègles,33,05 56 85 05 09,albatros@albatros-france.fr,https://albatros-france.fr
+PROTEOR BORDEAUX,5 allée Newton ZI Bersol,33600,Bordeaux Pessac,33,05 57 26 10 40,bordeaux@proteor.com,http://www.proteor.com
+DOMITAL ORTHOPEDIE,ZA JEAN ZAY 3 rue Condorcet,33150,Cenon,33,05 56 40 42 53,,https://www.domital-orthopedie.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (BORDEAUX),144 Avenue du Médoc Centre commercial Le Vigean,33320,Eysines,33,05 56 05 42 26,bordeaux@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/agence-bordeaux/
+LAGARRIGUE PESSAC,Parc Biogalien 27 allée Charles Darwin,33600,Pessac,33,05 56 47 60 07,pessac@groupelagarrigue.com,http://www.lagarrigue.com/
+LAGARRIGUE LIBOURNE,147 rue de la Marne,33500,Libourne,33,05 33 03 00 34,libourne@groupelagarrigue.com,http://www.lagarrigue.com/
+LAGARRIGUE COGNAC,35 rue de Bellefonds,16100,Cognac,16,05 45 82 23 07,cognac@groupelagarrigue.com,http://www.lagarrigue.com/
+ALBATROS FRANCE,Z.I. de Maury R.N. 113 40 route de Marceau,47130,Port Sainte Marie,47,05 53 95 23 48,albatros@albatros-france.fr,http://www.albatros-france.fr
+PROTEOR ANGOULÊME,30 rue Victor Hugo,16400,La Couronne,16,05 49 61 91 01,angouleme@proteor.com,http://www.proteor.com
+PROTEOR MONT-DE-MARSAN,3 allée de l'Oranger,40000,Mont-De-Marsan,40,05 58 51 14 68,proteor.montdemarsan@proteor.com,http://www.proteor.com
+LAGARRIGUE ANGOULÊME,187 rue de la Tourganier,16000,Angouleme,16,05 45 38 49 62,angouleme@groupelagarrigue.com,http://www.lagarrigue.com/
+ALBATROS PÉRIGUEUX,157 avenue du Maréchal Juin,24000,Perigueux,24,05 53 06 96 49,albatros@albatros-france.fr,https://albatros-france.fr
+PROTEOR PERIGUEUX,202/204 avenue Michel Grandou,24750,Trelissac,24,05 53 54 36 50,perigueux@proteor.com,http://www.proteor.com
+PROTEOR AGEN,39 rue Robespierre,47000,Agen,47,05 53 68 05 64,agen@proteor.com,http://www.proteor.com
+LAGARRIGUE AGEN,"852, avenue du Maréchal Leclerc",47000,Agen,47,05 53 98 33 65,agen@groupelagarrigue.com,http://www.lagarrigue.com/
+LAGARRIGUE LA ROCHELLE,55 rue Victor Hugo,17000,La Rochelle,17,05 46 34 79 85,larochelle@groupelagarrigue.com,http://www.lagarrigue.com/
+EQUIP'SANTE,14 rue des Greffières,17140,Lagord,17,05 46 34 39 06,NC,http://www.equip-sante.com/
+PROTEOR NIORT,493 avenue de Paris,79000,Niort,79,05 49 35 30 30,niort@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (ANGLET),3 rue de lestandau,64600,Anglet,64,05 59 31 42 84,anglet@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/agence-anglet/
+PROTEOR BAYONNE,4 allée Didier Daurat,64100,Bayonne,64,05 59 70 56 61,bayonne@proteor.com,http://www.proteor.com
+PROTEOR BRIVE,34 avenue Ribot,19100,Brive La Gaillarde,19,05 55 17 24 18,brive@proteor.com,http://www.proteor.com
+LAGARRIGUE PAU,14 rue Johannes Kepler,64000,Pau,64,NC,pau@groupelagarrigue.com,https://lagarrigue.com/
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (PAU),14 rue Jean Zay,64000,Pau,64,05 59 30 52 43,pau@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/pau-orthodynamic/
+LAGARRIGUE,ZAC Golf - 15 Impasse Oihana,64200,Bassussarry,64,NC,bayonne@groupelagarrigue.com,https://lagarrigue.com/
+LAGARRIGUE BRIVE-LA-GAILLARDE,23 avenue Maréchal Bugeaud,19100,Brive La Gaillarde,19,05 55 74 31 30,brive@groupelagarrigue.com,http://www.lagarrigue.com/
+LAGARRIGUE LIMOGES,43 rue de la Conque,87000,Limoges,87,05 55 01 25 25,limoges@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR MONTAUBAN,110 rue François Mauriac,82000,Montauban,82,05 63 65 53 45,proteor.montauban@proteor.com,http://www.proteor.com
+PROTEOR LIMOGES,5 rue Santos Dumont,87000,Limoges,87,05 87 41 83 03,proteor.limoges@proteor.com,http://www.proteor.com
+EQUIP'SANTE,"23, bd de l'Aumônerie",85400,Lucon,85,02 51 27 92 63,NC,http://www.equip-sante.com/
+ALBATROS TOULOUSE,Parc Pythagore 109 impasse Thalès - Bat. 17,31620,,31,05 34 52 64 26,albatros@albatros-france.fr,https://albatros-france.fr
+OCTO31,4 chemin de la Ménude,31770,Colomiers,31,05 61 84 33 46,,http://www.lagarrigue.com/
+PROTEOR POITIERS,116 rue des Artisans ZA de Beaubâton,86550,Mignaloux-Bauvoir,86,05 49 38 87 17,poitiers@proteor.com,http://www.proteor.com
+CAP ORTHOPEDIE,4 rue Albert Einstein Parc Numérimer,85340,Les Sables D'Olonne,85,02 51 32 57 38,accueil@cap-orthopedie.com,https://www.cap-orthopedie.com
+ORTHO EVOLUTION,7 rue Isabelle Eberhardt,31200,Toulouse,31,05 32 09 71 23,orthoevolution31@gmail.com,https://ortho-evolution.fr/
+APPAREILLAGES SUD PROTHESE,7 rue Isabelle Eberhardt,31000,Toulouse,31,05 61 13 06 67,,
+LAGARRIGUE TOULOUSE,50-56-58 Chemin Baluffet ZI Baluffet,31300,Toulouse,31,05 61 49 30 31,toulouse@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR TOULOUSE,5 Rue Roger Camboulives ZA de Basso Combo,31100,Toulouse,31,05 61 40 49 18,toulouse@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (TOULOUSE),HELIOPOLE Bât. D 33-43 avenue Georges Pompidou,31130,Balma,31,05 61 12 29 70,toulouse@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/toulouse-ottobock-orthopedie/
+EQUIP' SANTE,2 rue René Coty,85000,La Roche S/Yon,85,02 51 37 07 72,NC,http://www.equip-sante.com
+LAGARRIGUE,2 Rue René Coty,85000,La Roche-Sur-Yon,85,02 51 36 09 15,larochesuryon@lagarrigue.com,https://lagarrigue.com/
+PROTEOR LA ROCHE-SUR-YON,1 bis rue Haxo,85000,La Roche-Sur-Yon,85,02 52 43 08 07,larochesuryon@proteor.com,http://www.proteor.com
+APPAREILLAGE PROTHESE ORTHOPEDIE,54 ter avenue Jacques Douzans,31600,Muret,31,05 62 23 03 44,,
+OXILIUM,5 Avenue Vialas,81370,Saint Sulpice La Pointe,81,,info@,http://www.oxilium-orthoprothesiste.fr
+LAGARRIGUE ALBI,Rue François Arago,81000,Albi,81,05 63 45 48 25,albi@groupelagarrigue.com,http://www.lagarrigue.com/
+ORTEA,"210, rue des Charpentiers ZA Bel Air",12000,Rodez,12,,info@,http://
+AVEYRON ORTHOPEDIE,6 avenue de Rodez,12510,Olemps,12,05 65 68 23 42,,
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (RODEZ),5 boulevard Belle Isle,12000,Rodez,12,05 65 67 31 70,rodez@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/rodez-marcenac-ducros/
+ALBATROS NANTES,Parc d'activité de la Bayonne,44140,Montbert,44,,albatros@albatros-france.fr,https://albatros-france.fr
+EQUIP'SANTE,3 rue Blaise Pascal,44400,Reze,44,02 40 48 55 90,NC,http://www.equip-sante.com/
+PROTEOR SAUMUR,Place de Nantilly,49400,Saumur,49,02 41 51 29 59,angers@proteor.com,http://www.proteor.com
+LAGARRIGUE NANTES,18 Bd Victor Hugo,44200,Nantes,44,02 40 20 15 82,nantes@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR NANTES,359 route de Sainte Luce Village du petit Chatelier,44301,Nantes,44,02 51 89 92 43,nantes@proteor.com,http://www.proteor.com
+AUDRAIN ORTHO MEDICAL,97 route de Vannes,44800,Saint Herblain,44,02 40 76 61 53,,https://www.audrain-ortho-medical.fr/
+BOP TECHNOLOGIES,Parc de la Fleuriaye 9 rue Augustin Fresnel,44481,Carquefou,44,02 40 25 85 18,,https://www.bop-technologies.fr
+FORMOTION ORTHOPÉDIE,rue Sylvain Rebrioux,36130,Deols,36,02 54 07 32 20,admin.chateauroux@formotion.com,https://www.formotion.com/fr-fr
+PROTEOR ANGERS,181 - 183 boulevard de Strasbourg,49000,Angers,49,02 41 44 20 88,angers@proteor.com,http://www.proteor.com
+LAGARRIGUE ANGERS,16 rue Auguste Gautier,49100,Angers,49,02 41 25 33 50,angers@groupelagarrigue.com,http://www.lagarrigue.com/
+ORTHO-MAINE,9 rue René Bremont,49100,Angers,49,02 41 87 99 00,,https://www.ortho-maine.fr
+LAGARRIGUE,Espace Paulette - Rte de Bram,11000,Carcassonne,11,04 68 65 63 22,narbonne@groupelagarrigue.com,https://lagarrigue.com/
+FORMOTION ORTHOPÉDIE,22 rue des Frères Lumière,37170,Chambray-Les-Tours,37,02 47 20 82 56,admin.tours@formotion.com,https://www.formotion.com/fr-fr
+ALBATROS TOURS,16 Ter rue Augustin Fresnel,37170,Chambray-Les-Tours,37,,albatros@albatros-france.fr,https://albatros-france.fr
+PROTEOR SAINT NAZAIRE,24 boulevard de l'Université,44600,Saint Nazaire,44,02 52 41 07 60,saintnazaire@proteor.com,http://www.proteor.com
+LAGARRIGUE SAINT-NAZAIRE,43 Bd de l'Université,44600,St Nazaire,44,02 40 43 62 88,stnazaire@groupelagarrigue.com,http://www.lagarrigue.com/
+EQUIP'SANTE,67 avenue Ferdinand de Lesseps,44600,Saint-Nazaire,44,02 40 53 19 45,NC,http://www.equip-sante.com/
+PROTEOR TOURS,18 rue de la Tuilerie,37550,Saint-Avertin,37,02 47 28 91 59,tours@proteor.com,http://www.proteor.com
+PROTEOR NÉRIS-LES-BAINS,Route de Clermont,03310,Neris Les Bains,03,04 70 64 35 37,neris@proteor.com,http://www.proteor.com
+PROTEOR CLERMONT-FERRANT,74 avenue Jean Jaurès,63540,Romagnat,63,04 73 28 44 95,clermont@proteor.com,http://www.proteor.com
+LAGARRIGUE CLERMONT-FERRAND,236 Bd Etienne Clémentel,63100,Clermont-Ferrand,63,04 73 24 23 23,clermontferrant@groupelagarrigue.com,http://www.lagarrigue.com/
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (CLERMONT-FERRAND),27 route de Cendre ZI des Acilloux,63800,Cournon D'Auvergne,63,04 73 61 15 91,clermont@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/clermont-ferrand-chabloz-orthopedie/
+ALBATROS CLERMONT-FERRAND,9 bis Avenue Pierre et Marie Curie,63360,Gerzat,63,,albatros@albatros-france.fr,https://albatros-france.fr
+SOCIETE D'APPAREILLAGE DU CENTRE STER,10 avenue Dr Jean Ster,34240,Lamalou Les Bains,34,04 67 95 77 01,,
+COS ORTHO,3 rue des Filatures,34700,Lodeve,34,,info@,http://
+LAGARRIGUE NARBONNE,110 bis avenue Anatole France,11100,Narbonne,11,04 68 65 63 21,narbonne@groupelagarrigue.com,http://www.lagarrigue.com/
+FORMOTION ORTHOPÉDIE,2 rue du Docteur Laënnec,18230,Saint Doulchard,18,02 48 24 94 10,admin.bourges@formotion.com,https://www.formotion.com/fr-fr
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (NARBONNE),ZAC Bonne Source - 12 Rue Ernest Cognacq,11000,Narbonne,11,,narbonne@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/narbonne-marcenac-ducros/
+PROTEOR VICHY,Pôle Médical OYHENART 3 bis rue Doyat,03300,Cusset,03,04 70 59 23 39,vichy@@proteor.com,http://www.proteor.com
+LAGARRIGUE,20 avenue Jean Moulin,34500,Beziers,34,04 67 15 35 24,montpellier@groupelagarrigue.com,https://lagarrigue.com/
+PROTEOR BEZIERS,283 allée des Charmes,34500,Beziers,34,04 67 52 47 48,beziers@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (BÉZIERS),13 Rue du Docteur Flemong - Le Patio - ZAC de Montimarrant,34500,Beziers,34,,beziers@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/beziers-orthese-prothese-changeant/
+PROTEOR LE MANS,22 rue Arnod Dolmetzch,72000,Le Mans,72,02 43 39 22 90,lemans@proteor.com,http://www.proteor.com
+PROTEOR VANNES,10 rue Dr Joseph Audic Médicentre du Ténénio,56000,Vannes,56,02 97 62 00 02,vannes@proteor.com,http://www.proteor.com
+FORMOTION ORTHOPÉDIE,10 rue Fernand Soulet,53000,Laval,53,02 30 30 06 02,admin.laval@formotion.com,https://www.formotion.com/fr-fr
+PROTEOR MOULINS,27 avenue d'Orvilliers La résidence,03000,Moulins,03,04 70 46 85 46,moulins@proteor.com,http://www.proteor.com
+PROTEOR LAVAL,14 rue Ernest Laurain,53000,Laval,53,02 43 56 42 45,laval@proteor.com,http://www.proteor.com
+FORMOTION ORTHOPÉDIE,5 rue Victor Duruy,72650,Saint-Saturnin,72,02 43 14 29 33,admin.le-mans@formotion.com,https://www.formotion.com/fr-fr
+BROCHER ORTHOPÉDIE,9 RUE DE LA TREMBLAIE,72650,La Milesse,72,02 59 16 27 03,contact@brocher-orthopedie.fr,http://www.brocher-orthopedie.fr/
+LAGARRIGUE PERPIGNAN,139 rue Ettore Bugatti Polygone Nord,66000,Perpignan,66,04 68 61 18 05,perpignan@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR PERPIGNAN,1415 avenue Julien Panchot,66000,Perpignan,66,04 68 68 33 23,perpignan@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (PERPIGNAN),2 rue Ernest Renan,66000,Perpignan,66,04 68 52 84 09,perpignan@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/perpignan-marcenac-ducros/
+FORMOTION ORTHOPÉDIE,7 rue du Bois de Soeuvres ZA de la Hallerais,35770,Vern S/Seiche,35,02 99 86 00 11,admin.rennes@formotion.com,https://www.formotion.com/fr-fr
+PROTEOR RENNES,14 rue de la Rigourdière,35510,Cesson Sevigne,35,02 99 67 35 34,rennes@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (NEVERS),31 Boulevard du Pré Plantin,58000,Nevers,58,03 80 72 01 80,nevers@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/agence-nevers/
+OPR,28 avenue des champs blancs,35510,Cesson Sevigne,35,02 23 20 00 44,,http://opr35.com/
+LAGARRIGUE RENNES,3 rue du Coëtlogon,35000,Rennes,35,02 97 76 50 51,rennes@groupelagarrigue.com,http://www.lagarrigue.com/
+SUD ORTHOPEDIE,849 rue Favre de St Castor,34080,Montpellier,34,04 67 04 24 15,,https://www.sudorthopedie34.fr/
+PROTEOR MONTPELLIER,436 rue de la Croix verte Parc Euromédecine,34196,Montpellier,34,04 67 52 47 48,montpellier@proteor.com,http://www.proteor.com
+LAGARRIGUE MONTPELLIER,172 rue de la Jasse de Maurin,34070,Montpellier,34,04 67 15 35 24,montpellier@groupelagarrigue.com,http://www.lagarrigue.com/
+SCHAEFFLER ORTHOPEDIE (GROUPE PROTEOR),PA du Moulin 2 allée Antoine Petit,45160,Olivet,45,02 38 44 91 44,,http://www.schaefflerorthopedie.fr
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (MONTPELLIER),410 rue Etienne Lenoir,34130,Maugio,34,,montpellier@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/montpellier-marcenac-ducros/
+ERIC METSU ORTHOPÉDIE,95 Rue Joseph Aloïs SChumpeter,34470,Perols,34,,info@,
+JOUVET ORTHOPEDIE,504 La Mourre,34130,Mauguio,34,,info@,http://
+VYV ÉQUIPEMENT MÉDICAL,41 rue Chaigneau,56100,Lorient,56,02 97 21 91 81,,https://www.harmonie-medical-service.fr/nos-magasins/lorient
+FORMOTION ORTHOPÉDIE,7 rue Jacques Brel,56100,Lorient,56,02 97 87 07 55,admin.lorient@formotion.com,https://www.formotion.com/fr-fr
+PROTEOR LORIENT,165 rue de la montagne du Salut Bâtiment J2 - Porte 3,56600,Lanester,56,02 56 54 81 81,proteor.lorient@proteor.com,http://www.proteor.com
+LAGARRIGUE CAUDAN,375 rue Jean Baptiste Martenot ZI Lann Sévelin,56850,Caudan,56,02 97 76 50 51,caudan@groupelagarrigue.com,http://www.lagarrigue.com/
+ORTHOPEDIE GENERALE,9 rue Jehan de Meung,45000,Orleans,45,02 38 68 04 49,,https://www.orthopedie-bernard.f
+PROTEOR SAINT-ETIENNE,14 rue du Père Thoisy ZI du Devey,42530,Saint-Genest-Lerpt,42,04 77 57 62 64,saintetienne@proteor.com,http://www.proteor.com
+ORTHOPEDIE DU FOREZ,73 rue de la Talaudière,42000,Saint Etienne,42,04 77 55 03 78,,www.orthoforez.cabanova.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (SAINT-ETIENNE),800 Bd Jean Rostand,42650,St Jean Bonnefonds,42,04 77 46 21 26,saint-etienne@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/saint-etienne-chabloz-orthopedie/
+LAGARRIGUE SAINT-CHAMOND,Gentialon - 4 allées Copernic,42400,Saint-Chamond,42,04 77 22 37 68,saintetienne@lagarrigue.com,http://www.lagarrigue.com/
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (NÎMES),2725 Route de Montpellier,30000,Nîmes,30,04 66 29 48 85,nimes@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/nimes-marcenac-ducros/
+LAGARRIGUE NÎMES,221 rue Nicolas Ledoux Bât. A VALMEDICA 1er étage,30900,Nimes,30,04 66 29 65 28,nimes@groupelagarrigue.com,http://www.lagarrigue.com/
+FORMOTION ORTHOPÉDIE,ZA du Clavon Rue Louis Braille,26230,Valaurie,26,04 75 52 99 05,admin.valaurie@formotion.com,https://www.formotion.com/fr-fr
+PROTEOR CHARTRES,56 rue des Comtesses,28000,Chartres,28,02 43 39 22 90,,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (VALENCE),"ZA Morlon 135, rue Pierre Seghers",26800,Portes-Les-Valence,26,04 75 40 12 91,valence@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/valence-chabloz-orthopedie/
+PROTEOR VALENCE,176 B avenue Victor Hugo,26000,Valence,26,04 75 40 81 40,valence@proteor.com,http://www.proteor.com
+FORMOTION ORTHOPÉDIE,5 route du Paisy,69570,Dardilly,69,04 37 64 26 42,admin.lyon@formotion.com,https://www.formotion.com/fr-fr
+MATHIS SA,ZA de Keranguyon,29950,Benodet,29,02 98 57 21 45,,http://www.mathis-ortho.com/
+LAGARRIGUE VALENCE,119 Bd de la Corniche Plateau de Lautagne,26000,Valence,26,04 28 69 03 80,valence@groupelagarrigue.com,http://www.lagarrigue.com/
+FORMOTION ORTHOPÉDIE,8 Rue du Docteur Abel,26000,Valence,26,,admin.valence@formotion.com,https://www.formotion.com/fr-fr
+PROTEOR VILLEFRANCHE SUR SAÔNE,120 ancienne route de Beaujeu Bâtiment la Passerelle,69400,Arnas,69,09 70 75 55 40,villefrance@proteor.com,http://www.proteor.com
+ORTHO ACCESS,19 avenue de l’Aspre,30150,Roquemaure,30,04 66 50 80 04,,http://www.orthoaccess.fr/
+ALBATROS VALENCE,11 rue Jean Bertin,26000,Valence,26,,albatros@albatros-france.fr,https://albatros-france.fr
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (LYON),46 avenue Jean Jaurès,69600,Oullins,69,04 78 50 34 03,lyon@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/lyon-chabloz-orthopedie/
+ORTHESIS,1 rue du Chapeau Rouge,69009,Lyon,69,04 72 53 70 80,,https://orthesiste-lyon.com/
+PROTEOR SAINT MALO,4 rue Joséphine Le Scolan,35400,Saint Malo,35,02 99 40 10 91,saintmalo@proteor.com,http://www.proteor.com
+LAGARRIGUE LYON GERLAND,359 Avenue Jean Jaurès,69007,Lyon,69,04 78 16 00 89,info@,https://lagarrigue.com/
+ALBATROS LYON,113 rue André Bollier,69007,Lyon,69,04 75 57 66 43,albatros@albatros-france.fr,https://albatros-france.fr
+FORMOTION ORTHOPÉDIE,29 bd Trehouart,35400,Saint-Malo,35,02 23 52 47 02,admin.saint-malo@formotion.com,https://www.formotion.com/fr-fr
+LAGARRIGUE TREGUEUX,44 rue Marc Seguin,22950,Tregueux,22,02 96 52 49 00,tregueux@groupelagarrigue.com,http://www.lagarrigue.com/
+LAGARRIGUE LYON SANTY,17 avenue Paul Santy,69008,Lyon,69,NC,Lyon@groupelagarrigue.com,https://lagarrigue.com/
+LAGARRIGUE AVIGNON,825 rue de l'Aulanière,84000,Avignon,84,04 90 16 64 64,avignon@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR LYON,125 rue Bataille,69008,Lyon,69,04 72 84 77 30,lyon@proteor.com,http://www.proteor.com
+FORMOTION ORTHOPÉDIE,2 allée Benjamin Constant,29200,Quimper,29,02 98 84 37 16,admin.lorient@formotion.com,https://www.formotion.com/fr-fr
+LAGARRIGUE,13 rue du Président Sadate,29000,Quimper,29,02 97 76 50 51,caudan@groupelagarrigue.com,https://lagarrigue.com/
+LAGARRIGUE VAULX-EN-VELIN,6 rue de Dauphiné,69120,Vaulx-En-Velin,69,04 78 53 69 37,Lyon@groupelagarrigue.com,http://www.lagarrigue.com/
+FORMOTION ORTHOPÉDIE,4A rue du Bignon - ZA Les Prunelles,22190,Plerin,22,02 96 52 07 02,admin.saint-brieuc@formotion.com,https://www.formotion.com/fr-fr
+PROTEOR PLÉRIN,1 rue François Jacob,22190,Plerin,22,02 96 52 42 06,plerin@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (MÂCON),"109, allée Joanny Mommessin",71850,Charnay Les Mâcon,71,03 85 38 51 48,macon@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/agence-macon/
+LAGARRIGUE GRANVILLE,Chemin de la Lande,50400,Yquelon,50,02 21 00 06 30,granville@groupelagarrigue.com,http://www.lagarrigue.com/
+FORMOTION,5 avenue du Maréchal Leclerc,50400,Granville,50,02 31 72 82 54,admin.caen@formotion.com,https://www.formotion.com/fr-fr
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (AVIGNON),43 Départementale 7 - Nationale gauche,13670,Saint Andiol,13,,avignon@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/avignon-marcenac-ducros/
+LAGARRIGUE,118 Rue de la Croix Colin,01750,Replonges,01,04 28 69 06 20,macon@groupelagarrigue.com,https://lagarrigue.com/
+NEUT,37 rue Paul Bert,89000,Auxerre,89,03 25 76 71 74,info@,http://
+PROTEOR CHALON-SUR SAÔNE,76 rue d'Autun,71100,Chalon-Sur-Saone,71,06 85 93 67 79,chalon@proteor.com,http://www.proteor.com
+LAGARRIGUE SALON DE PROVENCE,71 rue de la Forge,13300,Salon De Provence,13,04 91 43 09 25,salondeprovence@groupelagarrigue.com,http://www.lagarrigue.com/
+FORMOTION ORTHOPÉDIE,12 Rue de l'Orme Brise,77310,Pringy,77,01 64 09 96 82,admin.antony@formotion.com,https://www.formotion.com/fr-fr
+NEUT,3 impasse Saint Vincent,89100,St Denis Les Sens,89,03 86 64 94 23,info@,http://
+LAGARRIGUE AGNEAUX,4 Rue du Général de Gaulle,50180,Agneaux,50,02 35 55 64 64,info@,https://lagarrigue.com/
+POMMIER ORTHOPEDIE,ZA de Courtaboeuf Avenue du Groenland,91140,Villebon S/Yvette,91,01 60 92 04 40,,https://www.pommier-orthopedie.com/
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (AMBÉRIEU),255 Impasse des Perdrix,01500,Chateau-Gaillard,01,04 37 86 46 55,amberieu@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/amberieu-ottobock-orthopedie/
+ESPACE ORTHOPEDIQUE,20 avenue des sports,01000,Bourg En Bresse,01,04 74 21 19 00,,http://www.proteor.fr/
+PROTEOR MELUN,35 boulevard Aristide Briand Résidence la Pléiade,77000,Melun,77,01 64 09 42 18,melun@proteor.com,http://www.proteor.com
+LAGARRIGUE CAEN,2D rue du long Douet,14760,Bretteville Sur Odon,14,02 21 00 06 30,caen@groupelagarrigue.com,http://www.lagarrigue.com/
+LAGARRIGUE,6 bis rue Jean Jaurès,29600,Morlaix,29,02 98 41 44 61,brest@groupelagarrigue.com,https://lagarrigue.com/
+FORMOTION ORTHOPÉDIE,1 rue de la Cotonnière,14000,Caen,14,02 31 72 82 54,admin.caen@formotion.com,https://www.formotion.com/fr-fr
+FORMOTION ORTHOPÉDIE,SILIC 26 17 rue Georges Besse,92160,Antony,92,01 46 78 08 08,admin.antony@formotion.com,https://www.formotion.com/fr-fr
+NEUT,9 rue de l’orangerie,78000,Versailles,78,01 39 51 61 40,info@,http://
+PROTEOR VERSAILLES,5 résidence de la Petite Place,78000,Versailles,78,01 39 55 45 38,proteor.versailles@proteor.com,http://www.proteor.com
+PROTEOR CAEN,571 rue Marie Curie CITIS,14200,Herouville-Saint-Clair,14,02 31 15 58 58,caen@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE & SERVICES - OTTOBOCK (CARE YERRES),37 rue Raymond Poincaré,91330,Yerres,91,01 69 48 59 03,yerres@ottobock.com,https://www.laprothesegenerale.fr
+PROTEOR BREST,465 rue Jurien de la Gravière,29200,Brest,29,02 90 82 84 74,proteor.brest2@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (GRENOBLE),2A avenue Pierre de Coubertin,38170,Seyssinet-Pariset,38,04 38 26 02 02,grenoble@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/agence-grenoble/
+PROTEOR PARIS 16,18 rue Parent de Rosan,75016,Paris,75,01 40 50 26 39,paris16@proteor.com,http://www.proteor.com
+AMBROIS ORTHOPEDIE,32 bis rue de la Liberté,38600,Fontaine,38,04 76 26 97 97,ambrois-orthopedie@lagarrigue.com,http://www.ambroisorthopedie.fr
+LAGARRIGUE GENTILLY,48 avenue Raspail,94250,Gentilly,94,01 47 40 91 92,gentilly@ravier-touzard.com,http://www.lagarrigue.com/
+BOP TECHNOLOGIES PARIS,15 rue Leriche,75015,Paris,75,02 40 25 85 18,info@,http://
+ORTHONOMY,3 Rue Missak Manouchian,38130,Echirolles,38,04.56.59.93.75,contact@orthonomy.fr,https://orthonomy.fr/
+OUEST ORTHOPEDIE,540 rue Augustin Jacq,29200,Brest,29,02 98 43 08 58,,http://ouest-orthopedie.com/
+PROTEOR PARIS 13 (ORTHÈSES),21 - 25 rue Albert,75013,Paris,75,01 45 86 63 63,paris@proteor.com,http://www.proteor.com
+ORTHOVISION,3 villa de l’Astrolabe,75015,Paris,75,01 40 56 02 20,,
+AHP EUROPE,39 rue Carnot,94700,Maisons-Alfort,94,01 55 96 05 40,,https://www.ahp-europe.com
+LAGARRIGUE BREST,10 rue Amiral Romain Desfosses,29200,Brest,29,02 98 41 44 61,brest@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR PARIS 13 (PROTHÈSES),6 rue de Reims,75013,Paris,75,01 45 83 76 50,proteor.paris2@proteor.com,http://www.proteor.com
+LAGARRIGUE AIX-EN-PROVENCE,9 allée des informaticiens,13290,Aix-En-Provence,13,04 91 43 09 25,aixenprovence@groupelagarrigue.com,http://www.lagarrigue.com/
+ESPACE ORTHO SCOLIOSE,1 rue Jacques Cœur,75004,Paris,75,01 44 78 94 84,,https://www.espace-ortho-scoliose.fr
+DEMEURE ORTHOPEDIE (GROUPE PROTEOR),1 rue Rosa Lee Parks,38400,St Martin D'Heres,38,04 76 54 15 02,,http://www.demeureorthopedie.fr
+NEUT,9 rue Léopold Bellan,75002,Paris,75,01 42 33 83 46,,https://www.neut.fr/fr/
+PROTEOR PARIS 17,18 rue Boursault,75017,Paris,75,01 42 93 92 10,paris17@proteor.com,http://www.proteor.com
+OTTO BOCK RÉSEAU ORTHOPÉDIE & SERVICES (AIX-EN-PROVENCE),2 Impasse de la Source,13770,Venelles,13,,info@,http://
+PROTEOR NOGENT-SUR-MARNE,6 rue Coulmiers,94130,Nogent-Sur-Marne,94,01 48 72 96 81,nogent@proteor.com,http://www.proteor.com
+LAGARRIGUE CLICHY (ORTHÈSES),"131, Bd Victor Hugo",92110,Clichy,92,01 49 68 82 46,clichy@groupelagarrigue.com,http://www.lagarrigue.com/
+LAGARRIGUE CLICHY (PROTHÈSES),136 Bd Victor Hugo,92110,Clichy,92,01 49 68 00 97,clichy@groupelagarrigue.com,http://www.lagarrigue.com/
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (PARIS),2 Rue Sigmund Freud Bâtiment Yvoire,75019,Paris,75,01 42 03 20 30,paris19@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/agence-paris/
+PROTEOR ROSCOFF,Centre de Perharidy Centre Hélio-Marin,29680,Roscoff,29,02 98 29 39 55,roscoff@proteor.com,http://www.proteor.com
+ORTHOTECH,5 rue des artisans,93160,Noisy-Le-Grand,93,01 48 85 60 50,,https://orthotech.fr/
+BTC ORTHOPEDIE,11 rue Neuve Ste Catherine,13007,Marseille,13,04 91 54 01 88,,http://btc-orthopedie.com/
+EUROPE ORTHO,9 rue du Général de Gaulle,76500,Elbeuf,76,02 35 81 92 39,,
+DUPONT ORTHOPEDIE (GROUPE PROTEOR),145 Rue de la Division Leclercq,93350,Le Bourget,93,01 48 37 88 15,lebourget@dupontortho.fr,http://www.proteor.com
+CENTRE D'ORTHOPEDIE APPLIQUEE,"145, av de la division Leclerc",93350,Le Bourget,93,01 48 37 88 15,,
+LAGARRIGUE MARSEILLE,240 avenue des Poilus,13012,Marseille,13,04 91 21 00 70,marseille@groupelagarrigue.com,http://www.lagarrigue.com/
+LAGARRIGUE,59 Aevenue Roland Carraz,21300,Chenove,21,03 84 82 67 11,accueildole@groupelagarrigue.com,https://lagarrigue.com/
+PROTEOR MARSEILLE,25 boulevard Saint Marcel,13011,Marseille,13,04 91 79 32 44,marseille@proteor.com,http://www.proteor.com
+PROTEOR CHAMBERY,1197 Avenue du Grand Arietaz,73000,Chambery,73,04 79 85 71 21,chambery@proteor.com,http://www.proteor.com
+PROTEOR DIJON,5 boulevard Winston Churchill ZAC les Hauts de Pouilly,21000,Dijon,21,03 80 78 42 00,dijon@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (MARSEILLE),820 Chemin de l'Aumône Vielle,13400,Aubagne,13,,marseille@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/marseille-chabloz-orthopedie/
+ORTHONOMY,350 Rue du Clapet,73490,La Ravoire,73,04.56.59.93.75,contact@orthonomy.fr,https://orthonomy.fr/
+LAGARRIGUE LONS-LE-SAUNIER,205 rue Regard,39000,Lons-Le-Saunier,39,03 81 48 25 55,besancon@groupelagarrigue.com,http://www.lagarrigue.com/
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (DIJON),30 rue de la Redoute,21850,Saint Appolinaire,21,03 80 72 01 80,dijon@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/agence-dijon/
+PROTEOR LONS-LE-SAUNIER,11 bis avenue du Stade La Tannerie,39000,Lons-Le-Saunier,39,04 84 25 91 86,lons@proteor.com,http://www.proteor.com
+NEUT,159 avenue d’Echenilly,10120,Saint Andre Les Vergers,10,03 25 76 10 10,info@,http://
+PROTEOR LE HAVRE,45 Rue Paul Doumer,76600,Le Havre,76,02 35 41 71 71,lehaver@proteor.com,http://www.proteor.com
+FORMOTION ORTHOPÉDIE,3 Chemin des Croix,10430,Rosieres Pres Troyes,10,03 51 25 20 40,admin.troyes@formotion.com,https://www.formotion.com/fr-fr
+LAGARRIGUE TROYES,6 Rue Jean Monnet 168 ZA Savipol,10300,Sainte-Savine,10,NC,troyes@groupelagarrigue.com,https://lagarrigue.com/
+LAGARRIGUE AUBAGNE,1085 avenue des Paluds,13400,Aubagne,13,04 91 43 09 25,aubagne@groupelagarrigue.cm,http://www.lagarrigue.com/
+LAGARRIGUE LE HAVRE,Zone d'aménagement concerté Nord Bléville Pressoir 80 et 82,76620,Le Havre,76,02 35 55 64 64,info@,https://lagarrigue.com/
+ALBATROS MARSEILLE,115 avenue de la carrière,13830,Roquefort-La-Bedoule,13,04 42 98 41 97,albatros@albatros-france.fr,https://albatros-france.fr
+PROTEOR GAP,7 route de Saint-Jean,05000,Gap,05,04 13 19 12 11,gap@proteor.com,http://www.proteor.com
+PROTEOR ROUEN,29 rue Louis Blanc,76100,Rouen,76,02 35 88 17 25,rouen@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (GAP),27 avenue du Commandant Dumont,05000,Gap,05,04 38 26 02 02,gap@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/gap-chabloz-orthopedie/
+FORMOTION ORTHOPÉDIE,15 rue Saint Gilles,76000,Rouen,76,02 32 08 08 32,admin.rouen@formotion.com,https://www.formotion.com/fr-fr
+NEUT,8 bis rue des Cordeliers,77100,Meaux,77,01 60 24 70 89,info@,http://
+GB ORTHO,25 Rur Abbé Floquet,76420,Bihorel,76,06 29 05 10 67,baskakoffgerard@gmx.fr,https://gb-ortho.fr/
+ORTHEA,14 avenue des quatre cantons,76000,Rouen,76,02 35 75 34 00,rouen@lagarrigue.com,http://www.lagarrigue.com/
+LAGARRIGUE DOLE,10 rue Henri Jean renaud,39100,Dole,39,03 84 82 67 11,accueildole@groupelagarrigue.com,https://www.lagarrigue.com/
+ORTHONOMY,80 Rue des creuses,74960,Cran-Gevrier,74,04.56.59.93.75,contact@orthonomy.fr,https://orthonomy.fr/
+ALPES ORTHOPEDIE,Cran Gevrier - 17 Impasse des Fusains,74960,Annecy,74,04 50 67 41 36,,https://www.alpes-orthopedie-annecy.fr/
+PROTEOR ANNECY,Allée de Mandallaz,74000,Annecy,74,04 79 36 45 84,annecy@proteor.com,http://www.proteor.com
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (ANNECY),"275 route Impériale, Saint Martin de Bellevue",74370,Filliere,74,04 50 23 24 07,annecy@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/annecy-chabloz-orthopedie/
+PROTEOR CHERBOURG,5 rue Noyon,50100,Cherbourg,50,02 33 22 59 05,cherbourg@proteor.com,http://www.proteor.com
+LAGARRIGUE,55 route des Contamines,74370,Argonay,74,04 28 69 06 92,annecy@groupelagarrigue.com,https://lagarrigue.com/
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (BESANÇON),Chemin de l'Etang,25870,Chatillon-Le-Duc,25,03 81 56 36 49,besancon@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/agence-besancon/
+BTC ORTHOPEDIE VAR,Route de la Seyne Batiment K Technopole Var matin,83190,Ollioules,83,04 94 22 11 83,,http://btc-orthopedie.com/
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (ANNEMASSE),4 Rue des Artisans,74100,Vetraz-Monthoux,74,,annemasse@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/annemasse-chabloz-orthopedie/
+FORMOTION ORTHOPÉDIE,Rue de Belloy,60860,Saint-Omer-En-Chaussee,60,03 65 61 10 10,admin.beauvais@formotion.com,https://www.formotion.com/fr-fr
+MONT-BLANC ORTHOPEDIE,615 rue Saint Maurice,74800,Saint Pierre En Faucigny,74,04 50 03 74 33,,
+LAGARRIGUE TOULON,10 avenue Gilles de Gennes,83160,La Valette-Du-Var,83,04 94 00 31 58,toulon@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR CARQUEIRANNE,ZAC les Castors route de la Moutonne,83320,Carqueiranne,83,04 94 48 28 92,carqueiranne@proteor.com,http://www.proteor.com
+AZUR ORTHOPEDIE,Quartier Le Beau Veze,83320,Carqueiranne,83,04 94 48 28 92,,http://orthopedie.proteor.fr/
+BETEILLE ORTHOPEDIE,38 avenue des Iles d’or,83400,Hyeres,83,04 94 35 35 07,,https://beteille-orthopedie.com
+PROTEOR BESANÇON,10 rue Alfred de Vigny ZAC Lafayette,25000,Besancon,25,03 81 41 54 54,besancon@proteor.com,http://www.proteor.com
+LAGARRIGUE BESANÇON,33 chemin des Tilleroyes,25000,Besancon,25,03 81 48 25 55,besancon@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR AMIENS,1 allée de la Pépinière Bâtiment Passiflore - Centre Oasis Dury,80000,Amiens,80,03 22 50 37 60,amiens@proteor.com,http://www.proteor.com
+ORTHOROBS,2 rue Jean-Nicolas Corvisart (Rue du Campus) ZAC Intercampus,80000,Amiens,80,03 22 52 58 07,orthorobs@gmail.com,https://lagarrigue.com/
+LAGARRIGUE REIMS,34 avenue Hoche,51100,Reims,51,03 26 09 65 73,reims@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR REIMS,rue Robert Fulton Zone Industrielle Farman,51100,Reims,51,03 26 47 49 29,reims@proteor.com,http://www.proteor.com
+VAR ORTHOPEDIK SERVICES,266 via Nova,83600,Frejus,83,04 94 40 32 76,,
+PROTEOR SAINT QUENTIN,98 bis rue Henriette Cabot,02100,Saint Quentin,02,03 23 67 67 39,proteor.saintquentin@proteor.com,http://www.proteor.com
+LAGARRIGUE NICE,173 chemin des Iscles ZI SAINT-LAURENT DU VAR,06730,Saint-Laurent Du Var,06,04 93 27 07 41,nice@groupelagarrigue.com,http://www.lagarrigue.com/
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (NICE),468 bd de la Madeleine,06000,Nice,06,04 89 14 13 55,nice@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/nice-chabloz-orthopedie/
+MODAP ORTHOPEDIE (GROUPE PROTEOR),32 rue Smolett,06300,Nice,06,04 93 89 10 20,,http://www.modap-orthopedie.com
+MIGNARD,11 avenue du Général de Gaulle,62600,Berck Sur Mer,62,03 21 09 01 07,,http://www.mignard.fr/emploi.htm
+LAGARRIGUE MONTBELLIARD,14 rue André Boulloche,25200,Montbeliard,25,03 84 82 67 11,accueildole@groupelagarrigue.com,http://www.lagarrigue.com/
+ETS. BOUBET,1750 route de Berck,62180,Rang Du Fliers,62,03 21 84 44 50,,
+ALBATROS NORD DE FRANCE,5010 Chemin des Poissonniers,62140,Marconelle,62,03 21 05 62 11,albatros@albatros-france.fr,https://albatros-france.fr
+ORTHOPEDIE MENEGHETTI,1 avenue François Mitterand,62217,Beaurains,62,03 21 73 45 75,,https://www.orthopedie-arras.com/
+PROTEOR EPINAL,1 Allée des Chênes Bât. A,88000,Epinal,88,03 83 85 41 41,,http://www.proteor.com
+FORMOTION ORTHOPÉDIE,58 avenue Winston Churchill,62000,Arras,62,03 21 24 83 79,admin.arras@formotion.com,https://www.formotion.com/fr-fr
+FORMOTION ORTHOPÉDIE,60 avenue de Valenciennes,59400,Cambrai,59,03 27 81 41 75,admin.cambrai@formotion.com,https://www.formotion.com/fr-fr
+H2 ORTHOPEDIE,7 rue Alfred Kastler,54320,Maxeville,54,03 83 95 15 01,,
+PROTEOR NANCY,109 avenue de Strasbourg,54000,Nancy,54,03 83 85 41 41,nancy@proteor.com,http://www.proteor.com
+PROTEOR LIEVIN,175 rue Jean-Baptiste Defernez,62800,Lievin,62,03 20 04 41 71,lievin@proteor.com,http://www.proteor.com
+FORMOTION ORTHOPÉDIE,238 rue de Brebières,59500,Douai,59,03 27 88 19 60,admin.douai@formotion.com,https://www.formotion.com/fr-fr
+FORMOTION ORTHOPÉDIE,64 Rue Jean Souvraz,62300,Lens,62,03 21 28 59 06,admin.lens@formotion.com,https://www.formotion.com/fr-fr
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (NANCY),Zone artisanale du haut Serroir,54690,Lay St Christophe,54,03 83 32 97 29,nancy@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/nancy-technicortho/
+PROTEOR LENS,5 Rue de l'Europe,62300,Lens,62,03 20 04 41 71,lille@proteor.com,http://www.proteor.com
+LAGARRIGUE CHARLEVILLE-MÉZIÈRES,7 rue des Hautes Chaussées,08000,Charleville-Mezieres,08,03 24 54 05 05,NC,http://www.lagarrigue.com/
+DUPONT ORTHOPEDIE (GROUPE PROTEOR),249 Place Maréchal Joffre,62400,Bethune,62,03 21 57 53 33,dunkerque@proteor.com,http://www.proteor.com
+LAGARRIGUE (ACMTO),9 rue d'Espagne - Parc Secoïa,68310,Wittelsheim,68,03 89 61 63 20,NC,https://lagarrigue.com/
+A.C.M.T.O.,"9 rue d'Espagne ""Parc Sécoïa""",68310,Wittelsheim,68,03 89 61 63 20,,
+PROTEOR MULHOUSE,74 rue Jean Monnet West Park,68200,Mulhouse,68,03 89 34 12 82,mulhouse@proteor.com,http://www.proteor.com
+FORMOTION ORTHOPÉDIE,2 Pont Villars,59300,Valenciennes,59,03 27 42 01 55,admin.valenciennes@formotion.com,https://www.formotion.com/fr-fr
+FORMOTION ORTHOPÉDIE,97 avenue de France,59600,Maubeuge,59,03 27 42 01 55,admin.valenciennes@formotion.com,https://www.formotion.com/fr-fr
+FORMOTION ORTHOPÉDIE,311 avenue Eugène Avinée,59120,Loos,59,03 20 62 99 00,admin.loos@formotion.com,https://www.formotion.com/fr-fr
+ORTHOPROJECT LOOS,85 rue Nelson Mandela,59120,Loos,59,03 28 01 04 12,,https://www.orthoway.fr/le-reseau/
+THOUVENY ORTHOPEDIE,"69, Gustave Delory",59810,Lesquin,59,,,http://orthoway.fr
+LAGARRIGUE LILLE,235 rue Faidherbe,59120,Loos,59,03 20 31 05 58,lille@groupelagarrigue.com,http://www.lagarrigue.com/
+PROTEOR VILLENEUVE-D'ASCQ,197 Boulevard de Valmy,59650,Villeneuve-D'Ascq,59,03 20 04 41 71,lille@proteor.com,http://www.proteor.com
+OPFM,Rue du Houblon,59270,Meteren,59,06 59 65 45 08,,
+OTTOBOCK RÉSEAU ORTHOPÉDIE ET SERVICES (METZ),7 rue Gaston Ramon,57050,Metz,57,03 83 32 97 29,metz@ottobock.com,https://ottobock-ortho.fr/centres-dappareillage/agence-metz/
+PROTEOR METZ,24 La Tannerie,57070,Saint-Julien-Les-Metz,57,03 87 74 41 32,metz@proteor.com,http://www.proteor.com
+FORMOTION ORTHOPÉDIE,2173 boulevard des Justes,62100,Calais,62,03 21 96 09 09,admin.calais@formotion.com,https://www.formotion.com/fr-fr
+ORTHO MEDICAL WELTER,4 rue de Ribeauvillé,68180,Horbourg-Wihr,68,03 89 24 24 07,,http://www.orthomedicalwelter.fr/
+DUPONT ORTHOPEDIE (GROUPE PROTEOR),238 Rue de l'Albeck,59640,Dunkerque,59,03 28 66 12 89,dunkerque@dupontortho.fr,http://www.proteor.com
+PROTEOR STRASBOURG,2 Rue Paul Rohmer,67200,Strasbourg,67,07 64 24 29 18,strasbourg@proteor.com,http://www.proteor.com
+BMO,2 rue de Dublin,67670,Mommenheim,67,03 88 80 08 88,,https://bmo-prothese-orthese.fr/
+SARL ORTHOPEDIA,Avenue Sampiero Corso RN 193,20600,Bastia,20,04 95 33 48 12,,
+ORTHESIA ST MARTIN,108 Howell Center,97150,Saint Martin - Guadeloupe,971,0590 51 02 79,,http://www.orthesia.com/
+ORTHO EXPERT (FORMOTION ORTHOPÉDIE),Grand Camp La Rocade,97139,Les Abymes - Guadeloupe,971,(590) 590 95 70 31,,https://www.formotion.com/fr-fr
+ORTHESIA GUADELOUPE,8 rue Gaston Dorogant Parc d’activités La Providence ZAC de Dothémare,97139,Les Abymes,971,0590 90 71 36,,http://www.orthesia.com/
+ACACIAS ORTHOPEDIE,Centre Médical Acacias Belcourt 1,97122,Baie Mahault,971,0590 26 16 26,,
+SOCIETE D'ORTHOPEDIE GUITTEAUD (SOG),50 Lot Hibiscus Place d'Armes,97232,Lamentin,972,0596 51 99 45,,http://orthopedieguitteaud.com
+ANTILLES ORTHOPEDIE,8 rue Paulo Rosile Ravine-Vilaine,97200,Fort De France,972,0596 63 55 50,,https://www.antillesorthopedie.fr
+ORTHEIS,3 avenue Eugène Mona,97200,Fort De France,972,0596 51 09 89,,https://www.ortheis.fr
+GUYANE ORTHOPROTHESE,3 place Schoelcher Immeuble Victor Hugo,97300,Cayenne,973,0594 29 22 37,,http://guyaneorthoprothese.com
+ORTHO ESPACE 3D,1 Rue des Arômes,97354,Remire-Montjoly,973,0594 28 2 8 08,contact@orthoespace3d.fr,http://www.orthoespace3d.fr
+GUYANE APPAREILLAGE MEDICAL,"660, avenue Justin Catayée",97300,Cayenne,973,06 94 44 81 16,,https://guyane-appareillage-medical.business.site/?utm_source=gmb&utm_medium=referral
+TPM MAYOTTE,16 impasse de l'entrepôt,97600,Mamoudzou,976,262 639 696 564,,
+NEUT,129 route Nationale,97660,Nyambadao,976,,info@,http://
+RUN ORTHO - ORTHO PEI,280 rue du Maréchal Leclerc,,Saint Denis,,+262 0693054715,info@,http://www.ortho-pei.com
+HTCR,27 rue du Butor,97400,St Denis De La Reunon,974,0262 29 81 85,,
+PRO ORTHO,La mare - Ilot 1 - Atelier 5 1 rue de la pépinière,97438,Sainte Marie,974,0262 41 24 00,,
+TPM ORTHOPEDIE,8 rue du cap rond ZI Pierrefonds,97410,Saint-Pierre - Reunion,974,0262 35 26 26,,
