@@ -868,7 +868,7 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
     elements.append(Paragraph("SUIVI CLINIQUE — 30 DERNIERS JOURS", styles['SectionTitle']))
     elements.append(Paragraph(
         "Données de suivi quotidien — à l'attention de l'équipe médicale",
-        ParagraphStyle('SubNote', parent=styles['StumprBody'], fontSize=9, textColor=HexColor('#8892a4'), fontName='Helvetica-Oblique')
+        ParagraphStyle('SubNote', parent=styles['StumprBody'], fontSize=9, textColor=colors.HexColor('#8892a4'), fontName='Helvetica-Oblique')
     ))
     elements.append(Spacer(1, 8))
 
