@@ -14,3 +14,4 @@ anthropic==0.52.0
 airtable-python-wrapper==0.15.3
 starlette==0.37.2
 anyio==4.12.1
+email-validator==2.3.0
