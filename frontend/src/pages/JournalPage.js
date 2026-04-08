@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Save, ArrowLeft } from "lucide-react";
 import axios from "axios";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || 'https://stumpr-backend.onrender.com'}/api`;
 
 const JOURNAL_ACTIVITIES = [
   { id: "marche-courte", label: "Marche courte", emoji: "🚶" },

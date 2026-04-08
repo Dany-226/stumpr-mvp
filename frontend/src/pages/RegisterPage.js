@@ -5,7 +5,7 @@ import { Eye, EyeOff, UserPlus } from "lucide-react";
 import axios from "axios";
 import StumprLogo from "../components/StumprLogo";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || 'https://stumpr-backend.onrender.com'}/api`;
 
 export default function RegisterPage() {
   const navigate = useNavigate();

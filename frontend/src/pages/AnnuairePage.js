@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Search, MapPin, Phone, Globe, Star, Plus, X } from "lucide-react";
 import axios from "axios";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || 'https://stumpr-backend.onrender.com'}/api`;
 
 const getAuthHeaders = () => ({
   headers: { Authorization: `Bearer ${localStorage.getItem("stumpr_token")}` },

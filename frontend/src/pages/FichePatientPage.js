@@ -12,7 +12,7 @@ import StumprLogo from "../components/StumprLogo";
 import LPPRSearch from "../components/LPPRSearch";
 import { COMPOSANT_TYPES, FABRICANTS } from "../constants/patient";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || 'https://stumpr-backend.onrender.com'}/api`;
 
 // ======================== CONSTANTS ========================
 

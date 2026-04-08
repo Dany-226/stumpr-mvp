@@ -30,7 +30,7 @@ ChartJS.register(
   Filler
 );
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || 'https://stumpr-backend.onrender.com'}/api`;
 
 // Activity labels map
 const ACTIVITY_LABELS = {

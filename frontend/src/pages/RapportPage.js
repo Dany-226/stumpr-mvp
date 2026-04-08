@@ -8,7 +8,7 @@ import {
 import axios from "axios";
 import StumprLogo from "../components/StumprLogo";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || 'https://stumpr-backend.onrender.com'}/api`;
 
 const PERIODE_OPTIONS = [
   { value: 30,  label: "30 jours" },

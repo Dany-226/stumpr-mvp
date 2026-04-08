@@ -15,7 +15,7 @@ import {
   FABRICANTS,
 } from "../constants/patient";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || 'https://stumpr-backend.onrender.com'}/api`;
 const TOTAL_STEPS = 3;
 
 const INPUT_CLS = "w-full bg-surface-container rounded-xl px-4 py-3 border-none outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline";
