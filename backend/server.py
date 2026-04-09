@@ -324,10 +324,14 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
 @api_router.post("/auth/register", response_model=TokenResponse)
 async def register(user: UserCreate):
+    beta = await db.beta_testers.find_one({"email": user.email})
+    if not beta:
+        raise HTTPException(status_code=403, detail="Accès réservé aux bêta testeurs pour l'instant.")
+
     existing = await db.users.find_one({"email": user.email})
     if existing:
         raise HTTPException(status_code=400, detail="Un compte existe déjà avec cet email")
-    
+
     user_id = str(uuid.uuid4())
     user_doc = {
         "id": user_id,
@@ -338,7 +342,12 @@ async def register(user: UserCreate):
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.users.insert_one(user_doc)
-    
+
+    await db.beta_testers.update_one(
+        {"email": user.email},
+        {"$set": {"status": "registered", "registered_at": datetime.now(timezone.utc)}}
+    )
+
     access_token = create_access_token(data={"sub": user_id})
     return TokenResponse(
         access_token=access_token,
