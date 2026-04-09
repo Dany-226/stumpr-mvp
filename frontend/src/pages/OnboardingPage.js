@@ -348,7 +348,7 @@ function StepComposants({ composants, onAdd, onRemove, onUpdate }) {
                 onUpdate(idx, "lppr_code", item.code);
                 onUpdate(idx, "lppr_label", item.nomenclature);
                 onUpdate(idx, "lppr_tarif", item.tarif);
-                onUpdate(idx, "lppr_duree_ans", item.duree_ans != null ? Math.round(item.duree_ans) : null);
+                onUpdate(idx, "lppr_duree_ans", item.duree_ans ?? null);
               }}
             />
 

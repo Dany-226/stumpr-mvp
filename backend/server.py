@@ -83,7 +83,7 @@ class LPPRComponent(BaseModel):
     code: str
     nomenclature: str
     tarif: Optional[float] = None
-    duree_ans: Optional[int] = None
+    duree_ans: Optional[float] = None
     categorie: Optional[str] = None
     application: Optional[str] = None
     date_prescription: Optional[str] = None

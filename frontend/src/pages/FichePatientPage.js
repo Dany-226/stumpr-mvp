@@ -158,7 +158,7 @@ const AddComposantModal = ({ protheseId, onClose, onAdd }) => {
       reference_lppr: item.code,
       nomenclature: item.nomenclature,
       tarif: item.tarif || null,
-      duree_ans: item.duree_ans != null ? Math.round(item.duree_ans) : null,
+      duree_ans: item.duree_ans ?? null,
       type: item.categorie || f.type,
     }));
   };
