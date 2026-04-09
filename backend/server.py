@@ -393,6 +393,13 @@ async def list_beta_testers(x_admin_secret: Optional[str] = Header(None)):
         "testers": testers
     }
 
+@api_router.get("/admin/users")
+async def list_users(x_admin_secret: Optional[str] = Header(None)):
+    if not ADMIN_SECRET or x_admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1).to_list(1000)
+    return {"total": len(users), "users": users}
+
 # ======================== LPPR ROUTES ========================
 
 @api_router.get("/lppr/search", response_model=List[LPPRSearchResult])
