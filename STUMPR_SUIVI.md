@@ -98,6 +98,23 @@ AIRTABLE_BASE_ID=appf0OPmCirvux6GG
 
 ---
 
+## Backlog S2 — Orthos
+
+### Claim profile ortho
+
+Permettre aux prothésistes de revendiquer et enrichir leur fiche dans l'annuaire.
+
+**Fonctionnalités prévues :**
+- Bouton "C'est mon cabinet" sur chaque fiche annuaire
+- Email de vérification envoyé via Brevo
+- Espace ortho authentifié : enrichissement fiche (photo, spécialités, certifications, collaborateurs)
+
+**Règle de déclenchement :** ne construire qu'après 3 demandes orthos confirmées (éviter de sur-ingéniérer trop tôt).
+
+**En attendant :** gestion manuelle — création fiche Atlas + accès accordé à la main.
+
+---
+
 ## Semaine 3 (ex-S2) — À planifier
 
 Objectif : refonte journal/douleurs
