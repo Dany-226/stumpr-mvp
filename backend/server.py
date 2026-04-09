@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Query
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Query, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
@@ -376,6 +376,22 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         prenom=current_user["prenom"],
         nom=current_user["nom"]
     )
+
+# ======================== ADMIN ROUTES ========================
+
+ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "")
+
+@api_router.get("/admin/beta-testers")
+async def list_beta_testers(x_admin_secret: Optional[str] = Header(None)):
+    if not ADMIN_SECRET or x_admin_secret != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Accès non autorisé")
+    testers = await db.beta_testers.find({}, {"_id": 0}).sort("created_at", 1).to_list(1000)
+    return {
+        "total": len(testers),
+        "invited": sum(1 for t in testers if t.get("status") == "invited"),
+        "registered": sum(1 for t in testers if t.get("status") == "registered"),
+        "testers": testers
+    }
 
 # ======================== LPPR ROUTES ========================
 
