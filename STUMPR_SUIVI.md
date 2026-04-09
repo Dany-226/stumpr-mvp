@@ -1,6 +1,6 @@
 # Stumpr MVP — Suivi de développement
 
-Dernière mise à jour : 31 mars 2026
+Dernière mise à jour : 09 avril 2026
 
 ---
 
@@ -16,9 +16,9 @@ Délai : 2-4 semaines.
 | Semaine | Chantier | Statut |
 |---|---|---|
 | S1 | Onboarding stepper + flux prothèses | ✅ Terminé |
-| S2 | Journal / douleurs refondus | 🔲 À faire |
+| S2 | Déploiement prod + migration données | ✅ Terminé (09/04/2026) |
 | S3 | Design mobile-first + bottom bar | 🔲 À faire |
-| S4 | Buffer tests + onboarding 18 testeurs | 🔲 À faire |
+| S4 | Buffer tests + envoi beta | 🔲 À faire |
 
 ---
 
@@ -80,7 +80,25 @@ AIRTABLE_BASE_ID=appf0OPmCirvux6GG
 
 ---
 
-## Semaine 2 — À planifier
+---
+
+## Sprint déploiement — Terminé le 09/04/2026
+
+### Ce qui a été fait
+
+- **Déploiement prod** : frontend sur Render (stumpr-mvp.onrender.com), backend sur Render (stumpr-backend.onrender.com)
+- **MongoDB Atlas** : cluster "Stumpr" provisionné (eu-central, Frankfurt), base `stumpr`
+- **Migration UFOP** : 295 cabinets orthos migrés vers Atlas (collections `orthos` + `annuaire`)
+- **UptimeRobot** : ping toutes les 5 min sur `/docs` pour éviter le cold start Render
+- **Routing SPA** : règle Rewrite `/* → /index.html` + fichier `_redirects` dans `frontend/public/`
+- **Bug corrigé** : calcul renouvellement manchon — `Math.round()` supprimé dans FichePatientPage et OnboardingPage, `duree_ans` désormais `float` partout (0.5 ans → 6 mois au lieu de 12)
+- **Bug corrigé** : dropdown département ortho
+- **Bug corrigé** : fallback URL backend (`REACT_APP_BACKEND_URL` avec fallback hardcodé)
+- **Beta** : 57 emails collectés, envoi prévu lundi 13/04/2026
+
+---
+
+## Semaine 3 (ex-S2) — À planifier
 
 Objectif : refonte journal/douleurs
 - Saisie rapide (en moins de 2 minutes)
@@ -89,7 +107,7 @@ Objectif : refonte journal/douleurs
 
 ---
 
-## Semaine 3 — À planifier
+## Semaine 4 (ex-S3) — À planifier
 
 Objectif : design unifié mobile-first + navigation
 - Unifier le système de classes CSS (stumpr-card, stumpr-btn-primary)

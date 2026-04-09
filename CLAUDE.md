@@ -10,7 +10,7 @@ Fichier de contexte pour Claude Code et Claude.ai. À lire en entier avant toute
 
 Problème central : 77% des patients amputés ne connaissent pas leurs droits de renouvellement LPPR. Stumpr leur permet de comprendre ce à quoi ils ont droit, quand, et comment l'obtenir.
 
-Landing page live : `stumpr.app` (collecte emails via Brevo)
+Landing page live : `stumpr.app` (collecte emails via Brevo — contact@stumpr.app → contact@ampower.fr)
 Repo : `Dany-226/stumpr-mvp`
 
 ---
@@ -20,12 +20,39 @@ Repo : `Dany-226/stumpr-mvp`
 ```
 Frontend   : React (PWA)
 Backend    : FastAPI (Python)
-Base       : MongoDB
+Base       : MongoDB Atlas (cluster "Stumpr", eu-central, Frankfurt)
 Référentiel: Airtable (appf0OPmCirvux6GG) — source de vérité LPPR
 Emails     : Brevo
 ```
 
 L'architecture est intentionnellement légère pour un MVP solo. Ne pas sur-ingéniérer.
+
+---
+
+## Déploiement production
+
+| Composant | URL | Hébergeur |
+|---|---|---|
+| Frontend | https://stumpr-mvp.onrender.com | Render (Static Site) |
+| Backend | https://stumpr-backend.onrender.com | Render (Web Service) |
+| Landing page | https://stumpr.app | Cloudflare Workers (old-credit-8991) |
+
+- **CORS_ORIGINS** (backend Render) : `https://stumpr-mvp.onrender.com`
+- **REACT_APP_BACKEND_URL** (frontend Render) : `https://stumpr-backend.onrender.com` — fallback hardcodé dans chaque page si variable absente
+- **Routing SPA** : règle Rewrite `/* → /index.html` configurée dans Render Static Site + fichier `frontend/public/_redirects`
+- **Cold start** : UptimeRobot ping toutes les 5 min sur `/docs` pour maintenir le backend actif
+- **Email** : contact@stumpr.app redirige vers contact@ampower.fr (Cloudflare)
+
+### Collections Atlas (base `stumpr`)
+
+| Collection | Contenu |
+|---|---|
+| `users` | Comptes utilisateurs |
+| `patients` | Fiches patients avec prothèses et composants |
+| `journal_entries` | Entrées journal douleurs |
+| `shares` | Liens de partage temporaires |
+| `orthos` | 295 cabinets UFOP (données brutes) |
+| `annuaire` | 295 cabinets UFOP (avec type, note_moyenne, avis — source pour /api/annuaire) |
 
 ---
 
