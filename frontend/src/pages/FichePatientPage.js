@@ -683,9 +683,8 @@ export default function FichePatientPage() {
     }
     loadProtheses();
     // Charger les départements disponibles dans l'annuaire UFOP
-    axios.get(`${API}/orthos`).then(res => {
-      const depts = [...new Set(res.data.map(o => o.departement).filter(Boolean))];
-      depts.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    axios.get(`${API}/orthos/departements`).then(res => {
+      const depts = [...res.data].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       setDepartementsDispos(depts);
     }).catch(() => {});
   }, [id]);

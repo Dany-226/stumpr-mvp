@@ -153,13 +153,20 @@ LPPR_DELAYS_PAR_TYPE: dict = {
     "autre": 5,
 }
 
-def calculate_renewal_date(date_attribution: Optional[str], type_composant: str, duree_ans: Optional[int] = None) -> Optional[str]:
+def calculate_renewal_date(date_attribution: Optional[str], type_composant: str, duree_ans: Optional[float] = None) -> Optional[str]:
     if not date_attribution:
         return None
     try:
         d = datetime.fromisoformat(date_attribution.replace('Z', '+00:00')) if 'T' in date_attribution else datetime.strptime(date_attribution, '%Y-%m-%d')
-        years = int(duree_ans) if duree_ans is not None else LPPR_DELAYS_PAR_TYPE.get(type_composant, 5)
-        renewal = d.replace(year=d.year + years)
+        years = float(duree_ans) if duree_ans is not None else float(LPPR_DELAYS_PAR_TYPE.get(type_composant, 5))
+        total_months = round(years * 12)
+        m = d.month - 1 + total_months
+        year = d.year + m // 12
+        month = m % 12 + 1
+        days_in_month = [31, 29 if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)) else 28,
+                         31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        day = min(d.day, days_in_month[month - 1])
+        renewal = d.replace(year=year, month=month, day=day)
         return renewal.strftime('%Y-%m-%d')
     except Exception:
         return None
@@ -181,7 +188,7 @@ class ComposantResponse(BaseModel):
     reference_lppr: Optional[str] = None
     nomenclature: Optional[str] = None
     tarif: Optional[float] = None
-    duree_ans: Optional[int] = None
+    duree_ans: Optional[float] = None
     date_attribution: Optional[str] = None
     date_renouvellement_eligible: Optional[str] = None
     notes: Optional[str] = None
@@ -455,9 +462,9 @@ async def update_patient(patient_id: str, patient: PatientCreate, current_user: 
     }
     update_data["updated_at"] = now
 
-    await db.patients.update_one({"id": patient_id}, {"$set": update_data})
-    
-    updated = await db.patients.find_one({"id": patient_id}, {"_id": 0})
+    await db.patients.update_one({"id": patient_id, "user_id": current_user["id"]}, {"$set": update_data})
+
+    updated = await db.patients.find_one({"id": patient_id, "user_id": current_user["id"]}, {"_id": 0})
     return PatientResponse(**updated)
 
 @api_router.delete("/patients/{patient_id}")
@@ -516,12 +523,12 @@ async def update_prothese(prothese_id: str, update: ProtheseUpdate, current_user
     update_fields["updated_at"] = now
 
     await db.patients.update_one(
-        {"user_id": current_user["id"], "protheses.id": prothese_id},
+        {"user_id": current_user["id"], "id": patient["id"], "protheses.id": prothese_id},
         {"$set": update_fields}
     )
 
     # Return updated prothese
-    updated_patient = await db.patients.find_one({"user_id": current_user["id"]}, {"_id": 0})
+    updated_patient = await db.patients.find_one({"user_id": current_user["id"], "id": patient["id"]}, {"_id": 0})
     updated_prothese = next((p for p in updated_patient.get("protheses", []) if p["id"] == prothese_id), prothese)
     return ProtheseResponse(**updated_prothese)
 
@@ -547,7 +554,7 @@ async def add_composant(prothese_id: str, composant: ComposantCreate, current_us
 
     now = datetime.now(timezone.utc).isoformat()
     await db.patients.update_one(
-        {"user_id": current_user["id"], "protheses.id": prothese_id},
+        {"user_id": current_user["id"], "id": patient["id"], "protheses.id": prothese_id},
         {"$push": {"protheses.$.composants": composant_doc}, "$set": {"updated_at": now}}
     )
     return ComposantResponse(**composant_doc)
@@ -562,7 +569,7 @@ async def delete_composant(prothese_id: str, composant_id: str, current_user: di
         raise HTTPException(status_code=404, detail="Prothèse non trouvée")
     now = datetime.now(timezone.utc).isoformat()
     await db.patients.update_one(
-        {"user_id": current_user["id"], "protheses.id": prothese_id},
+        {"user_id": current_user["id"], "id": patient["id"], "protheses.id": prothese_id},
         {"$pull": {"protheses.$.composants": {"id": composant_id}}, "$set": {"updated_at": now}}
     )
 
@@ -862,7 +869,7 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
     journal_entries = await db.journal_entries.find(
         {"patient_id": patient_id, "created_at": {"$gte": thirty_days_ago}},
         {"_id": 0}
-    ).sort("created_at", 1).to_list(None)
+    ).sort("created_at", 1).to_list(200)
 
     elements.append(Spacer(1, 20))
     elements.append(Paragraph("SUIVI CLINIQUE — 30 DERNIERS JOURS", styles['SectionTitle']))
@@ -952,7 +959,8 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
         media_type="application/pdf",
         headers={
             "Content-Disposition": f'attachment; filename="{filename}"',
-            "Access-Control-Expose-Headers": "Content-Disposition"
+            "Access-Control-Expose-Headers": "Content-Disposition",
+            "Cache-Control": "no-store"
         }
     )
 
@@ -1445,7 +1453,8 @@ async def export_rapport_pdf(rapport_id: str, token: str = Query(None), current_
         media_type="application/pdf",
         headers={
             "Content-Disposition": f'attachment; filename="{filename}"',
-            "Access-Control-Expose-Headers": "Content-Disposition"
+            "Access-Control-Expose-Headers": "Content-Disposition",
+            "Cache-Control": "no-store"
         }
     )
 
@@ -1495,6 +1504,12 @@ class OrthoResponse(BaseModel):
     telephone: Optional[str] = None
     email: Optional[str] = None
     site_web: Optional[str] = None
+
+@api_router.get("/orthos/departements")
+async def get_orthos_departements():
+    depts = await db.orthos.distinct("departement")
+    depts = sorted([d for d in depts if d], key=lambda x: str(x))
+    return depts
 
 @api_router.get("/orthos", response_model=List[OrthoResponse])
 async def get_orthos(departement: Optional[str] = Query(None)):
@@ -1565,7 +1580,7 @@ async def create_etablissement(
     etablissement_id = str(uuid.uuid4())
     doc = {
         "id": etablissement_id,
-        **data.dict(),
+        **data.model_dump(),
         "note_moyenne": 0.0,
         "nombre_avis": 0,
         "avis": [],
@@ -1628,6 +1643,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def startup_db_client():
+    await db.users.create_index("email", unique=True)
+    await db.patients.create_index("user_id")
+    await db.journal_entries.create_index("user_id")
+    await db.shares.create_index("share_id")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
