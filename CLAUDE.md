@@ -228,6 +228,15 @@ Daniel — fondateur solo, profil business/stratégie avec capacité technique s
 
 Langue de travail : **français**.
 
+## Règles de style — production de contenu
+
+Applicable à tout contenu produit : newsletters, emails, textes UI, articles, documents.
+
+- **Pas d'icônes ni emojis** dans les textes — ni dans le corps, ni dans les titres, ni dans les encadrés
+- **Pas de cadratins** (`&nbsp;`) comme séparateurs visuels
+- **Pas de listes à puces avec symboles** (❌, ✓, 💡, etc.) — utiliser du texte en gras à la place
+- Le contenu doit fonctionner sans décoration typographique non-standard
+
 ## Skill routing
 
 When the user's request matches an available skill, ALWAYS invoke it using the Skill
