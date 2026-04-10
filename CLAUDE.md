@@ -228,6 +228,43 @@ Daniel — fondateur solo, profil business/stratégie avec capacité technique s
 
 Langue de travail : **français**.
 
+## Newsletter Stumpr - Specs Brevo
+
+### Format HTML obligatoire
+- DOCTYPE XHTML 1.0 Transitional (pas HTML5)
+- Pas de SVG inline - Brevo les rejette
+- Pas de `display:none` - Brevo ne le lit pas
+- Texte visible directement dans des `<td>` pour passer la validation Brevo
+
+### Règles typographiques
+- Pas de tirets cadratins (—) - remplacer par tirets simples (-)
+- Pas d'icônes ni emojis
+- Pas de cadratins (`&nbsp;`) sauf dans les séparateurs techniques (dividers)
+- Pas de numérotation avec cercles - utiliser texte en gras simple
+
+### Structure type
+- DOCTYPE XHTML + head avec Google Fonts
+- Header : dégradé `linear-gradient(135deg,#00386c,#006a63)` + logo Stumpr. + mention "La Lettre - Mois Année"
+- Photo pleine largeur (600px) hébergée sur imgur ou serveur externe
+- Articles en `<td>` avec CSS inline
+- Section bêta CTA dégradé en fin d'article
+- Footer avec `{{ unsubscribe }}` pour désinscription Brevo
+
+### Process d'import dans Brevo
+1. Terminal : `cat ~/Downloads/stumpr-newsletter-beta.html | pbcopy`
+2. Brevo - Campagnes - Modifier le design
+3. Cliquer sur icône `<>` dans la barre d'outils
+4. Cmd+A puis Cmd+V
+5. Prévisualiser et tester avant envoi
+
+### Palette couleurs
+- Primary : #00386c
+- Secondary : #006a63
+- Surface : #f6fafe
+- Accent teal : #4dd9cc
+
+---
+
 ## Règles de style — production de contenu
 
 Applicable à tout contenu produit : newsletters, emails, textes UI, articles, documents.
