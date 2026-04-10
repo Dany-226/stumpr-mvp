@@ -80,8 +80,11 @@ GET /api/admin/patients      → toutes les fiches patients
 ## Bêta test en cours
 
 - **65 bêta testeurs** invités par email le 09/04/2026
+- **6 inscrits** au 10/04/2026 : rodolphe.peltier, jean.bechu, pollux266, bernard.leopold, vincent.labeque, zaiconcept
+- **4 fiches patients** créées dont 2 avec composants renseignés
 - **Whitelist active** : inscription bloquée si email absent de la collection `beta_testers` (HTTP 403)
-- **Suivi** via dashboard admin local (`stumpr-admin.html`)
+- **Dashboard admin** : `stumpr-admin.html` (fichier local — pointe sur https://stumpr-backend.onrender.com)
+- **exports/** : exclu du repo (`.gitignore`) — données sensibles locales uniquement
 - **Emails jetables à bloquer** à l'ouverture publique (ex: `izkat.com`, `hidingmail.com`)
 
 ---
