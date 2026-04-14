@@ -52,7 +52,6 @@ function StepIndicator({ current }) {
 
 // ── Step 1 — Profil ────────────────────────────────────────────────────────
 function StepProfil({ data, onChange, errors }) {
-  const user = JSON.parse(localStorage.getItem("stumpr_user") || "{}");
 
   return (
     <div>
@@ -91,7 +90,7 @@ function StepProfil({ data, onChange, errors }) {
         <input
           className={INPUT_CLS}
           type="email"
-          value={data.email || user.email || ""}
+          value={data.email}
           onChange={(e) => onChange("email", e.target.value)}
           placeholder="votre@email.com"
         />
@@ -386,7 +385,8 @@ function StepComposants({ composants, onAdd, onRemove, onUpdate }) {
 // ── Main OnboardingPage ────────────────────────────────────────────────────
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("stumpr_user") || "{}");
+  let user = {};
+  try { user = JSON.parse(localStorage.getItem("stumpr_user") || "{}"); } catch {}
 
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -439,14 +439,20 @@ export default function OnboardingPage() {
   const handleBack = () => setStep((s) => s - 1);
 
   const handleFinish = async () => {
-    setSubmitting(true);
     const token = localStorage.getItem("stumpr_token");
+    if (!token) {
+      toast.error("Session expirée, veuillez vous reconnecter");
+      navigate("/login");
+      return;
+    }
+    setSubmitting(true);
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
       // 1. Créer le patient
       const patientRes = await axios.post(`${API}/patients`, profil, { headers });
-      const patientId = patientRes.data.id || patientRes.data._id;
+      const patientId = patientRes.data?.id || patientRes.data?._id;
+      if (!patientId) throw new Error("Identifiant patient manquant dans la réponse API");
 
       // 2. Créer la prothèse si non skippée
       let proteseId = null;
@@ -456,7 +462,7 @@ export default function OnboardingPage() {
           { ...prothese, patient_id: patientId },
           { headers }
         );
-        proteseId = proteseRes.data.id || proteseRes.data._id;
+        proteseId = proteseRes.data?.id || proteseRes.data?._id;
       }
 
       // 3. Créer les composants si non skippés et si prothèse créée

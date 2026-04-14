@@ -92,9 +92,10 @@ export default function LPPRSearch({ onSelect, hideTarif = false }) {
           onChange={(e) => setQuery(e.target.value)}
         />
         {loading && (
-          <div style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)" }}
+          <div
             className="w-4 h-4 border-2 rounded-full animate-spin"
-            style={{ borderColor: "#0e6b63", borderTopColor: "transparent" }} />
+            style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", borderColor: "#0e6b63", borderTopColor: "transparent" }}
+          />
         )}
       </div>
 
