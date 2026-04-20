@@ -439,7 +439,7 @@ export default function DashboardPage() {
                 {entries.slice(0, 7).map((entry) => {
                   const avgPain = entry.douleurs?.composants?.length > 0
                     ? entry.douleurs.composants.reduce((sum, c) => sum + c.score, 0) / entry.douleurs.composants.length
-                    : 0;
+                    : (entry.douleurs?.globale || 0);
                   const painBadge = getPainBadge(Math.max(avgPain, entry.douleurs?.fantome || 0));
 
                   return (
