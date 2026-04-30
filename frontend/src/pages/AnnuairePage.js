@@ -41,6 +41,7 @@ const TypeBadge = ({ type }) => {
 
 // ─── Modal: Ajouter un avis ───────────────────────────────────────────────────
 const AvisModal = ({ etablissement, onClose, onSuccess }) => {
+  return null; // FEATURE DESACTIVEE — en attente modele de gouvernance
   const [auteur, setAuteur] = useState("");
   const [note, setNote] = useState(5);
   const [commentaire, setCommentaire] = useState("");
@@ -296,6 +297,7 @@ const EtablissementCard = ({ etab, onAvisClick }) => (
           Site web
         </a>
       )}
+      {/* FEATURE DESACTIVEE — bouton avis et liste avis masques
       <button
         onClick={() => onAvisClick(etab)}
         className="ml-auto bg-surface-container text-on-surface rounded-xl px-4 py-2 text-sm font-medium border-none"
@@ -305,8 +307,10 @@ const EtablissementCard = ({ etab, onAvisClick }) => (
           Donner un avis
         </span>
       </button>
+      */}
     </div>
 
+    {/* FEATURE DESACTIVEE — liste avis masquee
     {etab.avis && etab.avis.length > 0 && (
       <div className="pt-2 space-y-2">
         {etab.avis.slice(-2).reverse().map((a, i) => (
@@ -327,6 +331,7 @@ const EtablissementCard = ({ etab, onAvisClick }) => (
         ))}
       </div>
     )}
+    */}
   </div>
 );
 

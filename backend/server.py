@@ -1569,6 +1569,10 @@ class Avis(BaseModel):
     note: int = Field(ge=1, le=5)
     commentaire: Optional[str] = None
 
+class AvisPublic(BaseModel):
+    note: int
+    commentaire: Optional[str] = None
+
 class EtablissementCreate(BaseModel):
     nom: str
     type: str  # "CRF" ou "Prothesiste"
@@ -1591,7 +1595,7 @@ class EtablissementResponse(BaseModel):
     notes_communautaires: Optional[str] = None
     note_moyenne: float
     nombre_avis: int
-    avis: List[dict] = []
+    avis: List[AvisPublic] = []
     created_at: str
 
 # ======================== ANNUAIRE ROUTES ========================
@@ -1634,7 +1638,8 @@ async def create_etablissement(
     doc.pop("_id", None)
     return EtablissementResponse(**doc)
 
-@api_router.post("/annuaire/{etablissement_id}/avis")
+# FEATURE DESACTIVEE — modele de gouvernance avis en cours de definition
+# @api_router.post("/annuaire/{etablissement_id}/avis")
 async def add_avis(
     etablissement_id: str,
     avis: Avis,
