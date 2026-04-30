@@ -41,11 +41,11 @@ const TypeBadge = ({ type }) => {
 
 // ─── Modal: Ajouter un avis ───────────────────────────────────────────────────
 const AvisModal = ({ etablissement, onClose, onSuccess }) => {
-  return null; // FEATURE DESACTIVEE — en attente modele de gouvernance
   const [auteur, setAuteur] = useState("");
   const [note, setNote] = useState(5);
   const [commentaire, setCommentaire] = useState("");
   const [loading, setLoading] = useState(false);
+  return null; // FEATURE DESACTIVEE — en attente modele de gouvernance
 
   const submit = async (e) => {
     e.preventDefault();
