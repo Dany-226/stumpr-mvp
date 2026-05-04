@@ -293,3 +293,18 @@ Key routing rules:
 - Architecture review → invoke plan-eng-review
 - Save progress, checkpoint, resume → invoke checkpoint
 - Code quality, health check → invoke health
+
+## Landing Page
+Source live : `curl https://stumpr.app/ > fichier.html`
+Deployee via Cloudflare Pages, projet "old-credit-8991"
+Dossier deploy : ~/Desktop/stumpr-lp-deploy/index.html
+Commande deploy : `wrangler pages deploy . --project-name old-credit-8991`
+Palette : Manrope/Inter, --primary:#00386c, --secondary:#006a63, --accent:#00c9b8
+ATTENTION : /mnt/project/index.html est obsolete.
+
+## Dashboard Admin
+Fichier : ~/Downloads/stumpr-admin.html
+Auth : X-Admin-Secret: stumpr-admin-2026
+Backend local : http://127.0.0.1:8001
+Lancer : cd ~/Desktop/stumpr-mvp/backend && python3 -m uvicorn server:app --port 8001
+Endpoints : /api/admin/beta-testers, /api/admin/users, /api/admin/patients
