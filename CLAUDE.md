@@ -308,3 +308,10 @@ Auth : X-Admin-Secret: stumpr-admin-2026
 Backend local : http://127.0.0.1:8001
 Lancer : cd ~/Desktop/stumpr-mvp/backend && python3 -m uvicorn server:app --port 8001
 Endpoints : /api/admin/beta-testers, /api/admin/users, /api/admin/patients
+
+## Deploy LP - process final (mai 2026)
+1. Recuperer la LP live : `curl https://stumpr.app/ > ~/Desktop/stumpr-lp-live.html`
+2. Modifier le fichier
+3. Copier dans deploy : `cp fichier.html ~/Desktop/stumpr-lp-deploy/index.html`
+4. Deployer : `cd ~/Desktop/stumpr-lp-deploy && wrangler pages deploy . --project-name old-credit-8991`
+NOTE : Workers Routes supprimees - LP sur Cloudflare Pages uniquement.
