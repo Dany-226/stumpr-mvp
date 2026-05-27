@@ -792,26 +792,59 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
     styles.add(ParagraphStyle(name='StatLabel',     fontName='Helvetica',      fontSize=8,  textColor=colors.HexColor('#8892a4'), alignment=1))
     styles.add(ParagraphStyle(name='FooterStyle',   fontName='Helvetica',      fontSize=8,  textColor=colors.HexColor('#8892a4'), alignment=1))
     styles.add(ParagraphStyle(name='SubNote',       fontName='Helvetica-Oblique', fontSize=9, textColor=colors.HexColor('#8892a4')))
+    styles.add(ParagraphStyle(name='HeaderRight',   fontName='Helvetica',      fontSize=8,  textColor=colors.HexColor('#3d4a5c'), alignment=2, spaceAfter=2))
+    styles.add(ParagraphStyle(name='HeaderRightMuted', fontName='Helvetica',   fontSize=7,  textColor=colors.HexColor('#8892a4'), alignment=2, spaceAfter=2))
 
     elements = []
 
-    # ── HEADER ────────────────────────────────────────────────────────────
-    elements.append(Paragraph(
-        '<font name="Helvetica-Bold" color="#00386c" size="22">Stumpr</font>'
-        '<font name="Helvetica-Bold" color="#006a63" size="22">.</font>',
-        styles['StumprTitle']
-    ))
+    # ── HEADER (Table 2 colonnes) ─────────────────────────────────────────
     user_created = current_user.get("created_at", "")
     inscription_str = format_date(user_created[:10]) if user_created else "N/A"
-    elements.append(Paragraph(
-        f"Inscrit le {inscription_str}  ·  {total_entries} entrees sur 30j  ·  {avg_per_week} entrees/semaine",
-        styles['StumprMeta']
-    ))
+
+    ortho_nom_h = patient.get("ortho_nom") or ""
+    ortho_ville_h = patient.get("ortho_ville") or ""
+    medecin_h = patient.get("medecin_prescripteur") or ""
+    rdv_h = format_date(patient.get("prochain_rdv"))
+
+    ortho_display_h = " - ".join(p for p in [ortho_nom_h, ortho_ville_h] if p) or "Non renseigne"
+
+    col_left = [
+        Paragraph(
+            '<font name="Helvetica-Bold" color="#00386c" size="22">Stumpr</font>'
+            '<font name="Helvetica-Bold" color="#006a63" size="22">.</font>',
+            styles['StumprTitle']
+        ),
+        Paragraph(
+            f"Inscrit le {inscription_str}  ·  {total_entries} entrees sur 30j  ·  {avg_per_week} entrees/sem.",
+            styles['StumprMeta']
+        ),
+    ]
+    col_right = [
+        Paragraph(f"<b>Ortho :</b> {ortho_display_h}", styles['HeaderRight']),
+        Paragraph(f"<b>Medecin :</b> {medecin_h or 'Non renseigne'}", styles['HeaderRight']),
+        Paragraph(f"<b>Prochain RDV :</b> {rdv_h}", styles['HeaderRightMuted']),
+    ]
+
+    header_tbl = Table(
+        [[col_left, col_right]],
+        colWidths=[9*cm, 8*cm]
+    )
+    header_tbl.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'BOTTOM'),
+        ('LEFTPADDING', (0, 0), (0, 0), 0),
+        ('RIGHTPADDING', (0, 0), (0, 0), 0),
+        ('LEFTPADDING', (1, 0), (1, 0), 6),
+        ('RIGHTPADDING', (1, 0), (1, 0), 0),
+        ('TOPPADDING', (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+    ]))
+    elements.append(header_tbl)
+
     # Divider line
     div = Table([['']], colWidths=[17*cm])
     div.setStyle(TableStyle([
         ('LINEBELOW', (0, 0), (-1, -1), 1.5, colors.HexColor('#00386c')),
-        ('TOPPADDING', (0, 0), (-1, -1), 0),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
     ]))
     elements.append(div)
@@ -961,10 +994,8 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
     ))
     elements.append(Spacer(1, 10))
 
-    if not journal_entries:
-        elements.append(Paragraph("Aucune donnee de suivi enregistree sur les 30 derniers jours.", styles['StumprBody']))
-    else:
-        # ── Stats résumé 4 cellules ───────────────────────────────────────
+    # ── Stats résumé 4 cellules (toujours si données présentes) ─────────
+    if journal_entries:
         stat_cells = [
             [Paragraph(f"{avg_globale}/10", styles['StatValue']),
              Paragraph(f"{avg_fantome}/10", styles['StatValue']),
@@ -986,7 +1017,10 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
         ]))
         elements.append(stat_table)
         elements.append(Spacer(1, 14))
+    else:
+        elements.append(Paragraph("Aucune donnee de suivi enregistree sur les 30 derniers jours.", styles['StumprBody']))
 
+    if journal_entries:
         # ── Graphique ReportLab pur (Drawing / PolyLine) ─────────────────
         try:
             W = 17 * cm      # largeur totale
@@ -1127,15 +1161,15 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
             row_tbl.setStyle(TableStyle([
                 ('LINEAFTER', (0, 0), (0, 0), 0, colors.white),
                 ('LINEBEFORE', (0, 0), (0, 0), 3, border_color),
-                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#fafafa')),
+                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f6fafe')),
                 ('TOPPADDING', (0, 0), (-1, -1), 5),
                 ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-                ('LEFTPADDING', (0, 0), (0, 0), 8),
+                ('LEFTPADDING', (0, 0), (0, 0), 12),
                 ('RIGHTPADDING', (0, 0), (-1, -1), 6),
                 ('VALIGN', (0, 0), (-1, -1), 'TOP'),
             ]))
             elements.append(row_tbl)
-            elements.append(Spacer(1, 3))
+            elements.append(Spacer(1, 5))
 
     # Légende
     elements.append(Spacer(1, 6))
