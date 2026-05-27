@@ -20,11 +20,10 @@ import anthropic
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.units import cm
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from reportlab.graphics.shapes import Drawing, PolyLine, Line, String, Rect
+from reportlab.graphics import renderPDF
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -988,44 +987,103 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
         elements.append(stat_table)
         elements.append(Spacer(1, 14))
 
-        # ── Graphique matplotlib ──────────────────────────────────────────
+        # ── Graphique ReportLab pur (Drawing / PolyLine) ─────────────────
         try:
-            chart_dates = []
-            for e in journal_entries:
-                raw = e.get("created_at", "")[:10]
-                try:
-                    chart_dates.append(datetime.fromisoformat(raw).strftime("%d/%m"))
-                except Exception:
-                    chart_dates.append(raw)
+            W = 17 * cm      # largeur totale
+            H = 4.3 * cm     # hauteur totale
+            PAD_L = 1.2 * cm  # marge gauche (axe Y)
+            PAD_B = 0.8 * cm  # marge bas (axe X)
+            PAD_R = 0.3 * cm
+            PAD_T = 0.3 * cm
 
-            fig, ax = plt.subplots(figsize=(16/2.54, 4/2.54))
-            fig.patch.set_facecolor('white')
-            ax.set_facecolor('white')
+            plot_w = W - PAD_L - PAD_R
+            plot_h = H - PAD_B - PAD_T
 
-            x = range(len(chart_dates))
-            ax.plot(list(x), globale_scores, color='#00386c', linewidth=1.5, label='Globale')
-            ax.plot(list(x), fantome_scores, color='#006a63', linewidth=1.2, linestyle='--', label='Fantome')
+            n_pts = len(journal_entries)
 
-            ax.set_ylim(0, 10)
-            ax.set_xticks(list(x))
-            ax.set_xticklabels(chart_dates, fontsize=6, rotation=45, ha='right')
-            ax.yaxis.set_tick_params(labelsize=7)
-            ax.spines['top'].set_visible(False)
-            ax.spines['right'].set_visible(False)
-            ax.spines['left'].set_color('#d0dde8')
-            ax.spines['bottom'].set_color('#d0dde8')
-            ax.yaxis.set_ticks([0, 2, 4, 6, 8, 10])
-            ax.legend(fontsize=7, frameon=False, loc='upper right')
-            ax.set_ylabel('Douleur /10', fontsize=7, color='#8892a4')
-            fig.tight_layout(pad=0.3)
+            d = Drawing(W, H)
 
-            chart_buf = io.BytesIO()
-            fig.savefig(chart_buf, format='PNG', dpi=150, bbox_inches='tight', facecolor='white')
-            plt.close(fig)
-            chart_buf.seek(0)
+            # Fond blanc
+            d.add(Rect(0, 0, W, H, fillColor=colors.white, strokeColor=None))
 
-            img = RLImage(chart_buf, width=17*cm, height=4.3*cm)
-            elements.append(img)
+            # Grille horizontale légère (0, 2, 4, 6, 8, 10)
+            for yval in [0, 2, 4, 6, 8, 10]:
+                gy = PAD_B + (yval / 10.0) * plot_h
+                d.add(Line(PAD_L, gy, PAD_L + plot_w, gy,
+                           strokeColor=colors.HexColor('#e8edf3'), strokeWidth=0.4))
+
+            # Axe Y gauche
+            d.add(Line(PAD_L, PAD_B, PAD_L, PAD_B + plot_h,
+                       strokeColor=colors.HexColor('#d0dde8'), strokeWidth=0.6))
+            # Axe X bas
+            d.add(Line(PAD_L, PAD_B, PAD_L + plot_w, PAD_B,
+                       strokeColor=colors.HexColor('#d0dde8'), strokeWidth=0.6))
+
+            # Labels axe Y
+            for yval in [0, 2, 4, 6, 8, 10]:
+                gy = PAD_B + (yval / 10.0) * plot_h
+                d.add(String(PAD_L - 0.15*cm, gy - 3, str(yval),
+                             fontSize=5.5, fillColor=colors.HexColor('#8892a4'),
+                             textAnchor='end'))
+
+            # Label axe Y titre
+            d.add(String(0.05*cm, PAD_B + plot_h / 2, 'Douleur /10',
+                         fontSize=5.5, fillColor=colors.HexColor('#8892a4'),
+                         textAnchor='middle'))
+
+            if n_pts >= 2:
+                # Coordonnées des courbes
+                def to_xy(scores):
+                    pts = []
+                    for i, v in enumerate(scores):
+                        x = PAD_L + (i / (n_pts - 1)) * plot_w
+                        y = PAD_B + (v / 10.0) * plot_h
+                        pts.extend([x, y])
+                    return pts
+
+                # Courbe globale — trait plein #00386c
+                pts_g = to_xy(globale_scores)
+                d.add(PolyLine(pts_g,
+                               strokeColor=colors.HexColor('#00386c'),
+                               strokeWidth=1.5,
+                               strokeDashArray=None))
+
+                # Courbe fantôme — pointillés #006a63
+                pts_f = to_xy(fantome_scores)
+                d.add(PolyLine(pts_f,
+                               strokeColor=colors.HexColor('#006a63'),
+                               strokeWidth=1.2,
+                               strokeDashArray=[3, 3]))
+
+                # Labels axe X (dates) — 1 sur 2 si trop dense
+                step = max(1, n_pts // 10)
+                for i, e in enumerate(journal_entries):
+                    if i % step != 0 and i != n_pts - 1:
+                        continue
+                    raw = e.get("created_at", "")[:10]
+                    try:
+                        lbl = datetime.fromisoformat(raw).strftime("%d/%m")
+                    except Exception:
+                        lbl = raw
+                    x = PAD_L + (i / (n_pts - 1)) * plot_w
+                    d.add(String(x, PAD_B - 0.22*cm, lbl,
+                                 fontSize=5, fillColor=colors.HexColor('#8892a4'),
+                                 textAnchor='middle'))
+
+            # Légende en haut à droite
+            lx = PAD_L + plot_w - 2.8*cm
+            ly = PAD_B + plot_h - 0.35*cm
+            d.add(Line(lx, ly + 0.15*cm, lx + 0.5*cm, ly + 0.15*cm,
+                       strokeColor=colors.HexColor('#00386c'), strokeWidth=1.5))
+            d.add(String(lx + 0.6*cm, ly, 'Globale',
+                         fontSize=5.5, fillColor=colors.HexColor('#00386c')))
+            d.add(Line(lx + 1.6*cm, ly + 0.15*cm, lx + 2.1*cm, ly + 0.15*cm,
+                       strokeColor=colors.HexColor('#006a63'), strokeWidth=1.2,
+                       strokeDashArray=[3, 3]))
+            d.add(String(lx + 2.2*cm, ly, 'Fantome',
+                         fontSize=5.5, fillColor=colors.HexColor('#006a63')))
+
+            elements.append(d)
             elements.append(Spacer(1, 10))
         except Exception as chart_err:
             logger.warning(f"Graphique PDF non genere: {chart_err}")
