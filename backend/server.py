@@ -20,8 +20,11 @@ import anthropic
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
 from reportlab.lib.units import cm
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -661,6 +664,29 @@ async def get_shared_patient(share_id: str):
 
 # ======================== PDF EXPORT ========================
 
+EVENT_LABELS_PDF = {
+    "manchon_change": "Changement manchon",
+    "emboiture_changee": "Changement emboiture",
+    "composant_change": "Nouveau composant",
+    "reglage_prothese": "Reglage prothese",
+    "prothese_secours": "Prothese secours",
+    "prothese_non_portee": "Prothese non portee",
+    "irritation_cutanee": "Irritation cutanee",
+    "plaie_escarre": "Plaie/escarre",
+    "sudation_excessive": "Sudation excessive",
+    "oedeme_moignon": "Oedeme moignon",
+    "douleur_neuropathique": "Douleur neuropathique",
+    "point_dur_osseux": "Point osseux douloureux",
+    "reaction_allergique": "Reaction allergique",
+    "infection_suspectee": "Infection suspectee",
+    "chute_incident": "Chute/incident",
+    "activite_intense": "Activite intense",
+    "variation_poids": "Variation poids",
+    "consultation_medicale": "Consultation medicale",
+    "changement_traitement": "Changement traitement",
+    "chaleur_voyage": "Chaleur/voyage",
+}
+
 @api_router.get("/patients/{patient_id}/pdf")
 async def export_patient_pdf(patient_id: str, token: str = Query(None), current_user: dict = None):
     # Allow token via query param for direct browser download
@@ -676,40 +702,31 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
             current_user = user
         except JWTError:
             raise HTTPException(status_code=401, detail="Token invalide")
-    
+
     if not current_user:
         raise HTTPException(status_code=401, detail="Authentification requise")
-    
+
     patient = await db.patients.find_one({"id": patient_id, "user_id": current_user["id"]}, {"_id": 0})
     if not patient:
         raise HTTPException(status_code=404, detail="Fiche patient non trouvée")
-    
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=2*cm, leftMargin=2*cm, topMargin=2*cm, bottomMargin=2*cm)
-    
-    styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='StumprTitle', fontName='Helvetica-Bold', fontSize=24, textColor=colors.HexColor('#1d7a72'), spaceAfter=20))
-    styles.add(ParagraphStyle(name='SectionTitle', fontName='Helvetica-Bold', fontSize=14, textColor=colors.HexColor('#1a1f2e'), spaceBefore=15, spaceAfter=10))
-    styles.add(ParagraphStyle(name='StumprBody', fontName='Helvetica', fontSize=10, textColor=colors.HexColor('#3d4a5c'), spaceAfter=5))
-    styles.add(ParagraphStyle(name='FieldLabel', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#8892a4')))
-    styles.add(ParagraphStyle(name='CompTitle', fontName='Helvetica-Bold', fontSize=11, textColor=colors.HexColor('#1d7a72'), spaceBefore=8, spaceAfter=4))
-    styles.add(ParagraphStyle(name='RenewalOK', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#2d9e6b')))
-    styles.add(ParagraphStyle(name='RenewalWarn', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#e08c2a')))
-    styles.add(ParagraphStyle(name='RenewalDanger', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#d64545')))
-    
-    elements = []
-    
-    # Helper to format dates
+
+    # Fetch journal entries early — needed for header stats
+    thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+    journal_entries = await db.journal_entries.find(
+        {"patient_id": patient_id, "created_at": {"$gte": thirty_days_ago}},
+        {"_id": 0}
+    ).sort("created_at", 1).to_list(200)
+
+    # ── Helpers ──────────────────────────────────────────────────────────
     def format_date(date_str):
         if not date_str:
-            return "Non renseignée"
+            return "Non renseignee"
         try:
             d = datetime.fromisoformat(date_str.replace('Z', '+00:00')) if 'T' in date_str else datetime.strptime(date_str, '%Y-%m-%d')
             return d.strftime("%d/%m/%Y")
-        except:
+        except Exception:
             return date_str
-    
-    # Helper to calculate renewal date
+
     def get_renewal_info(prescription_date, duration_years):
         if not prescription_date or not duration_years:
             return None, None
@@ -718,24 +735,94 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
                 prescription = datetime.fromisoformat(prescription_date.replace('Z', '+00:00'))
             else:
                 prescription = datetime.strptime(prescription_date, '%Y-%m-%d')
-            renewal = prescription.replace(year=prescription.year + duration_years)
+            renewal = prescription.replace(year=prescription.year + int(duration_years))
             now = datetime.now(timezone.utc) if prescription.tzinfo else datetime.now()
             diff_days = (renewal - now).days
-            renewal_str = renewal.strftime("%d/%m/%Y")
-            return renewal_str, diff_days
-        except:
+            return renewal.strftime("%d/%m/%Y"), diff_days
+        except Exception:
             return None, None
-    
-    # Title
-    elements.append(Paragraph("Stumpr — Fiche Patient", styles['StumprTitle']))
-    elements.append(Spacer(1, 10))
-    
-    # Section 1 - Identité
-    elements.append(Paragraph("IDENTITÉ PATIENT", styles['SectionTitle']))
+
+    # ── Journal stats ─────────────────────────────────────────────────────
+    total_entries = len(journal_entries)
+    avg_per_week = round(total_entries / (30 / 7), 1) if total_entries > 0 else 0.0
+
+    globale_scores = [e.get("douleurs", {}).get("globale", 0) or 0 for e in journal_entries]
+    fantome_scores = [e.get("douleurs", {}).get("fantome", 0) or 0 for e in journal_entries]
+
+    avg_globale = round(sum(globale_scores) / max(len(globale_scores), 1), 1)
+    avg_fantome = round(sum(fantome_scores) / max(len(fantome_scores), 1), 1)
+
+    # Pic douloureux (max globale)
+    pic_val = 0
+    pic_date_str = "—"
+    if globale_scores:
+        pic_idx = globale_scores.index(max(globale_scores))
+        pic_val = globale_scores[pic_idx]
+        raw_date = journal_entries[pic_idx].get("created_at", "")[:10]
+        try:
+            pic_date_str = datetime.fromisoformat(raw_date).strftime("%d/%m/%Y")
+        except Exception:
+            pic_date_str = raw_date
+
+    # Evolution: difference entre derniere valeur et pic
+    evolution_str = "—"
+    if len(globale_scores) >= 2:
+        diff = globale_scores[-1] - pic_val
+        sign = "+" if diff >= 0 else ""
+        evolution_str = f"{sign}{diff} pts vs pic"
+
+    # ── Document setup ────────────────────────────────────────────────────
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        rightMargin=2*cm, leftMargin=2*cm,
+        topMargin=2*cm, bottomMargin=2.5*cm
+    )
+
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='StumprTitle',   fontName='Helvetica-Bold', fontSize=22, textColor=colors.HexColor('#00386c'), spaceAfter=4))
+    styles.add(ParagraphStyle(name='StumprMeta',    fontName='Helvetica',      fontSize=9,  textColor=colors.HexColor('#8892a4'), spaceAfter=14))
+    styles.add(ParagraphStyle(name='SectionTitle',  fontName='Helvetica-Bold', fontSize=13, textColor=colors.HexColor('#1a1f2e'), spaceBefore=14, spaceAfter=8))
+    styles.add(ParagraphStyle(name='StumprBody',    fontName='Helvetica',      fontSize=10, textColor=colors.HexColor('#3d4a5c'), spaceAfter=5))
+    styles.add(ParagraphStyle(name='FieldLabel',    fontName='Helvetica-Bold', fontSize=9,  textColor=colors.HexColor('#8892a4')))
+    styles.add(ParagraphStyle(name='CompTitle',     fontName='Helvetica-Bold', fontSize=11, textColor=colors.HexColor('#00386c'), spaceBefore=8, spaceAfter=4))
+    styles.add(ParagraphStyle(name='RenewalOK',     fontName='Helvetica-Bold', fontSize=9,  textColor=colors.HexColor('#2d9e6b')))
+    styles.add(ParagraphStyle(name='RenewalWarn',   fontName='Helvetica-Bold', fontSize=9,  textColor=colors.HexColor('#e08c2a')))
+    styles.add(ParagraphStyle(name='RenewalDanger', fontName='Helvetica-Bold', fontSize=9,  textColor=colors.HexColor('#d64545')))
+    styles.add(ParagraphStyle(name='StatValue',     fontName='Helvetica-Bold', fontSize=16, textColor=colors.HexColor('#00386c'), spaceAfter=2, alignment=1))
+    styles.add(ParagraphStyle(name='StatLabel',     fontName='Helvetica',      fontSize=8,  textColor=colors.HexColor('#8892a4'), alignment=1))
+    styles.add(ParagraphStyle(name='FooterStyle',   fontName='Helvetica',      fontSize=8,  textColor=colors.HexColor('#8892a4'), alignment=1))
+    styles.add(ParagraphStyle(name='SubNote',       fontName='Helvetica-Oblique', fontSize=9, textColor=colors.HexColor('#8892a4')))
+
+    elements = []
+
+    # ── HEADER ────────────────────────────────────────────────────────────
+    elements.append(Paragraph(
+        '<font name="Helvetica-Bold" color="#00386c" size="22">Stumpr</font>'
+        '<font name="Helvetica-Bold" color="#006a63" size="22">.</font>',
+        styles['StumprTitle']
+    ))
+    user_created = current_user.get("created_at", "")
+    inscription_str = format_date(user_created[:10]) if user_created else "N/A"
+    elements.append(Paragraph(
+        f"Inscrit le {inscription_str}  ·  {total_entries} entrees sur 30j  ·  {avg_per_week} entrees/semaine",
+        styles['StumprMeta']
+    ))
+    # Divider line
+    div = Table([['']], colWidths=[17*cm])
+    div.setStyle(TableStyle([
+        ('LINEBELOW', (0, 0), (-1, -1), 1.5, colors.HexColor('#00386c')),
+        ('TOPPADDING', (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+    ]))
+    elements.append(div)
+
+    # ── SECTION 1 — Identité ──────────────────────────────────────────────
+    elements.append(Paragraph("IDENTITE PATIENT", styles['SectionTitle']))
     identity_data = [
-        ["Prénom:", patient.get("prenom", ""), "Nom:", patient.get("nom", "")],
-        ["Email:", patient.get("email", ""), "Téléphone:", patient.get("telephone", "") or "Non renseigné"],
-        ["Date de naissance:", format_date(patient.get("date_naissance")), "Niveau d'activité:", patient.get("niveau_activite", "") or "Non renseigné"]
+        ["Prenom:", patient.get("prenom", ""), "Nom:", patient.get("nom", "")],
+        ["Email:", patient.get("email", ""), "Telephone:", patient.get("telephone", "") or "Non renseigne"],
+        ["Date de naissance:", format_date(patient.get("date_naissance")), "Niveau d'activite:", patient.get("niveau_activite", "") or "Non renseigne"]
     ]
     t = Table(identity_data, colWidths=[3*cm, 5*cm, 3*cm, 5*cm])
     t.setStyle(TableStyle([
@@ -750,12 +837,12 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
     ]))
     elements.append(t)
     elements.append(Spacer(1, 10))
-    
-    # Section 2 - Amputation
+
+    # ── SECTION 2 — Amputation ────────────────────────────────────────────
     elements.append(Paragraph("AMPUTATION", styles['SectionTitle']))
     amp_data = [
-        ["Niveau:", patient.get("niveau_amputation", ""), "Côté:", patient.get("cote", "") or "Non renseigné"],
-        ["Date:", format_date(patient.get("date_amputation")), "Cause:", patient.get("cause", "") or "Non renseignée"]
+        ["Niveau:", patient.get("niveau_amputation", ""), "Cote:", patient.get("cote", "") or "Non renseigne"],
+        ["Date:", format_date(patient.get("date_amputation")), "Cause:", patient.get("cause", "") or "Non renseignee"]
     ]
     t2 = Table(amp_data, colWidths=[3*cm, 5*cm, 3*cm, 5*cm])
     t2.setStyle(TableStyle([
@@ -769,84 +856,67 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
         ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
     ]))
     elements.append(t2)
-    
     if patient.get("notes_moignon"):
         elements.append(Spacer(1, 5))
-        elements.append(Paragraph(f"Notes sur le moignon: {patient['notes_moignon']}", styles['StumprBody']))
+        elements.append(Paragraph(f"Notes moignon: {patient['notes_moignon']}", styles['StumprBody']))
     elements.append(Spacer(1, 10))
-    
-    # Section 3 - Composants with full details
+
+    # ── SECTION 3 — Composants LPPR ──────────────────────────────────────
     composants = patient.get("composants", [])
     if composants:
-        elements.append(Paragraph("COMPOSANTS PROTHÉTIQUES (LPPR)", styles['SectionTitle']))
+        elements.append(Paragraph("COMPOSANTS PROTHETIQUES (LPPR)", styles['SectionTitle']))
         for i, comp in enumerate(composants, 1):
             elements.append(Paragraph(f"Composant {i}", styles['CompTitle']))
-            
-            # Code and nomenclature
             elements.append(Paragraph(f"<b>Code LPPR:</b> {comp.get('code', 'N/A')}", styles['StumprBody']))
             nomenclature = comp.get('nomenclature', 'N/A').replace('\n', ' ')
             elements.append(Paragraph(f"<b>Nomenclature:</b> {nomenclature}", styles['StumprBody']))
-            
-            # Tarif and duration
             tarif = comp.get('tarif')
-            tarif_str = f"{tarif}€" if tarif else "N/A"
+            tarif_str = f"{tarif}EUR" if tarif else "N/A"
             duree = comp.get('duree_ans')
             duree_str = f"{duree} ans" if duree else "N/A"
-            elements.append(Paragraph(f"<b>Tarif TTC:</b> {tarif_str} | <b>Durée prise en charge:</b> {duree_str}", styles['StumprBody']))
-            
-            # Category and application
+            elements.append(Paragraph(f"<b>Tarif TTC:</b> {tarif_str}  |  <b>Duree prise en charge:</b> {duree_str}", styles['StumprBody']))
             categorie = comp.get('categorie', 'N/A')
             application = comp.get('application', 'N/A')
-            elements.append(Paragraph(f"<b>Catégorie:</b> {categorie} | <b>Application:</b> {application}", styles['StumprBody']))
-            
-            # Prescription date
+            elements.append(Paragraph(f"<b>Categorie:</b> {categorie}  |  <b>Application:</b> {application}", styles['StumprBody']))
             prescription_date = comp.get('date_prescription')
             elements.append(Paragraph(f"<b>Date de prescription:</b> {format_date(prescription_date)}", styles['StumprBody']))
-            
-            # Renewal date with color coding
             renewal_str, diff_days = get_renewal_info(prescription_date, duree)
-            if renewal_str:
-                if diff_days is not None:
-                    if diff_days < 0:
-                        elements.append(Paragraph(f"Date de renouvellement: {renewal_str} (DÉPASSÉE)", styles['RenewalDanger']))
-                    elif diff_days < 30:
-                        elements.append(Paragraph(f"Date de renouvellement: {renewal_str} (URGENT)", styles['RenewalDanger']))
-                    elif diff_days < 180:
-                        elements.append(Paragraph(f"Date de renouvellement: {renewal_str} (dans {diff_days // 30} mois)", styles['RenewalWarn']))
-                    else:
-                        elements.append(Paragraph(f"Date de renouvellement: {renewal_str}", styles['RenewalOK']))
-            
-            # Additional info
+            if renewal_str and diff_days is not None:
+                if diff_days < 0:
+                    elements.append(Paragraph(f"Date de renouvellement: {renewal_str} (DEPASSEE)", styles['RenewalDanger']))
+                elif diff_days < 30:
+                    elements.append(Paragraph(f"Date de renouvellement: {renewal_str} (URGENT)", styles['RenewalDanger']))
+                elif diff_days < 180:
+                    elements.append(Paragraph(f"Date de renouvellement: {renewal_str} (dans {diff_days // 30} mois)", styles['RenewalWarn']))
+                else:
+                    elements.append(Paragraph(f"Date de renouvellement: {renewal_str}", styles['RenewalOK']))
             prise_charge = comp.get('prise_en_charge_complementaire')
             if prise_charge:
                 montant = comp.get('montant_rembourse')
-                montant_str = f" ({montant}€)" if montant else ""
+                montant_str = f" ({montant}EUR)" if montant else ""
                 elements.append(Paragraph(f"<b>Prise en charge:</b> {prise_charge}{montant_str}", styles['StumprBody']))
-            
             etat = comp.get('etat_composant')
             if etat:
-                elements.append(Paragraph(f"<b>État:</b> {etat}", styles['StumprBody']))
-            
-            notes = comp.get('notes')
-            if notes:
-                elements.append(Paragraph(f"<b>Notes:</b> {notes}", styles['StumprBody']))
-            
+                elements.append(Paragraph(f"<b>Etat:</b> {etat}", styles['StumprBody']))
+            notes_comp = comp.get('notes')
+            if notes_comp:
+                elements.append(Paragraph(f"<b>Notes:</b> {notes_comp}", styles['StumprBody']))
             elements.append(Spacer(1, 8))
-    
-    # Section 4 - Suivi médical
-    elements.append(Paragraph("SUIVI MÉDICAL", styles['SectionTitle']))
+
+    # ── SECTION 4 — Suivi médical ─────────────────────────────────────────
+    elements.append(Paragraph("SUIVI MEDICAL", styles['SectionTitle']))
     ortho_nom = patient.get("ortho_nom") or ""
     ortho_ville = patient.get("ortho_ville") or ""
     ortho_tel = patient.get("ortho_telephone") or ""
     if ortho_nom:
         ortho_parts = [p for p in [ortho_nom, ortho_ville, ortho_tel] if p]
-        ortho_display = " — ".join(ortho_parts)
+        ortho_display = " - ".join(ortho_parts)
     else:
-        ortho_display = "Non renseigné"
+        ortho_display = "Non renseigne"
     med_data = [
-        ["Orthoprothésiste:", ortho_display],
-        ["Médecin prescripteur:", patient.get("medecin_prescripteur", "") or "Non renseigné"],
-        ["Spécialité:", patient.get("specialite_prescripteur", "") or "Non renseignée"],
+        ["Orthoprothesiste:", ortho_display],
+        ["Medecin prescripteur:", patient.get("medecin_prescripteur", "") or "Non renseigne"],
+        ["Specialite:", patient.get("specialite_prescripteur", "") or "Non renseignee"],
         ["Prochain RDV:", format_date(patient.get("prochain_rdv"))]
     ]
     t3 = Table(med_data, colWidths=[4*cm, 12*cm])
@@ -858,145 +928,187 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
         ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
     ]))
     elements.append(t3)
-    
     if patient.get("notes_medicales"):
         elements.append(Spacer(1, 5))
-        elements.append(Paragraph(f"Notes médicales: {patient['notes_medicales']}", styles['StumprBody']))
+        elements.append(Paragraph(f"Notes medicales: {patient['notes_medicales']}", styles['StumprBody']))
     elements.append(Spacer(1, 10))
-    
-    # Section 5 - Activités with labels
+
+    # ── SECTION 5 — Activités ─────────────────────────────────────────────
     activites = patient.get("activites", [])
     if activites:
-        elements.append(Paragraph("ACTIVITÉS QUOTIDIENNES", styles['SectionTitle']))
+        elements.append(Paragraph("ACTIVITES QUOTIDIENNES", styles['SectionTitle']))
         activity_labels = {
             "marche_courte": "Marche courte (< 1km)",
             "marche_longue": "Marche longue (> 1km)",
-            "courses": "Courses / Supermarché",
+            "courses": "Courses / Supermarche",
             "conduite": "Conduite automobile",
-            "velo": "Vélo",
+            "velo": "Velo",
             "natation": "Natation",
             "sport_collectif": "Sport collectif",
-            "randonnee": "Randonnée",
+            "randonnee": "Randonnee",
             "travail_debout": "Travail debout",
             "travail_assis": "Travail assis",
-            "competition": "Activité intense / compétition"
+            "competition": "Activite intense / competition"
         }
         labels = [activity_labels.get(a, a) for a in activites]
-        elements.append(Paragraph(" • ".join(labels), styles['StumprBody']))
-    
-    # Section 6 - Clinical timeline (last 30 days)
-    EVENT_LABELS = {
-        "manchon_change": "Changement manchon",
-        "emboiture_changee": "Changement emboîture",
-        "composant_change": "Nouveau composant",
-        "reglage_prothese": "Réglage prothèse",
-        "prothese_secours": "Prothèse secours",
-        "prothese_non_portee": "Prothèse non portée",
-        "irritation_cutanee": "Irritation cutanée",
-        "plaie_escarre": "Plaie/escarre",
-        "sudation_excessive": "Sudation excessive",
-        "oedeme_moignon": "Œdème moignon",
-        "douleur_neuropathique": "Douleur neuropathique",
-        "point_dur_osseux": "Point osseux douloureux",
-        "reaction_allergique": "Réaction allergique",
-        "infection_suspectee": "Infection suspectée",
-        "chute_incident": "Chute/incident",
-        "activite_intense": "Activité intense",
-        "variation_poids": "Variation poids",
-        "consultation_medicale": "Consultation médicale",
-        "changement_traitement": "Changement traitement",
-        "chaleur_voyage": "Chaleur/voyage",
-    }
+        elements.append(Paragraph(" - ".join(labels), styles['StumprBody']))
 
-    thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
-    journal_entries = await db.journal_entries.find(
-        {"patient_id": patient_id, "created_at": {"$gte": thirty_days_ago}},
-        {"_id": 0}
-    ).sort("created_at", 1).to_list(200)
-
+    # ── SECTION 6 — Suivi clinique 30 jours ──────────────────────────────
     elements.append(Spacer(1, 20))
-    elements.append(Paragraph("SUIVI CLINIQUE — 30 DERNIERS JOURS", styles['SectionTitle']))
+    elements.append(Paragraph("SUIVI CLINIQUE - 30 DERNIERS JOURS", styles['SectionTitle']))
     elements.append(Paragraph(
-        "Données de suivi quotidien — à l'attention de l'équipe médicale",
-        ParagraphStyle('SubNote', parent=styles['StumprBody'], fontSize=9, textColor=colors.HexColor('#8892a4'), fontName='Helvetica-Oblique')
+        "Donnees de suivi quotidien - a l'attention de l'equipe medicale",
+        styles['SubNote']
     ))
-    elements.append(Spacer(1, 8))
+    elements.append(Spacer(1, 10))
 
     if not journal_entries:
-        elements.append(Paragraph("Aucune donnée de suivi enregistrée sur les 30 derniers jours.", styles['StumprBody']))
+        elements.append(Paragraph("Aucune donnee de suivi enregistree sur les 30 derniers jours.", styles['StumprBody']))
     else:
-        table_data = [["Date", "Douleurs", "Événements signalés"]]
+        # ── Stats résumé 4 cellules ───────────────────────────────────────
+        stat_cells = [
+            [Paragraph(f"{avg_globale}/10", styles['StatValue']),
+             Paragraph(f"{avg_fantome}/10", styles['StatValue']),
+             Paragraph(f"{pic_val}/10", styles['StatValue']),
+             Paragraph(evolution_str, styles['StatValue'])],
+            [Paragraph("Douleur globale moy.", styles['StatLabel']),
+             Paragraph("Douleur fantome moy.", styles['StatLabel']),
+             Paragraph(f"Pic ({pic_date_str})", styles['StatLabel']),
+             Paragraph("Evolution vs pic", styles['StatLabel'])],
+        ]
+        stat_table = Table(stat_cells, colWidths=[4.25*cm]*4)
+        stat_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f6fafe')),
+            ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#d0dde8')),
+            ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#d0dde8')),
+            ('TOPPADDING', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+        elements.append(stat_table)
+        elements.append(Spacer(1, 14))
+
+        # ── Graphique matplotlib ──────────────────────────────────────────
+        try:
+            chart_dates = []
+            for e in journal_entries:
+                raw = e.get("created_at", "")[:10]
+                try:
+                    chart_dates.append(datetime.fromisoformat(raw).strftime("%d/%m"))
+                except Exception:
+                    chart_dates.append(raw)
+
+            fig, ax = plt.subplots(figsize=(16/2.54, 4/2.54))
+            fig.patch.set_facecolor('white')
+            ax.set_facecolor('white')
+
+            x = range(len(chart_dates))
+            ax.plot(list(x), globale_scores, color='#00386c', linewidth=1.5, label='Globale')
+            ax.plot(list(x), fantome_scores, color='#006a63', linewidth=1.2, linestyle='--', label='Fantome')
+
+            ax.set_ylim(0, 10)
+            ax.set_xticks(list(x))
+            ax.set_xticklabels(chart_dates, fontsize=6, rotation=45, ha='right')
+            ax.yaxis.set_tick_params(labelsize=7)
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['left'].set_color('#d0dde8')
+            ax.spines['bottom'].set_color('#d0dde8')
+            ax.yaxis.set_ticks([0, 2, 4, 6, 8, 10])
+            ax.legend(fontsize=7, frameon=False, loc='upper right')
+            ax.set_ylabel('Douleur /10', fontsize=7, color='#8892a4')
+            fig.tight_layout(pad=0.3)
+
+            chart_buf = io.BytesIO()
+            fig.savefig(chart_buf, format='PNG', dpi=150, bbox_inches='tight', facecolor='white')
+            plt.close(fig)
+            chart_buf.seek(0)
+
+            img = RLImage(chart_buf, width=17*cm, height=4.3*cm)
+            elements.append(img)
+            elements.append(Spacer(1, 10))
+        except Exception as chart_err:
+            logger.warning(f"Graphique PDF non genere: {chart_err}")
+
+        # ── Blocs par entrée avec bordure gauche colorée ──────────────────
         for e in journal_entries:
             date_str = e.get("created_at", "")[:10]
             try:
                 date_fmt = datetime.fromisoformat(date_str).strftime("%d/%m/%Y")
             except Exception:
                 date_fmt = date_str
+
             d_obj = e.get("douleurs", {})
-            globale = d_obj.get("globale", 0) or 0
-            fantome = d_obj.get("fantome", 0) or 0
-            max_pain = max(globale, fantome)
-            if max_pain <= 2:
-                pain_hex = '#2d9e6b'
-            elif max_pain <= 5:
-                pain_hex = '#c9a227'
-            elif max_pain <= 7:
-                pain_hex = '#e08c2a'
+            globale_v = d_obj.get("globale", 0) or 0
+            fantome_v = d_obj.get("fantome", 0) or 0
+            max_pain = max(globale_v, fantome_v)
+
+            if max_pain >= 7:
+                border_color = colors.HexColor('#c04a1a')
+            elif max_pain >= 4:
+                border_color = colors.HexColor('#c97c2a')
             else:
-                pain_hex = '#d64545'
-            pain_str = f"G: {globale}/10 · F: {fantome}/10"
+                border_color = colors.HexColor('#0f6e56')
+
             evts = e.get("evenements", []) or []
-            evts_str = " · ".join(EVENT_LABELS.get(ev, ev) for ev in evts) if evts else "—"
-            table_data.append([
-                Paragraph(f"<font name='Helvetica-Bold' color='#8892a4' size='9'>{date_fmt}</font>", styles['StumprBody']),
-                Paragraph(f"<font color='{pain_hex}' size='9'>{pain_str}</font>", styles['StumprBody']),
-                Paragraph(f"<font size='9' color='#3d4a5c'>{evts_str}</font>", styles['StumprBody']),
-            ])
+            evts_str = "  -  ".join(EVENT_LABELS_PDF.get(ev, ev) for ev in evts) if evts else "—"
+            notes_e = e.get("notes") or ""
 
-        col_widths = [2.5 * cm, 5 * cm, 8.5 * cm]
-        tbl = Table(table_data, colWidths=col_widths)
-        tbl.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f6fafe')),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 9),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1a1f2e')),
-            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#fafafa')]),
-            ('LINEBELOW', (0, 0), (-1, -1), 0.25, colors.HexColor('#f0f0f0')),
-            ('TOPPADDING', (0, 0), (-1, -1), 5),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-            ('LEFTPADDING', (0, 0), (-1, -1), 6),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ]))
-        elements.append(tbl)
+            pain_line = f"Douleur globale: {globale_v}/10  |  Fantome: {fantome_v}/10"
+            body_lines = pain_line
+            if evts_str != "—":
+                body_lines += f"\nEvenements: {evts_str}"
+            if notes_e:
+                body_lines += f"\nNote: {notes_e[:120]}"
 
-    note_style = ParagraphStyle(
-        'TimelineNote',
-        parent=styles['StumprBody'],
-        fontSize=8,
-        textColor=colors.HexColor('#8892a4'),
-        fontName='Helvetica-Oblique',
-    )
+            row_data = [[
+                Paragraph(f"<b>{date_fmt}</b>", styles['StumprBody']),
+                Paragraph(body_lines.replace('\n', '<br/>'), styles['StumprBody']),
+            ]]
+            row_tbl = Table(row_data, colWidths=[2.5*cm, 14.5*cm])
+            row_tbl.setStyle(TableStyle([
+                ('LINEAFTER', (0, 0), (0, 0), 0, colors.white),
+                ('LINEBEFORE', (0, 0), (0, 0), 3, border_color),
+                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#fafafa')),
+                ('TOPPADDING', (0, 0), (-1, -1), 5),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                ('LEFTPADDING', (0, 0), (0, 0), 8),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ]))
+            elements.append(row_tbl)
+            elements.append(Spacer(1, 3))
+
+    # Légende
     elements.append(Spacer(1, 6))
     elements.append(Paragraph(
-        "G = Douleur globale · F = Douleur fantôme · Échelle 0-10<br/>"
-        "Ces données sont déclaratives et saisies par le patient.<br/>"
-        "Elles ne constituent pas un diagnostic médical.",
-        note_style
+        "G = Douleur globale  -  F = Douleur fantome  -  Echelle 0-10<br/>"
+        "Ces donnees sont declaratives et saisies par le patient. Elles ne constituent pas un diagnostic medical.",
+        styles['SubNote']
     ))
 
-    # Footer
-    elements.append(Spacer(1, 30))
-    gen_date = datetime.now(timezone.utc).strftime("%d/%m/%Y à %H:%M")
-    elements.append(Paragraph(f"Document généré le {gen_date}", styles['StumprBody']))
-    
+    # ── FOOTER ────────────────────────────────────────────────────────────
+    elements.append(Spacer(1, 20))
+    footer_div = Table([['']], colWidths=[17*cm])
+    footer_div.setStyle(TableStyle([
+        ('LINEABOVE', (0, 0), (-1, -1), 0.5, colors.HexColor('#d0dde8')),
+        ('TOPPADDING', (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    elements.append(footer_div)
+    gen_date = datetime.now(timezone.utc).strftime("%d/%m/%Y a %H:%M")
+    elements.append(Paragraph(
+        f"Stumpr - stumpr.app - Document confidentiel  -  Genere le {gen_date}",
+        styles['FooterStyle']
+    ))
+
+    # ── Build ─────────────────────────────────────────────────────────────
     doc.build(elements)
     buffer.seek(0)
-    
-    # Sanitize filename
+
     nom = (patient.get('nom') or 'patient').lower().replace(' ', '-')
     filename = f"stumpr-fiche-{nom}.pdf"
-    
+
     return StreamingResponse(
         buffer,
         media_type="application/pdf",
