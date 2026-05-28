@@ -788,7 +788,7 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
     styles.add(ParagraphStyle(name='RenewalOK',     fontName='Helvetica-Bold', fontSize=9,  textColor=colors.HexColor('#2d9e6b')))
     styles.add(ParagraphStyle(name='RenewalWarn',   fontName='Helvetica-Bold', fontSize=9,  textColor=colors.HexColor('#e08c2a')))
     styles.add(ParagraphStyle(name='RenewalDanger', fontName='Helvetica-Bold', fontSize=9,  textColor=colors.HexColor('#d64545')))
-    styles.add(ParagraphStyle(name='StatValue',     fontName='Helvetica-Bold', fontSize=16, textColor=colors.HexColor('#00386c'), spaceAfter=2, alignment=1))
+    styles.add(ParagraphStyle(name='StatValue',     fontName='Helvetica-Bold', fontSize=18, textColor=colors.HexColor('#00386c'), spaceAfter=2, alignment=1))
     styles.add(ParagraphStyle(name='StatLabel',     fontName='Helvetica',      fontSize=8,  textColor=colors.HexColor('#8892a4'), alignment=1))
     styles.add(ParagraphStyle(name='FooterStyle',   fontName='Helvetica',      fontSize=8,  textColor=colors.HexColor('#8892a4'), alignment=1))
     styles.add(ParagraphStyle(name='SubNote',       fontName='Helvetica-Oblique', fontSize=9, textColor=colors.HexColor('#8892a4')))
@@ -814,6 +814,7 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
             '<font name="Helvetica-Bold" color="#006a63" size="22">.</font>',
             styles['StumprTitle']
         ),
+        Spacer(1, 8),
         Paragraph(
             f"Inscrit le {inscription_str}  ·  {total_entries} entrees sur 30j  ·  {avg_per_week} entrees/sem.",
             styles['StumprMeta']
@@ -830,7 +831,6 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
         colWidths=[9*cm, 8*cm]
     )
     header_tbl.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('LEFTPADDING', (0, 0), (0, 0), 0),
         ('RIGHTPADDING', (0, 0), (0, 0), 0),
         ('LEFTPADDING', (1, 0), (1, 0), 6),
