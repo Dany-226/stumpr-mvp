@@ -797,7 +797,7 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
 
     elements = []
 
-    # ── HEADER (Table 2 colonnes) ─────────────────────────────────────────
+    # ── HEADER ────────────────────────────────────────────────────────────
     user_created = current_user.get("created_at", "")
     inscription_str = format_date(user_created[:10]) if user_created else "N/A"
 
@@ -808,37 +808,19 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
 
     ortho_display_h = " - ".join(p for p in [ortho_nom_h, ortho_ville_h] if p) or "Non renseigne"
 
-    col_left = [
-        Paragraph(
-            '<font name="Helvetica-Bold" color="#00386c" size="22">Stumpr</font>'
-            '<font name="Helvetica-Bold" color="#006a63" size="22">.</font>',
-            styles['StumprTitle']
-        ),
-        Spacer(1, 8),
-        Paragraph(
-            f"Inscrit le {inscription_str}  ·  {total_entries} entrees sur 30j  ·  {avg_per_week} entrees/sem.",
-            styles['StumprMeta']
-        ),
-    ]
-    col_right = [
-        Paragraph(f"<b>Ortho :</b> {ortho_display_h}", styles['HeaderRight']),
-        Paragraph(f"<b>Medecin :</b> {medecin_h or 'Non renseigne'}", styles['HeaderRight']),
-        Paragraph(f"<b>Prochain RDV :</b> {rdv_h}", styles['HeaderRightMuted']),
-    ]
-
-    header_tbl = Table(
-        [[col_left, col_right]],
-        colWidths=[9*cm, 8*cm]
-    )
-    header_tbl.setStyle(TableStyle([
-        ('LEFTPADDING', (0, 0), (0, 0), 0),
-        ('RIGHTPADDING', (0, 0), (0, 0), 0),
-        ('LEFTPADDING', (1, 0), (1, 0), 6),
-        ('RIGHTPADDING', (1, 0), (1, 0), 0),
-        ('TOPPADDING', (0, 0), (-1, -1), 0),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
-    ]))
-    elements.append(header_tbl)
+    elements.append(Paragraph(
+        '<font name="Helvetica-Bold" color="#00386c" size="22">Stumpr</font>'
+        '<font name="Helvetica-Bold" color="#006a63" size="22">.</font>',
+        styles['StumprTitle']
+    ))
+    elements.append(Paragraph(
+        f"Inscrit le {inscription_str} · {total_entries} entrees sur 30j · {avg_per_week} entrees/sem.",
+        styles['StumprMeta']
+    ))
+    elements.append(Paragraph(
+        f"Ortho : {ortho_display_h} · Medecin : {medecin_h or 'Non renseigne'} · RDV : {rdv_h}",
+        ParagraphStyle('OrthoLine', parent=styles['StumprBody'], fontSize=8, alignment=2, textColor=colors.HexColor('#3d4a5c'))
+    ))
 
     # Divider line
     div = Table([['']], colWidths=[17*cm])
