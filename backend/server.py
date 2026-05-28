@@ -830,7 +830,7 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
         colWidths=[9*cm, 8*cm]
     )
     header_tbl.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'BOTTOM'),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('LEFTPADDING', (0, 0), (0, 0), 0),
         ('RIGHTPADDING', (0, 0), (0, 0), 0),
         ('LEFTPADDING', (1, 0), (1, 0), 6),
