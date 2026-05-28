@@ -984,7 +984,7 @@ async def export_patient_pdf(patient_id: str, token: str = Query(None), current_
   <div style="background:#00386c;border-radius:12px;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
     <div>
       <div style="font-size:10px;text-transform:uppercase;color:rgba(255,255,255,0.6);letter-spacing:1px;margin-bottom:6px;">STUMPR - FICHE PATIENT</div>
-      <div style="font-size:22px;font-weight:bold;color:white;margin-bottom:4px;">{nom_patient}</div>
+      <div style="font-size:22px;font-weight:bold;color:white;margin-bottom:20px;">{nom_patient}</div>
       <div style="font-size:12px;color:rgba(255,255,255,0.6);">{esc(amp_str)}</div>
     </div>
     <div style="text-align:right;font-size:11px;color:white;">
