@@ -407,10 +407,25 @@ async def list_users(x_admin_secret: Optional[str] = Header(None)):
     # Métriques par user — 2 agrégations parallèles
     journal_agg, patient_agg = await asyncio.gather(
         db.journal_entries.aggregate([
+            # 1. Grouper par patient_id
             {"$group": {
-                "_id": "$user_id",
+                "_id": "$patient_id",
                 "nb_entries": {"$sum": 1},
                 "derniere_entree": {"$max": "$created_at"}
+            }},
+            # 2. Jointure patients.id → remonter au user_id
+            {"$lookup": {
+                "from": "patients",
+                "localField": "_id",
+                "foreignField": "id",
+                "as": "patient"
+            }},
+            {"$unwind": "$patient"},
+            # 3. Regrouper par user_id (un user peut avoir plusieurs patients)
+            {"$group": {
+                "_id": "$patient.user_id",
+                "nb_entries": {"$sum": "$nb_entries"},
+                "derniere_entree": {"$max": "$derniere_entree"}
             }}
         ]).to_list(None),
         db.patients.aggregate([
