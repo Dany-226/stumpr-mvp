@@ -333,7 +333,7 @@ export default function DashboardPage() {
               data-testid="nav-rapport"
             >
               <Sparkles size={16} />
-              Rapport IA
+              Rapport de synthèse
             </button>
             <button
               onClick={() => navigate("/journal")}
