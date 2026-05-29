@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import asyncio
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, EmailStr
@@ -400,8 +401,52 @@ async def list_beta_testers(x_admin_secret: Optional[str] = Header(None)):
 async def list_users(x_admin_secret: Optional[str] = Header(None)):
     if not ADMIN_SECRET or x_admin_secret != ADMIN_SECRET:
         raise HTTPException(status_code=403, detail="Accès non autorisé")
+
     users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1).to_list(1000)
-    return {"total": len(users), "users": users}
+
+    # Métriques par user — 2 agrégations parallèles
+    journal_agg, patient_agg = await asyncio.gather(
+        db.journal_entries.aggregate([
+            {"$group": {
+                "_id": "$user_id",
+                "nb_entries": {"$sum": 1},
+                "derniere_entree": {"$max": "$created_at"}
+            }}
+        ]).to_list(None),
+        db.patients.aggregate([
+            {"$group": {
+                "_id": "$user_id",
+                "nb_patients": {"$sum": 1},
+                "a_composants": {
+                    "$max": {
+                        "$cond": [
+                            {"$gt": [{"$size": {"$ifNull": ["$composants", []]}}, 0]},
+                            1, 0
+                        ]
+                    }
+                }
+            }}
+        ]).to_list(None)
+    )
+
+    journal_map = {s["_id"]: s for s in journal_agg}
+    patient_map = {s["_id"]: s for s in patient_agg}
+
+    enriched = []
+    for u in users:
+        uid = u["id"]
+        j = journal_map.get(uid, {})
+        p = patient_map.get(uid, {})
+        enriched.append({
+            **u,
+            "derniere_connexion": u.get("created_at"),  # proxy : date création (login non tracé)
+            "nb_journal_entries": j.get("nb_entries", 0),
+            "derniere_entree_journal": j.get("derniere_entree"),
+            "nb_patients": p.get("nb_patients", 0),
+            "a_genere_pdf": bool(p.get("a_composants", 0)),
+        })
+
+    return {"total": len(enriched), "users": enriched}
 
 @api_router.get("/admin/patients")
 async def list_patients(x_admin_secret: Optional[str] = Header(None)):
