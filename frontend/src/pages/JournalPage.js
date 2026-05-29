@@ -7,16 +7,16 @@ import axios from "axios";
 const API = `${process.env.REACT_APP_BACKEND_URL || 'https://stumpr-backend.onrender.com'}/api`;
 
 const JOURNAL_ACTIVITIES = [
-  { id: "marche-courte", label: "Marche courte", emoji: "🚶" },
-  { id: "marche-longue", label: "Marche longue", emoji: "🏃" },
+  { id: "marche_courte", label: "Marche courte", emoji: "🚶" },
+  { id: "marche_longue", label: "Marche longue", emoji: "🏃" },
   { id: "courses", label: "Courses", emoji: "🛒" },
   { id: "conduite", label: "Conduite", emoji: "🚗" },
   { id: "velo", label: "Vélo", emoji: "🚲" },
   { id: "natation", label: "Natation", emoji: "🏊" },
-  { id: "sport-collectif", label: "Sport collectif", emoji: "⚽" },
+  { id: "sport_collectif", label: "Sport collectif", emoji: "⚽" },
   { id: "randonnee", label: "Randonnée", emoji: "🏔️" },
-  { id: "travail", label: "Travail", emoji: "💼" },
-  { id: "sport-intense", label: "Sport intense", emoji: "🏆" },
+  { id: "travail_debout", label: "Travail", emoji: "💼" },
+  { id: "sport_intense", label: "Sport intense", emoji: "🏆" },
   { id: "repos", label: "Repos", emoji: "🛋️" },
 ];
 

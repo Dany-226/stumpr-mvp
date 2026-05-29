@@ -35,7 +35,7 @@ client = AsyncIOMotorClient(
 db = client[os.environ['DB_NAME']]
 
 # JWT Configuration
-SECRET_KEY = os.environ.get('JWT_SECRET', 'stumpr-secret-key-change-in-production-2024')
+SECRET_KEY = os.environ.get('JWT_SECRET', '')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
@@ -1747,7 +1747,7 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=os.environ.get('CORS_ORIGINS', 'https://stumpr-mvp.onrender.com').split(','),
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -1757,6 +1757,8 @@ async def startup_db_client():
     await db.users.create_index("email", unique=True)
     await db.patients.create_index("user_id")
     await db.journal_entries.create_index("user_id")
+    await db.journal_entries.create_index([("patient_id", 1), ("created_at", 1)])
+    await db.journal_entries.create_index([("user_id", 1), ("created_at", -1)])
     await db.shares.create_index("share_id")
 
 @app.on_event("shutdown")
