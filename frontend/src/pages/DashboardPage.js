@@ -124,6 +124,22 @@ export default function DashboardPage() {
     }
   };
 
+  const handleRapportPdf = async () => {
+    try {
+      const res = await axios.get(`${API}/patients`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const patient = res.data?.[0];
+      if (!patient?.id) {
+        toast.error("Aucun patient trouvé");
+        return;
+      }
+      window.open(`${API}/patients/${patient.id}/pdf?token=${token}`, "_blank");
+    } catch {
+      toast.error("Impossible de générer le rapport");
+    }
+  };
+
   // Prepare chart data
   const painChartData = {
     labels: stats?.entries_by_day?.map((e) => e.date) || [],
@@ -328,7 +344,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => navigate("/rapport")}
+              onClick={handleRapportPdf}
               className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-secondary/10 text-secondary"
               data-testid="nav-rapport"
             >
