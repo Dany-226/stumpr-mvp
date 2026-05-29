@@ -174,10 +174,10 @@ export default function RapportPage() {
       <main className="max-w-3xl mx-auto p-6">
         <h1 className="text-3xl font-bold mb-2"
           style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: "#1a1f2e" }}>
-          Rapport médical automatique
+          Rapport de synthèse
         </h1>
         <p className="text-sm mb-8" style={{ color: "#8892a4" }}>
-          Généré par IA à partir de vos données de journal — à partager avec votre médecin
+          Genere a partir de vos donnees de journal - a partager avec votre orthoprothesiste ou medecin
         </p>
 
         {/* Config card */}
