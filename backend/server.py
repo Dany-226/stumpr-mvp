@@ -1692,6 +1692,7 @@ class Avis(BaseModel):
 class AvisPublic(BaseModel):
     note: int
     commentaire: Optional[str] = None
+    date: Optional[str] = Field(default=None, validation_alias="created_at")
 
 class EtablissementCreate(BaseModel):
     nom: str
@@ -1758,38 +1759,41 @@ async def create_etablissement(
     doc.pop("_id", None)
     return EtablissementResponse(**doc)
 
-# FEATURE DESACTIVEE — modele de gouvernance avis en cours de definition
-# @api_router.post("/annuaire/{etablissement_id}/avis")
+# FEATURE SUSPENDUE — soumission d'avis desactivee (RGPD / gouvernance en cours de definition)
+@api_router.post("/annuaire/{etablissement_id}/avis")
 async def add_avis(
     etablissement_id: str,
-    avis: Avis,
     current_user: dict = Depends(get_current_user)
 ):
-    etablissement = await db.annuaire.find_one({"id": etablissement_id})
-    if not etablissement:
-        raise HTTPException(status_code=404, detail="Établissement non trouvé")
-
-    avis_doc = {
-        "auteur": avis.auteur,
-        "note": avis.note,
-        "commentaire": avis.commentaire,
-        "user_id": current_user["id"],
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-
-    existing_avis = etablissement.get("avis", [])
-    existing_avis.append(avis_doc)
-    note_moyenne = sum(a["note"] for a in existing_avis) / len(existing_avis)
-
-    await db.annuaire.update_one(
-        {"id": etablissement_id},
-        {"$set": {
-            "avis": existing_avis,
-            "nombre_avis": len(existing_avis),
-            "note_moyenne": round(note_moyenne, 1)
-        }}
+    raise HTTPException(
+        status_code=403,
+        detail="La soumission d'avis est temporairement suspendue le temps de redéfinir notre modèle de gouvernance des avis. Merci de votre compréhension."
     )
-    return {"message": "Avis ajouté", "note_moyenne": round(note_moyenne, 1)}
+
+    # ---- Logique originale, conservee pour reprise ulterieure ----
+    # async def add_avis(etablissement_id: str, avis: Avis, current_user: dict = Depends(get_current_user)):
+    #     etablissement = await db.annuaire.find_one({"id": etablissement_id})
+    #     if not etablissement:
+    #         raise HTTPException(status_code=404, detail="Établissement non trouvé")
+    #     avis_doc = {
+    #         "auteur": avis.auteur,
+    #         "note": avis.note,
+    #         "commentaire": avis.commentaire,
+    #         "user_id": current_user["id"],
+    #         "created_at": datetime.now(timezone.utc).isoformat()
+    #     }
+    #     existing_avis = etablissement.get("avis", [])
+    #     existing_avis.append(avis_doc)
+    #     note_moyenne = sum(a["note"] for a in existing_avis) / len(existing_avis)
+    #     await db.annuaire.update_one(
+    #         {"id": etablissement_id},
+    #         {"$set": {
+    #             "avis": existing_avis,
+    #             "nombre_avis": len(existing_avis),
+    #             "note_moyenne": round(note_moyenne, 1)
+    #         }}
+    #     )
+    #     return {"message": "Avis ajouté", "note_moyenne": round(note_moyenne, 1)}
 
 # ======================== HEALTH CHECK ========================
 

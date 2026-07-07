@@ -40,33 +40,32 @@ const TypeBadge = ({ type }) => {
 };
 
 // ─── Modal: Ajouter un avis ───────────────────────────────────────────────────
-const AvisModal = ({ etablissement, onClose, onSuccess }) => {
-  const [auteur, setAuteur] = useState("");
-  const [note, setNote] = useState(5);
-  const [commentaire, setCommentaire] = useState("");
-  const [loading, setLoading] = useState(false);
-  return null; // FEATURE DESACTIVEE — en attente modele de gouvernance
-
-  const submit = async (e) => {
-    e.preventDefault();
-    if (!auteur.trim()) return toast.error("Veuillez indiquer votre prénom");
-    setLoading(true);
-    try {
-      await axios.post(
-        `${API}/annuaire/${etablissement.id}/avis`,
-        { auteur, note, commentaire },
-        getAuthHeaders()
-      );
-      toast.success("Avis ajouté !");
-      onSuccess();
-      onClose();
-    } catch {
-      toast.error("Erreur lors de l'ajout de l'avis");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+// FEATURE SUSPENDUE — soumission d'avis desactivee (RGPD / gouvernance en cours de definition)
+// État, validation et soumission conservés en commentaire pour reprise ultérieure :
+// const [auteur, setAuteur] = useState("");
+// const [note, setNote] = useState(5);
+// const [commentaire, setCommentaire] = useState("");
+// const [loading, setLoading] = useState(false);
+// const submit = async (e) => {
+//   e.preventDefault();
+//   if (!auteur.trim()) return toast.error("Veuillez indiquer votre prénom");
+//   setLoading(true);
+//   try {
+//     await axios.post(
+//       `${API}/annuaire/${etablissement.id}/avis`,
+//       { auteur, note, commentaire },
+//       getAuthHeaders()
+//     );
+//     toast.success("Avis ajouté !");
+//     onSuccess();
+//     onClose();
+//   } catch {
+//     toast.error("Erreur lors de l'ajout de l'avis");
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+const AvisModal = ({ etablissement, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
       <div className="bg-surface-container-lowest rounded-3xl p-6 shadow-xl w-full max-w-md">
@@ -79,55 +78,9 @@ const AvisModal = ({ etablissement, onClose, onSuccess }) => {
           </button>
         </div>
         <p className="text-sm text-on-surface-variant mb-4">{etablissement.nom}</p>
-        <form onSubmit={submit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-on-surface-variant mb-1">Votre prénom</label>
-            <input
-              value={auteur}
-              onChange={(e) => setAuteur(e.target.value)}
-              className="w-full bg-surface-container rounded-xl border-none px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline"
-              placeholder="ex: Marie"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-on-surface-variant mb-2">Note</label>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setNote(n)}
-                  className="w-10 h-10 rounded-xl text-sm font-bold transition-all"
-                  style={{
-                    border: `2px solid ${note >= n ? "#f59e0b" : "#e4e9ed"}`,
-                    backgroundColor: note >= n ? "#fef3c7" : "white",
-                    color: note >= n ? "#d97706" : "#737781",
-                  }}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-on-surface-variant mb-1">Commentaire (optionnel)</label>
-            <textarea
-              value={commentaire}
-              onChange={(e) => setCommentaire(e.target.value)}
-              rows={3}
-              className="w-full bg-surface-container rounded-xl border-none px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-secondary/30 text-on-surface placeholder:text-outline resize-y"
-              placeholder="Partagez votre expérience..."
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-xl py-3 font-bold"
-            style={{ backgroundColor: '#00386c', color: '#fff', opacity: loading ? 0.7 : 1 }}
-          >
-            {loading ? "Envoi..." : "Publier l'avis"}
-          </button>
-        </form>
+        <p className="text-sm text-on-surface-variant">
+          La soumission d'avis est temporairement suspendue le temps de redéfinir notre modèle de gouvernance des avis. Merci de votre compréhension.
+        </p>
       </div>
     </div>
   );
@@ -310,18 +263,22 @@ const EtablissementCard = ({ etab, onAvisClick }) => (
       */}
     </div>
 
-    {/* FEATURE DESACTIVEE — liste avis masquee
+    {/* FEATURE DESACTIVEE — liste avis masquee (champ auteur retire du modele, pas seulement de l'affichage)
     {etab.avis && etab.avis.length > 0 && (
       <div className="pt-2 space-y-2">
         {etab.avis.slice(-2).reverse().map((a, i) => (
           <div key={i} className="bg-surface-container-low rounded-2xl p-3 flex gap-2 items-start">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 bg-secondary/10 text-secondary">
-              {a.auteur?.[0]?.toUpperCase()}
+            <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 bg-secondary/10 text-secondary">
+              <Star size={13} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-on-surface">{a.auteur}</span>
                 <Stars note={a.note} size={12} />
+                {a.date && (
+                  <span className="text-xs text-on-surface-variant">
+                    {new Date(a.date).toLocaleDateString("fr-FR")}
+                  </span>
+                )}
               </div>
               {a.commentaire && (
                 <p className="text-sm mt-0.5 text-on-surface-variant">{a.commentaire}</p>
@@ -474,7 +431,6 @@ export default function AnnuairePage() {
         <AvisModal
           etablissement={avisTarget}
           onClose={() => setAvisTarget(null)}
-          onSuccess={fetchEtablissements}
         />
       )}
       {showAddModal && (
